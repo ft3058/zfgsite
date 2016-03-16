@@ -1,4 +1,2 @@
 
-
-
 curl -d "ip=1.2.3.4&port=22&account=root&password=12345678&checkCode=0000" "http://127.0.0.1:8000/jasset/asset/add_post/"
