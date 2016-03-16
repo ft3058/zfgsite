@@ -1,0 +1,37 @@
+env: centos6.5
+
+su root
+yum – y install python-setuptools
+pip install ansbile
+
+[webserver]
+192.168.1.1
+192.168.1.2
+[databaseServer]
+192.168.1.10
+192.168.1.11
+
+ ## 生成公钥/私钥
+
+ssh-keygen -t rsa -P ''
+cat /root/.ssh/id_rsa_centos.pub >> /root/.ssh/authorized_keys
+chmod 600 /root/.ssh/authorized_keys
+
+
+ansible storm_cluster -m command -a 'uptime'
+ansible storm_cluster -m setup
+ansible storm_cluster -m ping
+
+ ## 远程文件符号链接创建
+# ansible storm_cluster -m file -a "src=/etc/resolv.conf dest=/tmp/resolv.conf state=link"
+
+远程文件信息查看
+# ansible storm_cluster -m command -a "ls –al /tmp/resolv.conf"
+ ## 远程文件符号链接删除
+# ansible storm_cluster -m file -a "path=/tmp/resolv.conf state=absent"
+
+将本地文件“/etc/ansible/ansible.cfg”复制到远程服务器
+# ansible storm_cluster -m copy -a "src=/etc/ansible/ansible.cfg dest=/tmp/ansible.cfg owner=root group=root mode=0644"
+
+远程文件信息查看
+# ansible my -m command -a "cat /root/.ssh/au*"

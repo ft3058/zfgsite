@@ -1,0 +1,19 @@
+1.先在installed_app中添加新的应用名称'south'
+
+2. 同步一下，python manage.py syncdb --settings=prj.settings.test
+
+3. 初始化之前的表结构， python manage.py schemamigration jasset --initial --settings=prj.settings.test
+
+如果有多个app,这一步可能得运行多次.这会在各app目录下生成类似0001_initial.py作为初始条件。
+
+4.现在有新的需求，需要在model中添加一个字段，添加好后运行：
+
+python manage.py schemamigration jasset --auto --settings=prj.settings.test 这里又会生成一个py文件。
+
+5.根据提示，这下运行：python manage.py migrate jasset ( --auto ) ( --settings=prj.settings.test )
+
+完成后会在数据库中添加新字段，并将此操作写入到south_migrationhistory这个表中，
+south会让生成的py文件与数据库中记录的保持一到处。
+(注意[good]：如果出现django.db.utils.OperationalError: (1050,
+"Table 'table_name' already exists")这类错误，说明是有可能在数据库中不存在0001_initial的运行记录，
+这里可能需要手工添加这一条记录，以跳过执行初始化的语句)

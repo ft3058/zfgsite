@@ -1,0 +1,20 @@
+
+
+
+start dev django server:
+1. su root  (need super perm)
+2. source /home/wxd/env/bin/activate
+3. python manage.py runserver 0.0.0.0:8000
+
+
+
+before install (pip install readline ):
+
+yum install ncurses-*
+
+
+
+
+
+
+

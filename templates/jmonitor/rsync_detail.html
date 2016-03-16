@@ -1,0 +1,272 @@
+{% extends 'base.html' %}
+{% load mytags %}
+{% load humanize %}
+
+{% block content %}
+    {% include 'nav_cat_bar.html' %}
+    <div class="wrapper wrapper-content animated fadeInRight">
+
+
+    <!-- new added -->
+    <div class="row">
+
+        <!-- ------------------------------------ -->
+        <div class="col-sm-6">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5> {{asset.ip}} </h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <i class="fa fa-wrench"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-user">
+                        </ul>
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+
+
+                <div class="ibox-content ibox-heading">
+                    <h3>文件数量统计（客户端／仓库）</h3>
+                    <small><i class="fa fa-map-marker"></i> </small>
+                </div>
+                <div class="ibox-content">
+                    <div>
+                        <div class="text-left">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>目录名</th>
+                                        <th>文件数量</th>
+                                    </tr>
+                                </thead>
+
+                                {% for x in file_num_list %}
+                                <tr>
+                                    <td class="text-navy">{{x.path}}</td>
+                                    <td class="text-navy">{{x.desc}}</td>
+                                </tr>
+                                {% endfor %}
+
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5> {{asset.ip}} </h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <i class="fa fa-wrench"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-user">
+                        </ul>
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+
+
+                <div class="ibox-content ibox-heading">
+                    <h3>运行错误日志</h3>
+                    <small><i class="fa fa-map-marker"></i> </small>
+                </div>
+                <div class="ibox-content">
+                    <div>
+                        <div class="text-left">
+                            <table class="table">
+
+                                <tr>
+                                    <td class="text-navy" style="color:red;">{{log_detail}}</td>
+                                </tr>
+
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+
+
+
+
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <span class="text text-primary"><b> {{asset.ip}} </b></span>
+                        <div class="ibox-tools">
+                            <a class="" href="{% url 'asset_update' %}?id={{ asset.id }}">
+                                <i class="fa fa-refresh"></i>
+                            </a>
+                            <a class="collapse-link">
+                                <i class="fa fa-chevron-up"></i>
+                            </a>
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                <i class="fa fa-wrench"></i>
+                            </a>
+                            <ul class="dropdown-menu dropdown-user">
+                            </ul>
+                            <a class="close-link">
+                                <i class="fa fa-times"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="ibox-content ibox-heading">
+                        <h3>未同步的文件({{file_not_exists_list_count}})</h3>
+                        <small><i class="fa fa-map-marker"></i> 文件名 </small>
+                    </div>
+                    <div class="ibox-content">
+                        <div>
+                            <div class="text-left">
+                                <table class="table">
+
+                                    {% for fname in file_not_exists_list %}
+                                        <tr>
+                                            <td class="text-navy">{{fname}}</td>
+                                        </tr>
+                                    {% empty %}
+                                        <td class="text-navy">(暂无)</td>
+                                    {% endfor %}
+
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+
+            <div class="col-sm-4">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5> {{asset.ip}} </h5>
+                        <div class="ibox-tools">
+                            <a class="collapse-link">
+                                <i class="fa fa-chevron-up"></i>
+                            </a>
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                <i class="fa fa-wrench"></i>
+                            </a>
+                            <ul class="dropdown-menu dropdown-user">
+                            </ul>
+                            <a class="close-link">
+                                <i class="fa fa-times"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="ibox-content ibox-heading">
+                        <h3>时间不匹配的文件({{file_err_time_list_count}})</h3>
+                        <small><i class="fa fa-map-marker"></i> 文件名 </small>
+                    </div>
+                    <div class="ibox-content">
+                        <div>
+                            <div class="text-left">
+                                <table class="table">
+
+                                    {% for fname in file_err_time_list %}
+                                        <tr>
+                                            <td class="text-navy">{{fname}}</td>
+                                        </tr>
+                                    {% empty %}
+                                        <td class="text-navy">(暂无)</td>
+                                    {% endfor %}
+
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                </div>
+            </div>
+
+            <div class="col-sm-4">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5> {{asset.ip}} </h5>
+                        <div class="ibox-tools">
+                            <a class="collapse-link">
+                                <i class="fa fa-chevron-up"></i>
+                            </a>
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                <i class="fa fa-wrench"></i>
+                            </a>
+                            <ul class="dropdown-menu dropdown-user">
+                            </ul>
+                            <a class="close-link">
+                                <i class="fa fa-times"></i>
+                            </a>
+                        </div>
+                    </div>
+
+
+                    <div class="ibox-content ibox-heading">
+                        <h3>大小不匹配的文件({{file_err_size_list_count}})</h3>
+                        <small><i class="fa fa-map-marker"></i> 文件名 </small>
+                    </div>
+                    <div class="ibox-content">
+                        <div>
+                            <div class="text-left">
+                                <table class="table">
+
+                                    {% for fname in file_err_size_list %}
+                                        <tr>
+                                            <td class="text-navy">{{fname}}</td>
+                                        </tr>
+                                    {% empty %}
+                                        <td class="text-navy">(暂无)</td>
+                                    {% endfor %}
+
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+</div>
+
+<script>
+    $(document).ready(function(){
+        $('#show').click(function(){
+            $('#show').css('display', 'none');
+            $('#more').css('display', 'block');
+        })
+    })
+</script>
+
+
+{% endblock %}
