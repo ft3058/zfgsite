@@ -8,7 +8,7 @@
         <div class="col-sm-10">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
-                    <h5> 域详细信息列表 </h5>
+                    <h5> 主机分组详细信息列表</h5>
                     <div class="ibox-tools">
                         <a class="collapse-link">
                             <i class="fa fa-chevron-up"></i>
@@ -23,7 +23,7 @@
                 </div>
                 <div class="ibox-content">
                     <div class="">
-                        <a href="{% url 'domain_add' %}" class="btn btn-sm btn-primary "> 添加域 </a>
+                        <a href="{% url 'asset_group_add' %}" class="btn btn-sm btn-primary "> 添加主机分组 </a>
 
                         <a class="btn btn-sm btn-danger" id="del_check"> 删除所选 </a>
                         <form id="search_form" method="get" action="" class="pull-right mail-search">
@@ -46,33 +46,36 @@
                                 <th class="text-center">
                                     <input id="checkall" type="checkbox" class="i-checks" name="checkall" value="checkall" data-editable='false' onclick="check_all('contents_form')">
                                 </th>
-                                <th class="text-center"> 模块名 </th>
-                                <th class="text-center"> 相应路径 </th>
+                                <th class="text-center"> 主机分组名 </th>
+                                <th class="text-center"> 所属资产组 </th>
                                 <th class="text-center"> 主机数量 </th>
                                 <th class="text-center"> 备注 </th>
                                 <th class="text-center"> 操作 </th>
                             </tr>
                         </thead>
                         <tbody>
-                        {% for d in domains.object_list %}
+                        {% for asset_group in asset_groups.object_list %}
                             <tr class="gradeX">
-                                <td class="text-center" name="id" value="{{ d.id }}" data-editable='false'>
-                                    <input name="id" value="{{ d.id }}" type="checkbox" class="i-checks">
+                                <td class="text-center" name="id" value="{{ asset_group.id }}" data-editable='false'>
+                                    <input name="id" value="{{ asset_group.id }}" type="checkbox" class="i-checks">
                                 </td>
-                                <td class="text-center"><a href="{% url 'asset_list_domain' %}?module_name={{ d.module_name }}">{{ d.module_name }} </a>  </td>
+                                <td class="text-center"><a href="{% url 'asset_list' %}?group_id={{ asset_group.id }}">{{ asset_group.name }} </a>  </td>
                                 <td class="text-center">
                                     {% autoescape off %}
-                                        {{ d | get_joined_path }}
+                                        {{ asset_group | belong_to_group }}
                                     {% endautoescape %}
 
                                 </td>
 
-                                <td class="text-center"> <a href="{% url 'asset_list_domain' %}?module_name={{ d.module_name }}">{{ d | get_asset_count }}</a> </td>
-                                <td class="text-center"> {{ d.comment }} </td>
+                                <td class="text-center"> <a href="{% url 'asset_list' %}?group1_id={{ asset_group.id }}">
+                                    {{ asset_group.asset_set.count }}</a>
+                                </td>
+
+                                <td class="text-center"> {{ asset_group.comment }} </td>
                                 <td class="text-center">
-                                    <a href="{% url 'asset_group_edit' %}?id={{ asset_group.id }}" class="btn btn-xs btn-info">编辑</a>
-                                    <a href="{% url 'asset_group1_add' %}?id={{ asset_group.id }}" class="btn btn-xs btn-info "> 添加分组 </a>
-                                    <a value="{% url 'asset_group_del' %}?id={{ asset_group.id }}" class="btn btn-xs btn-danger group_del">删除</a>
+                                    <a href="{% url 'asset_group1_edit' %}?id={{ asset_group.id }}" class="btn btn-xs btn-info">编辑</a>
+                                    <!--a href="{% url 'asset_group1_add' %}?id={{ asset_group.id }}" class="btn btn-xs btn-info "> 添加分组 </a-->
+                                    <a value="{% url 'asset_group1_del' %}?id={{ asset_group.id }}" class="btn btn-xs btn-danger group_del">删除</a>
                                 </td>
                             </tr>
                         {% endfor %}

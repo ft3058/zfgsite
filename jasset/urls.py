@@ -17,11 +17,13 @@ urlpatterns = patterns('',
     url(r'^asset/update_batch/$', asset_update_batch, name='asset_update_batch'),
     url(r'^asset/upload/$', asset_upload, name='asset_upload'),
     url(r'^group/del/$', group_del, name='asset_group_del'),
+    url(r'^group1/del/$', group1_del, name='asset_group1_del'),
     url(r'^group/add/$', group_add, name='asset_group_add'),
     url(r'^group1/add/$', group1_add, name='asset_group1_add'),
     url(r'^group1/edit/$', group1_edit, name='asset_group1_edit'),
 
     url(r'^group/list/$', group_list, name='asset_group_list'),
+    url(r'^group1/list/$', group1_list, name='asset_group1_list'),
     url(r'^group/edit/$', group_edit, name='asset_group_edit'),
     url(r'^idc/add/$', idc_add, name='idc_add'),
     url(r'^idc/list/$', idc_list, name='idc_list'),
@@ -31,8 +33,6 @@ urlpatterns = patterns('',
     # custom
     url(r'^asset/add_post/$', asset_add_post, name='asset_add_post'),
     url(r'^domain/add/$', domain_add, name='domain_add'),
-    url(r'^domain/domain_group/$', domain_group_list, name='domain_group_list'),
-
-
+    url(r'^domains/domain_group/$', domain_group_list, name='domain_group_list'),
 
 )

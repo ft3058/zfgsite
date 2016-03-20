@@ -195,6 +195,47 @@ def all_group1_join(instance):
     s = '<br/>'.join(link_list)
     return s
 
+@register.filter(name='get_joined_path')
+def get_joined_path(instance):
+    domain = instance
+    path_list = []
+    for i in range(1, 9):
+        p = ''
+        exec "p = domain.path%d" % i
+        if p:
+            path_list.append(p)
+    return '/' + '/'.join(path_list)
+
+@register.filter(name='get_asset_count')
+def get_asset_count(instance):
+    domains = instance
+    count = Asset.objects.filter(domains=domains).count()
+    return count
+
+
+@register.filter(name='belong_to_group')
+def belong_to_group(instance):
+    """
+    instance is a rule object,
+    use to get the number of the members
+    join the domain names
+    """
+    group1 = instance
+    '''
+    group1_list = AssetGroup1.objects.filter(group=group)
+
+    link_list = []
+    for x in group1_list:
+        # /jasset/group1/edit/?group1_id=15&gourp_id=22
+        s = "<a href='/jasset/group1/edit/?group_id=%d&group1_id=%d'>%s</a>" % (group.id, x.id, x.name)
+        link_list.append(s)
+
+    s = '<br/>'.join(link_list)'''
+    if group1.group:
+        return group1.group.name
+
+    return 'None'
+
 
 @register.filter(name='rule_member_name')
 def rule_member_name(instance, member):

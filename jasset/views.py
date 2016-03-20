@@ -93,19 +93,25 @@ def group1_edit(request):
     http://127.0.0.1:8000/jasset/group1/edit/?group1_id=7&gourp_id=15
     """
     header_title, path1, path2 = u'修改资产组分组', u'资产管理', u'修改资产分组'
-    group_id = request.GET.get('group_id', 0)
+    '''
+    group_id = request.GET.get('id', 0)
     if not group_id:
-        return HttpResponse('group_id is empty!')
+        return HttpResponse('group_id is empty!')'''
 
-    group1_id = request.GET.get('group1_id', 0)
-    if not group_id:
+    group1_id = request.GET.get('id', 0)
+    if not group1_id:
         return HttpResponse('group1_id is empty!')
 
-    group = get_object(AssetGroup, id=group_id)
     group1 = get_object(AssetGroup1, id=group1_id)
+    if not group1:
+        return HttpResponse('not found group1!')
+    group = group1.group  # get_object(AssetGroup, id=group_id)
 
     # available for select
-    asset_all = Asset.objects.filter(group=group)
+    if group:
+        asset_all = Asset.objects.filter(group=group)
+    else:
+        asset_all = Asset.objects.all()
     asset_exist = Asset.objects.filter(group=group, group1=group1)
 
     if request.method == 'POST':
@@ -206,11 +212,14 @@ def group_list(request):
 
 
 @require_role('admin')
-def domain_group_list(request):
-    """ show all domain """
-    header_title, path1, path2 = u'查看资产组', u'资产管理', u'查看资产组'
+def group1_list(request):
+    """
+    list asset group
+    列出资产分组
+    """
+    header_title, path1, path2 = u'查看资产分组', u'资产管理', u'查看资产分组'
     keyword = request.GET.get('keyword', '')
-    asset_group_list = AssetGroup.objects.all()
+    asset_group_list = AssetGroup1.objects.all()
     group_id = request.GET.get('id')
     if group_id:
         asset_group_list = asset_group_list.filter(id=group_id)
@@ -218,6 +227,23 @@ def domain_group_list(request):
         asset_group_list = asset_group_list.filter(Q(name__contains=keyword) | Q(comment__contains=keyword))
 
     asset_group_list, p, asset_groups, page_range, current_page, show_first, show_end = pages(asset_group_list, request)
+    return my_render('jasset/group1_list.html', locals(), request)
+
+
+@require_role('admin')
+def domain_group_list(request):
+    """ show all domain """
+    header_title, path1, path2 = u'查看所有域', u'域管理', u'查看域'
+    keyword = request.GET.get('keyword', '')
+    # asset_group_list = AssetGroup.objects.all()
+    domain_list = Domains.objects.all()
+    domain_id = request.GET.get('id')
+    if domain_id:
+        domain_list = domain_list.filter(id=domain_id)
+    if keyword:
+        domain_list = domain_list.filter(Q(module_name__contains=keyword) | Q(comment__contains=keyword))
+
+    domain_list, p, domains, page_range, current_page, show_first, show_end = pages(domain_list, request)
     return my_render('jasset/domain_group_list.html', locals(), request)
 
 
@@ -241,8 +267,22 @@ def group_del(request):
                 print u'remove group1[%d] from asset[%d]' % (gp1.id, ast.id)
             gp1.delete()
             print u'AssetGroup1 [id=%d] is deleted!' % gp1.id
+    return HttpResponse(u'删除成功')
 
-    print 'complete.......'
+@require_role('admin')
+def group1_del(request):
+    """
+    Group delete view
+    删除主机fen组
+    """
+    try:
+        group1_ids = request.GET.get('id', '')
+        group1_id_list = group1_ids.split(',')
+        for group1_id in group1_id_list:
+            AssetGroup1.objects.filter(id=int(group1_id)).delete()
+        print 'delete succ..'
+    except Exception, e:
+        print 'delete group1 delete error: %s' % str(e)
     return HttpResponse(u'删除成功')
 
 
@@ -506,24 +546,32 @@ def asset_list(request):
     keyword = request.GET.get('keyword', '')
     export = request.GET.get("export", False)
     group_id = request.GET.get("group_id", '')
+    group1_id = request.GET.get("group1_id", '')
     idc_id = request.GET.get("idc_id", '')
     asset_id_all = request.GET.getlist("id", '')
 
     if group_id:
         group = get_object(AssetGroup, id=group_id)
         if group:
-            asset_find = Asset.objects.filter(group=group)
+            asset_find = Asset.objects.filter(group=group).order_by('-date_added')
             # find sub group (group1) in this group
             asset_group_all1 = AssetGroup1.objects.filter(group=group)
+
+    elif group1_id:
+        group1 = get_object(AssetGroup1, id=group1_id)
+        if group1:
+            asset_find = Asset.objects.filter(group1=group1).order_by('-date_added')
+            # find sub group (group1) in this group
+            asset_group_all1 = AssetGroup1.objects.filter(id=group1_id)
 
     elif idc_id:
         idc = get_object(IDC, id=idc_id)
         if idc:
-            asset_find = Asset.objects.filter(idc=idc)
+            asset_find = Asset.objects.filter(idc=idc).order_by('-date_added')
     else:
         # SU user
         if user_perm != 0:
-            asset_find = Asset.objects.all()
+            asset_find = Asset.objects.all().order_by('-date_added')
         else:
             # CU user
             asset_id_all = []
@@ -542,7 +590,7 @@ def asset_list(request):
                 domains = rule_dm.domains.all()
                 for dm in domains:
                     print '---domains= ', dm
-                    asset_list1 = Asset.objects.filter(domains=dm)
+                    asset_list1 = Asset.objects.filter(domains=dm).order_by('-date_added')
                     for st in asset_list1:
                         print '++++st.id = ', st.id
                         if st.id not in asset_id_all:
@@ -550,26 +598,26 @@ def asset_list(request):
 
             # Item.objects.filter(Q(creator=owner) | Q(moderated=False))
             # asset_find = Asset.objects.filter(pk__in=asset_id_all)  old
-            asset_find = Asset.objects.filter(pk__in=asset_id_all)
+            asset_find = Asset.objects.filter(pk__in=asset_id_all).order_by('-date_added')
             asset_group_all = list(asset_perm['asset_group'])
 
     if idc_name:
-        asset_find = asset_find.filter(idc__name__contains=idc_name)
+        asset_find = asset_find.filter(idc__name__contains=idc_name).order_by('-date_added')
 
     if group_name:
-        asset_find = asset_find.filter(group__name__contains=group_name)
+        asset_find = asset_find.filter(group__name__contains=group_name).order_by('-date_added')
         gp = get_object(AssetGroup, name=group_name)
         asset_group_all1 = AssetGroup1.objects.filter(group=gp)
 
     if group1_name:
         # asset_find = asset_find.filter(group1__name__contains=group1_name)
-        asset_find = asset_find.filter(group1__name=group1_name)
+        asset_find = asset_find.filter(group1__name=group1_name).order_by('-date_added')
 
     if asset_type:
-        asset_find = asset_find.filter(asset_type__contains=asset_type)
+        asset_find = asset_find.filter(asset_type__contains=asset_type).order_by('-date_added')
 
     if status:
-        asset_find = asset_find.filter(status__contains=status)
+        asset_find = asset_find.filter(status__contains=status).order_by('-date_added')
 
     if keyword:
         asset_find = asset_find.filter(
@@ -587,7 +635,7 @@ def asset_list(request):
             Q(cabinet__contains=keyword) |
             Q(sn__contains=keyword) |
             Q(system_type__contains=keyword) |
-            Q(system_version__contains=keyword))
+            Q(system_version__contains=keyword)).order_by('-date_added')
 
     if export:
         if asset_id_all:

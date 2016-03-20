@@ -326,6 +326,7 @@ def excel_to_db(excel_file):
                                   hostname=hostname,
                                   use_default_auth=use_default_auth,
                                   username=username,
+                                  passwd=password,
                                   password=password_encode
                                   )
                     asset.save()

@@ -141,7 +141,7 @@ class AssetParent(models.Model):
 
     class Meta:
         abstract = True
-        ordering = ['ip']
+        ordering = ['-date_added']
 
 
 class Asset(AssetParent):
