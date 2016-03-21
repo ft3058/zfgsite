@@ -315,7 +315,8 @@ def excel_to_db(excel_file):
             row = table.row_values(row_num)
             if row:
                 group_instance = []
-                ip, port, hostname, use_default_auth, username, password, group = row
+                group1_instance = []
+                ip, port, hostname, use_default_auth, username, password, group, group1 = row
                 if get_object(Asset, hostname=hostname):
                     continue
                 use_default_auth = 1 if use_default_auth == u'默认' else 0
@@ -337,6 +338,14 @@ def excel_to_db(excel_file):
                             group_instance.append(group)
                     if group_instance:
                         asset.group = group_instance
+
+                    group1_list = group1.split('/')
+                    for group1_name in group1_list:
+                        group1 = get_object(AssetGroup1, name=group1_name)
+                        if group1:
+                            group1_instance.append(group1)
+                    if group1_instance:
+                        asset.group1 = group1_instance
                     asset.save()
         return True
 

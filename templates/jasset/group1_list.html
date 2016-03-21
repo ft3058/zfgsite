@@ -59,7 +59,7 @@
                                 <td class="text-center" name="id" value="{{ asset_group.id }}" data-editable='false'>
                                     <input name="id" value="{{ asset_group.id }}" type="checkbox" class="i-checks">
                                 </td>
-                                <td class="text-center"><a href="{% url 'asset_list' %}?group_id={{ asset_group.id }}">{{ asset_group.name }} </a>  </td>
+                                <td class="text-center"> {{ asset_group.name }} </td>
                                 <td class="text-center">
                                     {% autoescape off %}
                                         {{ asset_group | belong_to_group }}
