@@ -49,6 +49,7 @@
                                 <th class="text-center"> 主机分组名 </th>
                                 <th class="text-center"> 所属资产组 </th>
                                 <th class="text-center"> 主机数量 </th>
+                                <th class="text-center"> 模块名对应路径 </th>
                                 <th class="text-center"> 备注 </th>
                                 <th class="text-center"> 操作 </th>
                             </tr>
@@ -71,6 +72,7 @@
                                     {{ asset_group.asset_set.count }}</a>
                                 </td>
 
+                                <td class="text-center"> {{ asset_group.module_path }} </td>
                                 <td class="text-center"> {{ asset_group.comment }} </td>
                                 <td class="text-center">
                                     <a href="{% url 'asset_group1_edit' %}?id={{ asset_group.id }}" class="btn btn-xs btn-info">编辑</a>

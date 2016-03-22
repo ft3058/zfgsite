@@ -65,9 +65,25 @@
                             </div>
                         </div>
 
-                        <div class="form-group"><label class="col-sm-2 control-label"> 分组名<span class="red-fonts">*</span></label>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label"> 分组名<span class="red-fonts">*</span></label>
                             <div class="col-sm-8" name="group_id" value="{{ post.id }}">
                                 <input type="text" value="{{ group1.name }}" placeholder="Name" name="name" class="form-control">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label"> 模块和路径 </label>
+                            <div class="col-sm-8" name="module_path" value="{{ post.id }}">
+                                <input type="text" value="{{ group1.module_path }}" placeholder="" name="module_path" class="form-control">
+
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label"> </label>
+                            <div class="col-sm-8">
+                                <p style="color:red;">Tips: 多个路径使用逗号','隔开, 格式是“模块名1=对应路径1,模块名2=对应路径2”, 例如：YouxiheBox32=/home/youxihe/box32,YouxiheBox64=/home/youxihe/box64 </p>
                             </div>
                         </div>
 

@@ -116,6 +116,7 @@ def group1_edit(request):
 
     if request.method == 'POST':
         name = request.POST.get('name', '')
+        module_path = request.POST.get('module_path', '')
         asset_select = request.POST.getlist('asset_select', [])
         print 'added list:', ',,'.join(asset_select)
         comment = request.POST.get('comment', '')
@@ -128,7 +129,7 @@ def group1_edit(request):
 
             edit_group1 = get_object(AssetGroup1, name=name)
             if not edit_group1:
-                edit_group1 = AssetGroup1(name=name, group=group, comment=comment)
+                edit_group1 = AssetGroup1(name=name, group=group, comment=comment, module_path=module_path)
                 edit_group1.save()
 
         except ServerError:
@@ -137,6 +138,11 @@ def group1_edit(request):
         else:
             # db_add_group1(name=name, comment=comment, asset_select=asset_select, group=group)
             # group1.save()
+            group1.name = name.strip()
+            group1.group = group
+            group1.comment = comment.strip()
+            group1.module_path = module_path.strip()
+            group1.save()
 
             # delete all group1 for every asset
             for at in asset_exist:
