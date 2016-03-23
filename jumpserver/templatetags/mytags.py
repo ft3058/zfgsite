@@ -195,6 +195,14 @@ def all_group1_join(instance):
     s = '<br/>'.join(link_list)
     return s
 
+@register.filter(name='split_to_row')
+def split_to_row(instance):
+    if instance:
+        return '<br/>'.join(instance.split(','))
+    else:
+        return u'empty'
+
+
 @register.filter(name='get_joined_path')
 def get_joined_path(instance):
     domain = instance

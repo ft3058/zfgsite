@@ -72,7 +72,12 @@
                                     {{ asset_group.asset_set.count }}</a>
                                 </td>
 
-                                <td class="text-center"> {{ asset_group.module_path }} </td>
+                                <td class="text-center">
+                                    {% autoescape off %}
+                                        {{ asset_group.module_path | split_to_row }}
+                                    {% endautoescape %}
+
+                                </td>
                                 <td class="text-center"> {{ asset_group.comment }} </td>
                                 <td class="text-center">
                                     <a href="{% url 'asset_group1_edit' %}?id={{ asset_group.id }}" class="btn btn-xs btn-info">编辑</a>

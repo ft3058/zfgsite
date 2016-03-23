@@ -8,6 +8,7 @@ from jasset.forms import AssetForm, IdcForm
 from jasset.models import Asset, IDC, AssetGroup, AssetGroup1, ASSET_TYPE, ASSET_STATUS, Domains
 from jperm.perm_api import get_group_asset_perm, get_group_user_perm
 from jperm.models import PermRuleDomain
+from util import get_random_str
 
 
 @require_role('admin')
@@ -251,6 +252,29 @@ def domain_group_list(request):
 
     domain_list, p, domains, page_range, current_page, show_first, show_end = pages(domain_list, request)
     return my_render('jasset/domain_group_list.html', locals(), request)
+
+
+@require_role("user")
+def asset_change_passwd(request):
+    asset_id = unicode(request.POST.get('asset_id', ''))
+    if asset_id:
+        obj = get_object(Asset, id=int(asset_id))
+        if obj:
+            # host, port, username, password, new_pwd = '111.7.165.43', 16543, 'root', 'qq@20171328', '123456bgf'  # qq@20171328'
+            host = obj.ip
+            port = obj.port
+            username = obj.username
+            password = obj.passwd
+            new_pwd = get_random_str()
+            tag, txt = change_passwd(host, port, username, password, new_pwd)
+            if tag == 'ok':
+                return HttpResponse('change password successful')
+            else:
+                return HttpResponse(txt)
+        else:
+            return HttpResponse('cannot find asset ! ')
+    else:
+        return HttpResponse('asset_id is empty, return!')
 
 
 @require_role('admin')
