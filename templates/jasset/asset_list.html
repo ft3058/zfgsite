@@ -156,7 +156,10 @@
                                     <td class="text-center hostname"> <a href="{% url 'asset_detail' %}?id={{ asset.id }}">{{ asset.hostname|default_if_none:"" }}</a></td>
                                     <td class="text-center">{{ asset.port }}</td>
                                     <td class="text-center">{{ asset.username }}</td>
-                                    <td class="text-center">{{ asset.passwd }} <a class="gen_new_pass" asset_id="{{asset.id}}">生成新密码</a> </td>
+                                    <td class="text-center">
+                                        <span id="asset_passwd_{{asset.id}}">{{asset.passwd}}</span>
+                                        <a class="gen_new_pass" asset_id="{{asset.id}}">生成新密码</a>
+                                    </td>
 
                                     <!--
                                     <td class="text-center"> {{ asset.ip|default_if_none:"" }} </td>
@@ -182,9 +185,6 @@
                             {% endfor %}
                             </tbody>
                         </table>
-
-
-
 
 
                         <div class="row">
@@ -282,7 +282,13 @@
                         type: "post",
                         data: {asset_id: asset_id},
                         url: "{% url 'asset_change_passwd' %}?asset_id=" + asset_id,
-                        success: function () {
+                        success: function (data) {
+                            if (data.indexOf('New passwd:') > -1) {
+                                alert(data);  //'更新成功，新密码：' +
+                                //$("#asset_passwd_"+asset_id).html(data);
+                            } else {
+                                alert('更新失败，错误是：' + data);
+                            }
                             parent.location.reload();
                         }
                     });

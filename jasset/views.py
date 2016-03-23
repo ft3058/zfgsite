@@ -264,14 +264,25 @@ def asset_change_passwd(request):
             host = obj.ip
             port = obj.port
             username = obj.username
-            password = obj.passwd
+            old_pwd = obj.passwd
             new_pwd = get_random_str()
-            tag, txt = change_passwd(host, port, username, password, new_pwd)
+            print u'old_pwd: ', old_pwd
+            print u'new_pwd: ', new_pwd
+            tag, txt = change_passwd(host, port, username, old_pwd, new_pwd)
             if tag == 'ok':
-                return HttpResponse('change password successful')
+                print 'succ'  # s2jBv2JzDt
+                # update to db
+                obj.passwd = new_pwd
+                password_encode = CRYPTOR.encrypt(new_pwd)
+                obj.password = password_encode
+                obj.save()
+
+                return HttpResponse('New passwd: ' + new_pwd)  # 'ok-' +
             else:
+                print 'fail', txt
                 return HttpResponse(txt)
         else:
+            print 'cannot find asset !'
             return HttpResponse('cannot find asset ! ')
     else:
         return HttpResponse('asset_id is empty, return!')
