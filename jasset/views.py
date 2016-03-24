@@ -2,6 +2,7 @@
 import traceback
 from django.db.models import Q
 from jasset.asset_api import *
+from jasset.asset_scripts import *
 from jumpserver.api import *
 from jumpserver.models import Setting
 from jasset.forms import AssetForm, IdcForm
@@ -63,8 +64,10 @@ def group1_add(request):
     if request.method == 'POST':
         name = request.POST.get('name', '')
         asset_select = request.POST.getlist('asset_select', [])
-        print 'added list:', ',,'.join(asset_select)
+        # print 'added list:', ',,'.join(asset_select)
         comment = request.POST.get('comment', '')
+        module_path = request.POST.get('module_path', '')
+        script_path = request.POST.get('script_path', '')
 
         try:
             if not name:
@@ -80,7 +83,12 @@ def group1_add(request):
             pass
 
         else:
-            db_add_group1(name=name, comment=comment, asset_select=asset_select, group=gp)
+            db_add_group1(name=name,
+                          module_path=module_path,
+                          script_path=script_path,
+                          comment=comment,
+                          asset_select=asset_select,
+                          group=gp)
             smg = u"主机分组 %s 添加成功" % name
 
     return my_render('jasset/group1_add.html', locals(), request)
@@ -118,8 +126,9 @@ def group1_edit(request):
     if request.method == 'POST':
         name = request.POST.get('name', '')
         module_path = request.POST.get('module_path', '')
+        script_path = request.POST.get('script_path', '')
         asset_select = request.POST.getlist('asset_select', [])
-        print 'added list:', ',,'.join(asset_select)
+        # print 'added list:', ',,'.join(asset_select)
         comment = request.POST.get('comment', '')
 
         edit_group1 = None
@@ -143,6 +152,7 @@ def group1_edit(request):
             group1.group = group
             group1.comment = comment.strip()
             group1.module_path = module_path.strip()
+            group1.script_path = script_path.strip()
             group1.save()
 
             # delete all group1 for every asset

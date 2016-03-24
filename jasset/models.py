@@ -44,7 +44,8 @@ class AssetGroup1(models.Model):
         ('A', 'ASSET'),
     )
     name = models.CharField(max_length=80, unique=True)
-    module_path = models.CharField(max_length=6000, blank=True, null=True, verbose_name=u"module and paths")
+    module_path = models.CharField(max_length=6000, blank=True, null=True, verbose_name=u"分组下面的模块与路径对")
+    script_path = models.CharField(max_length=500, blank=True, null=True, verbose_name=u"初始化脚本路径")
     comment = models.CharField(max_length=160, blank=True, null=True)
     group = models.ForeignKey(AssetGroup, blank=True, null=True,  on_delete=models.SET_NULL, verbose_name=u'MainGroup')
 
