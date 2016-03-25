@@ -361,6 +361,7 @@ class WebTerminalHandler(tornado.websocket.WebSocketHandler):
                 t.start()
             except RuntimeError:
                 pass
+
     def on_message(self, message):
         data = json.loads(message)
         if not data:

@@ -538,19 +538,17 @@ def asset_init(request):
 
 @require_role('admin')
 def custom_cmd(request):
-    import getpass
     local_file_dir = LOCAL_FILE_DIR  # "/root/scripts"
-    if getpass.getuser() == 'u1404':
-        local_file_dir = '/root/scripts'
+    local_file_dir = local_file_dir if local_file_dir.endswith('/') else local_file_dir+'/'
     print 'local_file_dir = ', local_file_dir
 
     select_ips = request.session.get('select_ips', '')
-    # select_ips = check_assets
-    # asset_all = ['abc.png', 'defaaa.txt', '12345678.sh']
     asset_all = []
-    for f in os.listdir(local_file_dir):
-        if os.path.isfile(os.path.join(local_file_dir, f)):
-            asset_all.append(f)
+    for root, _, files in os.walk(local_file_dir):
+        for i in files:
+            fullpath = os.path.join(root, i)
+            rel_path = fullpath.replace(local_file_dir, '')
+            asset_all.append(rel_path)
 
     if request.method == 'POST':
         q = request.POST
