@@ -15,10 +15,17 @@ def get_ssh(host, port, username, password, timeout=10):
     s.connect(hostname=host, port=int(port), username=username, password=password, timeout=timeout)
     return s
 
+# local settings
+IP = '127.0.0.1'
+PORT = 22
+USERNAME = 'root'
+PASSWORD = '114418'
+
 
 def copy_file_to_server(host, port, username, password, local_dir, remote_dir, fname_list):
     try:
-        # ssh root@123.56.195.124 'mkdir -p /root/scripts'
+        s0 = get_ssh(IP, PORT, USERNAME, PASSWORD)
+        ssh0 = s0.invoke_shell()
         s = get_ssh(host, port, username, password)
         ssh = s.invoke_shell()
 
@@ -31,14 +38,29 @@ def copy_file_to_server(host, port, username, password, local_dir, remote_dir, f
 
         buff = ''
         while 1:
+
             if '# ' in buff or '$ ' in buff:
-                break
+                print 'buff = ', buff
+
+                if '(yes/no)' in buff:
+                    ssh.send('yes\n')
+                    buff = ''
+                    print 'send yes..'
+                elif 'password:' in buff:
+                    ssh.send(password+'\n')
+                    buff = ''
+                    print 'send password..'
+                else:
+                    print 'succ'
+                    break
             else:
                 resp = ssh.recv(9999)
                 buff += resp
-                time.sleep(1)
-            print 'resp:'
-            print resp
+                print 'resp:'
+                print resp
+                print '-----------------------1-------------------------'
+            time.sleep(1)
+
         print 'install openssh-clients complete..'
         write_log(ip=host, cmd=install_ssh_cmd, title='copy_file', result="mkdir complete..")
         print '-----------------------------------------------------------------------------------------'
@@ -47,19 +69,33 @@ def copy_file_to_server(host, port, username, password, local_dir, remote_dir, f
         mkdir_cmd = "/usr/bin/ssh %s@%s -p %s 'mkdir -p %s'" % (username, host, str(port), remote_dir)
         write_log(ip=host, cmd=mkdir_cmd, title='copy_file', result="")
         print 'run CMD: ', mkdir_cmd
-        ssh.send(mkdir_cmd + '\n')
+        ssh0.send(mkdir_cmd + '\n')
         time.sleep(0.5)
 
         buff = ''
         while 1:
+
             if '# ' in buff or '$ ' in buff:
-                break
+                print 'buff = ', buff
+
+                if '(yes/no)' in buff:
+                    ssh0.send('yes\n')
+                    buff = ''
+                    print 'send yes..'
+                elif 'password:' in buff:
+                    ssh0.send(password+'\n')
+                    buff = ''
+                    print 'send password..'
+                else:
+                    print 'succ'
+                    break
             else:
-                resp = ssh.recv(9999)
+                resp = ssh0.recv(9999)
                 buff += resp
-                time.sleep(1)
-            print 'resp:'
-            print resp
+                print 'resp:'
+                print resp
+                print '-----------------------1-------------------------'
+            time.sleep(1)
         print 'mkdir complete..'
         write_log(ip=host, cmd=mkdir_cmd, title='copy_file', result="mkdir complete..")
         print '-----------------------------------------------------------------------------------------'
@@ -70,17 +106,34 @@ def copy_file_to_server(host, port, username, password, local_dir, remote_dir, f
         scp_cmd = "/usr/bin/scp %s %s@%s:%s" % (files, username, host, remote_dir)
         print 'run CMD: ', scp_cmd
         write_log(ip=host, cmd=scp_cmd, title='copy_file', result="")
-        ssh.send(scp_cmd + '\n')
+        ssh0.send(scp_cmd + '\n')
         time.sleep(0.5)
 
         buff = ''
         while 1:
+
             if '# ' in buff or '$ ' in buff:
-                break
+                print 'buff = ', buff
+
+                if '(yes/no)' in buff:
+                    ssh0.send('yes\n')
+                    buff = ''
+                    print 'send yes..'
+                elif 'password:' in buff:
+                    ssh0.send(password+'\n')
+                    buff = ''
+                    print 'send password..'
+                else:
+                    print 'succ'
+                    break
             else:
-                resp = ssh.recv(9999)
+                resp = ssh0.recv(9999)
                 buff += resp
-                time.sleep(1)
+                print 'resp:'
+                print resp
+                print '-----------------------3-------------------------'
+            time.sleep(1)
+
         print 'scp cmd complete..'
         write_log(ip=host, cmd=scp_cmd, title='copy_file', result="scp cmd complete..")
         s.close()
@@ -88,6 +141,11 @@ def copy_file_to_server(host, port, username, password, local_dir, remote_dir, f
     except Exception, e:
         txt = 'exception while copy files: %s' % str(e)
         return 'fail', txt
+    finally:
+        try:
+            ssh0.close()
+            ssh.close()
+        except:pass
 
 if __name__ == '__main__':
     ip = '123.56.195.124'

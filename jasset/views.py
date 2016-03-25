@@ -541,7 +541,7 @@ def custom_cmd(request):
     import getpass
     local_file_dir = LOCAL_FILE_DIR  # "/root/scripts"
     if getpass.getuser() == 'u1404':
-        local_file_dir = '/home/u1404/scripts'
+        local_file_dir = '/root/scripts'
     print 'local_file_dir = ', local_file_dir
 
     select_ips = request.session.get('select_ips', '')
