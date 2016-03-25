@@ -41,8 +41,8 @@ EMAIL_USE_TLS = config.getboolean('mail', 'email_use_tls')
 EMAIL_TIMEOUT = 5
 
 # ======== Log ==========
-# LOG_DIR = os.path.join(BASE_DIR, 'logs')
-LOG_DIR = '/var/log/jumpserver'
+LOG_DIR = os.path.join(BASE_DIR, 'logs')
+# LOG_DIR = '/var/log/jumpserver'
 SSH_KEY_DIR = os.path.join(BASE_DIR, 'keys/role_keys')
 KEY = config.get('base', 'key')
 URL = config.get('base', 'url')
