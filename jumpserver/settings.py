@@ -165,3 +165,9 @@ CRONJOBS = [
 
 # paginator
 MAX_PAGE_SHOW_NUM = 40  # default 20
+
+
+try:
+    from local_settings import *
+except Exception, e:
+    print 'django settings error: %s' % str(e)
