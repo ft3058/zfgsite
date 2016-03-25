@@ -336,9 +336,13 @@ class Tty(object):
                         look_for_keys=False)
 
         except paramiko.ssh_exception.AuthenticationException, paramiko.ssh_exception.SSHException:
-            raise ServerError('认证失败 Authentication Error.')
+            tag, res = 'fail', '认证失败 Authentication Error.'
+            # raise ServerError('认证失败 Authentication Error.')
+            return tag, res
         except socket.error:
-            raise ServerError('端口可能不对 Connect SSH Socket Port Error, Please Correct it.')
+            tag, res = 'fail', '端口可能不对 Connect SSH Socket Port Error, Please Correct it.'
+            # raise ServerError('端口可能不对 Connect SSH Socket Port Error, Please Correct it.')
+            return tag, res
         else:
             self.ssh = ssh
             return ssh
