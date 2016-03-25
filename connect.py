@@ -323,7 +323,7 @@ class Tty(object):
                             )
                 return ssh
             except (paramiko.ssh_exception.AuthenticationException, paramiko.ssh_exception.SSHException):
-                logger.warning(u'使用ssh key %s 失败, 尝试只使用密码' % role_key)
+                logger.warning(u'使用ssh key 失败, 尝试只使用密码')
                 pass
 
             ssh.connect(connect_info.get('ip'),
