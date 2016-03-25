@@ -23,7 +23,7 @@ from tornado.options import define, options
 from pyinotify import WatchManager, Notifier, ProcessEvent, IN_DELETE, IN_CREATE, IN_MODIFY, AsyncNotifier
 import select
 
-from jumpserver.api import ServerError
+# from jumpserver.api import ServerError
 from connect import Tty, User, Asset, PermRole, logger, get_object, PermRole, gen_resource
 from connect import TtyLog, Log, Session, user_have_perm, get_group_user_perm, MyRunner, ExecLog
 
@@ -345,7 +345,7 @@ class WebTerminalHandler(tornado.websocket.WebSocketHandler):
         if isinstance(result, tuple) and result[0] == 'fail':
             self.channel.send(result[1])
             time.sleep(1)
-            raise ServerError(result[1])
+            raise Exception(result[1])
 
         self.ssh = result
 
