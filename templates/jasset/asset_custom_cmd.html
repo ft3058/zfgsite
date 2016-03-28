@@ -95,7 +95,7 @@
 
                         <div class="form-group">
                             <label for="" class="col-sm-2 control-label">要复制的文件</label>
-                            <div class="col-sm-4">
+                            <div class="col-sm-10">
                                 <div>
                                     <select id="assets" name="assets" class="form-control m-b" size="12" multiple>
                                         {% for asset in asset_all %}
@@ -105,14 +105,14 @@
                                 </div>
                             </div>
 
-                            <div class="col-sm-1">
-                                <div class="btn-group" style="margin-top: 60px;">
+                            <div class="col-sm-2">
+                                <div class="" style="margin-top: 60px;">
                                     <button type="button" class="btn btn-white" onclick="move('assets', 'asset_select', 'assets_total', 'asset_select_total')"><i class="fa fa-chevron-right"></i></button>
                                     <button type="button" class="btn btn-white" onclick="move_left('asset_select', 'assets', 'asset_select_total', 'assets_total')"><i class="fa fa-chevron-left"></i> </button>
                                 </div>
                             </div>
 
-                            <div class="col-sm-3">
+                            <div class="col-sm-10">
                                 <div>
                                     <select id="asset_select" name="asset_select" class="form-control m-b" size="12"  multiple></select>
                                 </div>
