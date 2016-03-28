@@ -587,11 +587,17 @@ def custom_cmd(request):
                 username = obj.username
                 password = obj.passwd
                 print 'start ip: ', ip
+                '''
                 tag, desc = copy_file_to_server(host, port, username, password, local_file_dir, remote_dir, fname_list)
                 if tag == 'ok':
                     smg += u'<%s> 命令已经执行成功！ |' % ip
                 else:
                     emg += u'<%s> 命令执行失败！ %s |' % (ip, desc)
+                '''
+                # async execute
+                copy_file_to_server(host, port, username, password, local_file_dir, remote_dir, fname_list)
+                smg += u'<%s> 命令已经提交成功！ |' % ip
+
             return my_render('jasset/asset_custom_cmd.html', locals(), request)
     else:
         return my_render('jasset/asset_custom_cmd.html', locals(), request)

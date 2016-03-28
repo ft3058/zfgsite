@@ -102,16 +102,22 @@ def install_softs(host, port, username, password, timeout=10):
                     return 'fail', str(e)
             time.sleep(3)
 
+        s.close()
+
         t2 = time.time()
         print 'all second: ', int(t2 - t1)
-        s.close()
         result = 'succ'
 
         write_log(ip=host, cmd='', title='install_softs', result="complete all")
         return 'ok', result
     except Exception, e:
         write_log(ip=host, cmd='', title='install_softs', result="Exception while install_softs(): %s" % str(e))
+        try:
+            s.close()
+        except:
+            pass
         return 'fail', str(e)
+
 
 def get_ssh(host, port, username, password,timeout=10):
     s = paramiko.SSHClient()
@@ -120,12 +126,14 @@ def get_ssh(host, port, username, password,timeout=10):
     s.connect(hostname=host, port=int(port), username=username, password=password, timeout=timeout)
     return s
 
+
 def get_new_port_by_ip__(ip):
     """ manual """
     sp = ip.split('.')
     part1 = sp[-2] if len(sp[-2]) <= 2 else sp[-2][:2]
     part2 = sp[-1] if len(sp[-1]) <= 2 else sp[-1][:2]
     return int(part1+part2)
+
 
 def get_new_port_by_ip(ip):
     """ get new password and port from db """
@@ -134,45 +142,50 @@ def get_new_port_by_ip(ip):
 
 
 def copy_files_and_restart_service(host, port, username, password, script_dir):
-    s = get_ssh(host, port, username, password)
-    ssh = s.invoke_shell()
-    cmd = 'cd %s\n' % script_dir
-    write_log(ip=host, cmd=cmd, title='copy_file', result="")
-    print 'run CMD: ', cmd
-    ssh.send(cmd)
-    time.sleep(0.5)
-    print 'complete..'
+    try:
+        s = get_ssh(host, port, username, password)
+        ssh = s.invoke_shell()
+        cmd = 'cd %s\n' % script_dir
+        write_log(ip=host, cmd=cmd, title='copy_file', result="")
+        print 'run CMD: ', cmd
+        ssh.send(cmd)
+        time.sleep(0.5)
+        print 'complete..'
 
-    cmd = '/bin/cp *.sh /root \n'
-    write_log(ip=host, cmd=cmd, title='copy_file', result="")
-    print 'run CMD: ', cmd
-    ssh.send(cmd)
-    time.sleep(0.5)
-    print 'complete..'
+        cmd = '/bin/cp *.sh /root \n'
+        write_log(ip=host, cmd=cmd, title='copy_file', result="")
+        print 'run CMD: ', cmd
+        ssh.send(cmd)
+        time.sleep(0.5)
+        print 'complete..'
 
-    cmd = '/bin/rm /usr/local/nginx/conf/vhost/*.conf \n'
-    write_log(ip=host, cmd=cmd, title='copy_file', result="")
-    print 'run CMD: ', cmd
-    ssh.send(cmd)
-    time.sleep(0.5)
-    print 'complete..'
+        cmd = '/bin/rm /usr/local/nginx/conf/vhost/*.conf \n'
+        write_log(ip=host, cmd=cmd, title='copy_file', result="")
+        print 'run CMD: ', cmd
+        ssh.send(cmd)
+        time.sleep(0.5)
+        print 'complete..'
 
-    cmd = '/bin/cp *.conf /usr/local/nginx/conf/vhost/ \n'
-    write_log(ip=host, cmd=cmd, title='copy_file', result="")
-    print 'run CMD: ', cmd
-    ssh.send(cmd)
-    time.sleep(0.5)
-    print 'complete..'
+        cmd = '/bin/cp *.conf /usr/local/nginx/conf/vhost/ \n'
+        write_log(ip=host, cmd=cmd, title='copy_file', result="")
+        print 'run CMD: ', cmd
+        ssh.send(cmd)
+        time.sleep(0.5)
+        print 'complete..'
 
-    cmd = 'service nginx restart \n'
-    write_log(ip=host, cmd=cmd, title='copy_file', result="")
-    print 'run CMD: ', cmd
-    ssh.send(cmd)
-    time.sleep(1)
-    print 'complete..'
-    write_log(ip=host, cmd='', title='copy_file', result="copy complete .. ")
-
-    s.close()
+        cmd = 'service nginx restart \n'
+        write_log(ip=host, cmd=cmd, title='copy_file', result="")
+        print 'run CMD: ', cmd
+        ssh.send(cmd)
+        time.sleep(1)
+        print 'complete..'
+        write_log(ip=host, cmd='', title='copy_file', result="copy complete .. ")
+        s.close()
+    except:
+        try:
+            s.close()
+        except:
+            pass
 
 
 def init_server(host, port, username, password, script_path):
@@ -201,6 +214,9 @@ def init_server(host, port, username, password, script_path):
                     print 'retry_times = ', retry_times
                     write_log(ip=host, cmd='paramiko get_ssh()', title='ping ssh', result="ssh : connect error: %s" % str(e))
                     retry_times += 1
+                    try:
+                        ssh.close()
+                    except:pass
                     time.sleep(5)
             else:
                 write_log(ip=host, cmd='paramiko get_ssh()', title='ping ssh', result='connect time out after retart !!, retry times: %d' % retry_times)

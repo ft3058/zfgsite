@@ -4,6 +4,7 @@
 """
 import time, os
 import paramiko
+from threading import Thread
 from jumpserver.settings import *
 
 '''
@@ -12,6 +13,96 @@ PORT = 22
 USERNAME = 'root'
 PASSWORD = '114418'
 '''
+
+
+class CopyThread(Thread):
+
+    def __init__(self):
+        super(CopyThread, self).__init__()
+        self.host = ''
+        self.port = ''
+        self.username = ''
+        self.password = ''
+        self.local_dir = ''
+        self.remote_dir = ''
+        self.fname_list = ''
+
+    def open(self, host, port, username, password, local_dir, remote_dir, fname_list):
+        self.host = host
+        self.port = port
+        self.username = username
+        self.password = password
+        self.local_dir = local_dir
+        self.remote_dir = remote_dir
+        self.fname_list = fname_list
+
+    def run(self):
+        """
+        """
+        try:
+
+            s = get_ssh(IP, PORT, USERNAME, PASSWORD)
+            ssh = s.invoke_shell()
+
+            files = ' '.join([os.path.join(self.local_dir, fn) for fn in self.fname_list])
+
+            scp_cmd = "rsync -avH -progress '-e ssh -p %s' %s %s@%s:%s" % (str(self.port), files, self.username, self.host, self.remote_dir)
+            # scp_cmd = "/usr/bin/scp -P %s %s %s@%s:%s" % (str(port), files, username, host, remote_dir)
+
+            print 'scp_cmd = ', scp_cmd
+            ssh.send(scp_cmd + '\n')
+
+            buff = ''
+            flag = False
+            while 1:
+                if '(yes/no)' in buff:
+                    ssh.send('yes\n')
+                    buff = ''
+                    time.sleep(1)
+                    print 'send yes..'
+                elif 'password:' in buff:
+                    ssh.send(self.password+'\n')
+                    buff = ''
+                    time.sleep(1)
+                    flag = True
+                    print 'send password..'
+                elif ('# ' in buff or '$ ' in buff) and flag:
+                    print '******************************'
+                    print buff
+                    print '^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^'
+                    print 'succ'
+                    break
+
+                else:
+                    print 'receiving data...'
+                    resp = ssh.recv(9999)
+                    buff += resp
+
+                print '------------------------------------------'
+                print 'buff = ', buff
+                print '++++++++++++++++++++++++++++++++++++++++++'
+                print
+                time.sleep(1)
+
+            print 'scp complete..'
+            s.close()
+
+            return 'ok', 'success'
+        except Exception, e:
+            # print traceback.print_exc()
+            try:
+                s.close()
+            except: pass
+            return 'fail', str(e)
+
+
+def copy_file_to_server(host, port, username, password, local_dir, remote_dir, fname_list):
+    """
+    user rsync for copy
+    """
+    ct = CopyThread()
+    ct.open(host, port, username, password, local_dir, remote_dir, fname_list)
+    ct.start()
 
 
 def get_ssh(host, port, username, password, timeout=20):
@@ -61,70 +152,8 @@ def install_ssh_client(host, port, username, password):
             resp = ssh.recv(9999)
             buff += resp
 
-        ssh.close()
-        print 'install openssh-clients complete..'
-        return 'ok', 'success'
-    except Exception, e:
-        # print traceback.print_exc()
-        try:
-            ssh.close()
-        except: pass
-        return 'fail', str(e)
-
-
-def copy_file_to_server(host, port, username, password, local_dir, remote_dir, fname_list):
-    """
-    user rsync for copy
-    """
-    try:
-
-        s = get_ssh(IP, PORT, USERNAME, PASSWORD)
-        ssh = s.invoke_shell()
-
-        files = ' '.join([os.path.join(local_dir, fn) for fn in fname_list])
-
-        scp_cmd = "rsync -avH -progress '-e ssh -p %s' %s %s@%s:%s" % (str(port), files, username, host, remote_dir)
-        # scp_cmd = "/usr/bin/scp -P %s %s %s@%s:%s" % (str(port), files, username, host, remote_dir)
-
-        print 'scp_cmd = ', scp_cmd
-        ssh.send(scp_cmd + '\n')
-
-        buff = ''
-        flag = False
-        while 1:
-            if '(yes/no)' in buff:
-                ssh.send('yes\n')
-                buff = ''
-                time.sleep(1)
-                print 'send yes..'
-            elif 'password:' in buff:
-                ssh.send(password+'\n')
-                buff = ''
-                time.sleep(1)
-                flag = True
-                print 'send password..'
-            elif ('# ' in buff or '$ ' in buff) and flag:
-                print '******************************'
-                print buff
-                print '^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^'
-                print 'succ'
-                break
-
-            else:
-                print 'receiving data...'
-                resp = ssh.recv(9999)
-                buff += resp
-
-            print '------------------------------------------'
-            print 'buff = ', buff
-            print '++++++++++++++++++++++++++++++++++++++++++'
-            print
-            time.sleep(1)
-
-        print 'scp complete..'
-        # ssh.close()
         s.close()
-
+        print 'install openssh-clients complete..'
         return 'ok', 'success'
     except Exception, e:
         # print traceback.print_exc()
@@ -227,12 +256,12 @@ def copy_file_to_server_bak(host, port, username, password, local_dir, remote_di
             time.sleep(1)
 
         print 'scp complete..'
-        ssh.close()
+        s.close()
 
         return 'ok', 'success'
     except Exception, e:
         # print traceback.print_exc()
         try:
-            ssh.close()
+            s.close()
         except: pass
         return 'fail', str(e)
