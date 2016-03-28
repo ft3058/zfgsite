@@ -568,6 +568,7 @@ def custom_cmd(request):
                 return my_render('jasset/asset_custom_cmd.html', locals(), request)
 
             remote_dir = remote_dir if remote_dir.endswith('/') else remote_dir+'/'
+            remote_path = remote_dir
             asset_select = request.POST.getlist('asset_select', [])
             fname_list = asset_select
             print 'added file list:', ','.join(fname_list)
