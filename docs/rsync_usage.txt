@@ -1,0 +1,8 @@
+old:
+nohup rsync -avP --exclude=.[a-zA-Z0-9]* --chmod=ugo=rwx --password-file=/etc/rsyncd.down --port=19873 sync-dal1.yxdown.cn::YxdownPcgameDal1 /home/yxdown/pcgame/dal1
+
+
+
+nohup rsync -avP --exclude=.[a-zA-Z0-9]* --chmod=ugo=rwx --port=19873 sync-dal1.yxdown.cn::YxdownPcgameDal1 /home/yxdown/pcgame/dal1
+
+

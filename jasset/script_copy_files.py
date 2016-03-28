@@ -49,7 +49,7 @@ def install_ssh_client(host, port, username, password):
                 time.sleep(1)
                 print 'send password..'
                 continue
-            elif 'Complete!' in buff or 'Nothing to do' in buff:
+            elif 'Complete!' in buff or 'Nothing to do' in buff or '无须任何处理' in buff:
                 print '******************************'
                 print buff
                 print '^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^'
@@ -73,6 +73,65 @@ def install_ssh_client(host, port, username, password):
 
 
 def copy_file_to_server(host, port, username, password, local_dir, remote_dir, fname_list):
+    """
+    user rsync for copy
+    """
+    try:
+
+        s = get_ssh(IP, PORT, USERNAME, PASSWORD)
+        ssh = s.invoke_shell()
+
+        files = ' '.join([os.path.join(local_dir, fn) for fn in fname_list])
+
+        scp_cmd = "rsync -avH -progress '-e ssh -p %s' %s %s@%s:%s" % (str(port), files, username, host, remote_dir)
+        # scp_cmd = "/usr/bin/scp -P %s %s %s@%s:%s" % (str(port), files, username, host, remote_dir)
+
+        print 'scp_cmd = ', scp_cmd
+        ssh.send(scp_cmd + '\n')
+
+        buff = ''
+        while 1:
+            if '(yes/no)' in buff:
+                ssh.send('yes\n')
+                buff = ''
+                time.sleep(1)
+                print 'send yes..'
+            elif 'password:' in buff:
+                ssh.send(password+'\n')
+                buff = ''
+                time.sleep(1)
+                print 'send password..'
+            elif '# ' in buff or '$ ' in buff:
+                print '******************************'
+                print buff
+                print '^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^'
+                print 'succ'
+                break
+
+            else:
+                print 'receiving data...'
+                resp = ssh.recv(9999)
+                buff += resp
+
+            print '------------------------------------------'
+            print 'buff = ', buff
+            print '++++++++++++++++++++++++++++++++++++++++++'
+            print
+            time.sleep(1)
+
+        print 'scp complete..'
+        ssh.close()
+
+        return 'ok', 'success'
+    except Exception, e:
+        print traceback.print_exc()
+        try:
+            ssh.close()
+        except: pass
+        return 'fail', str(e)
+
+
+def copy_file_to_server_bak(host, port, username, password, local_dir, remote_dir, fname_list):
     try:
         tag, res = install_ssh_client(host, port, username, password)
         if tag == 'fail':
