@@ -2,7 +2,7 @@
 """
 
 """
-import time, traceback, os
+import time, os
 import paramiko
 from jumpserver.settings import *
 
@@ -65,7 +65,7 @@ def install_ssh_client(host, port, username, password):
         print 'install openssh-clients complete..'
         return 'ok', 'success'
     except Exception, e:
-        print traceback.print_exc()
+        # print traceback.print_exc()
         try:
             ssh.close()
         except: pass
@@ -122,13 +122,14 @@ def copy_file_to_server(host, port, username, password, local_dir, remote_dir, f
             time.sleep(1)
 
         print 'scp complete..'
-        ssh.close()
+        # ssh.close()
+        s.close()
 
         return 'ok', 'success'
     except Exception, e:
-        print traceback.print_exc()
+        # print traceback.print_exc()
         try:
-            ssh.close()
+            s.close()
         except: pass
         return 'fail', str(e)
 
@@ -230,7 +231,7 @@ def copy_file_to_server_bak(host, port, username, password, local_dir, remote_di
 
         return 'ok', 'success'
     except Exception, e:
-        print traceback.print_exc()
+        # print traceback.print_exc()
         try:
             ssh.close()
         except: pass

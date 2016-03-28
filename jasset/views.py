@@ -1,5 +1,5 @@
 # coding:utf-8
-import traceback
+# import traceback
 from django.db.models import Q
 from jasset.asset_api import *
 from jasset.asset_scripts import *
@@ -372,7 +372,7 @@ def asset_add_post(request):
         return HttpResponse('success')
     except Exception, e:
         print str(e)
-        print traceback.print_exc()
+        # print traceback.print_exc()
         return HttpResponse('Error: %s' % str(e))
 
 
