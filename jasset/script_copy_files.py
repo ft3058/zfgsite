@@ -90,6 +90,7 @@ def copy_file_to_server(host, port, username, password, local_dir, remote_dir, f
         ssh.send(scp_cmd + '\n')
 
         buff = ''
+        flag = False
         while 1:
             if '(yes/no)' in buff:
                 ssh.send('yes\n')
@@ -100,8 +101,9 @@ def copy_file_to_server(host, port, username, password, local_dir, remote_dir, f
                 ssh.send(password+'\n')
                 buff = ''
                 time.sleep(1)
+                flag = True
                 print 'send password..'
-            elif '# ' in buff or '$ ' in buff:
+            elif ('# ' in buff or '$ ' in buff) and flag:
                 print '******************************'
                 print buff
                 print '^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^'
