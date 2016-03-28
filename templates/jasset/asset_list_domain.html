@@ -28,130 +28,26 @@
                             <a href="{% url 'domain_add' %}" class="btn btn-sm btn-primary "> 添加Rsync域 </a>
                         </div>
 
-                        <div class="col-sm-9" style="padding-left: 0px">
+                        <div class="col-sm-8" style="padding-left: 0px">
 
                             <label>
                                 <select name="module_name" class="form-control m-b input-sm" onchange="change_info()">
                                     <option value="">模块名</option>
                                     {% for name in module_name_list %}
-                                        {% ifequal name module_name %}
-                                            <option value="{{name}}" selected> {{ name|slice:":20" }}</option>
+                                        {% ifequal name.k1 module_name %}
+                                            <option value="{{ name.k1 }}" selected> {{ name.k1 }} - {{ name.k2 }}</option>
                                         {% else %}
-                                            <option value="{{name}}"> {{ name|slice:":20" }}</option>
+                                            <option value="{{ name.k1 }}"> {{ name.k1 }} - {{ name.k2 }}</option>
                                         {% endifequal %}
                                     {% endfor %}
                                 </select>
                             </label>
 
-                            <label>
-                                <select name="path1" class="form-control m-b input-sm" onchange="change_info()">
-                                    <option value="">目录1</option>
-                                    {% for path in path1_list %}
-                                        {% ifequal path path1 %}
-                                            <option value="{{path}}" selected> {{ path|slice:":20" }}</option>
-                                        {% else %}
-                                            <option value="{{path}}"> {{ path|slice:":20" }}</option>
-                                        {% endifequal %}
-                                    {% endfor %}
-                                </select>
-                            </label>
 
-                            <label>
-                                <select name="path2" class="form-control m-b input-sm" onchange="change_info()">
-                                    <option value="">目录2</option>
-                                    {% for path in path2_list %}
-                                        {% ifequal path path2 %}
-                                            <option value="{{path}}" selected> {{ path|slice:":20" }}</option>
-                                        {% else %}
-                                            <option value="{{path}}"> {{ path|slice:":20" }}</option>
-                                        {% endifequal %}
-                                    {% endfor %}
-                                </select>
-                            </label>
-
-                            <label>
-                                <select name="path3" class="form-control m-b input-sm" onchange="change_info()">
-                                    <option value="">目录3</option>
-                                    {% for path in path3_list %}
-                                        {% ifequal path path3 %}
-                                            <option value="{{path}}" selected> {{ path|slice:":20" }}</option>
-                                        {% else %}
-                                            <option value="{{path}}"> {{ path|slice:":20" }}</option>
-                                        {% endifequal %}
-                                    {% endfor %}
-                                </select>
-                            </label>
-
-                            <label>
-                                <select name="path4" class="form-control m-b input-sm" onchange="change_info()">
-                                    <option value="">目录4</option>
-                                    {% for path in path4_list %}
-                                        {% ifequal path path4 %}
-                                            <option value="{{path}}" selected> {{ path|slice:":20" }}</option>
-                                        {% else %}
-                                            <option value="{{path}}"> {{ path|slice:":20" }}</option>
-                                        {% endifequal %}
-                                    {% endfor %}
-                                </select>
-                            </label>
-
-                            <label>
-                                <select name="path5" class="form-control m-b input-sm" onchange="change_info()">
-                                    <option value="">目录5</option>
-                                    {% for path in path5_list %}
-                                        {% ifequal path path5 %}
-                                            <option value="{{path}}" selected> {{ path|slice:":20" }}</option>
-                                        {% else %}
-                                            <option value="{{path}}"> {{ path|slice:":20" }}</option>
-                                        {% endifequal %}
-                                    {% endfor %}
-                                </select>
-                            </label>
-
-                            <label>
-                                <select name="path6" class="form-control m-b input-sm" onchange="change_info()">
-                                    <option value="">目录6</option>
-                                    {% for path in path6_list %}
-                                        {% ifequal path path6 %}
-                                            <option value="{{path}}" selected> {{ path|slice:":20" }}</option>
-                                        {% else %}
-                                            <option value="{{path}}"> {{ path|slice:":20" }}</option>
-                                        {% endifequal %}
-                                    {% endfor %}
-                                </select>
-                            </label>
-
-                            <label>
-                                <select name="path7" class="form-control m-b input-sm" onchange="change_info()">
-                                    <option value="">目录7</option>
-                                    {% for path in path7_list %}
-                                        {% ifequal path path7 %}
-                                            <option value="{{path}}" selected> {{ path|slice:":20" }}</option>
-                                        {% else %}
-                                            <option value="{{path}}"> {{ path|slice:":20" }}</option>
-                                        {% endifequal %}
-                                    {% endfor %}
-                                </select>
-                            </label>
-
-                            <!--
-                            <label>
-                                <select name="path8" class="form-control m-b input-sm" onchange="change_info()">
-                                    <option value="">目录8</option>
-                                    {% for path in path8_list %}
-                                        {% ifequal path path8 %}
-                                            <option value="{{path}}" selected> {{ path|slice:":20" }}</option>
-                                        {% else %}
-                                            <option value="{{path}}"> {{ path|slice:":20" }}</option>
-                                        {% endifequal %}
-                                    {% endfor %}
-                                </select>
-                            </label>
-                            -->
                         </div>
 
 
-                        <div class="col-sm-2" style="padding-right: 0">
+                        <div class="col-sm-3" style="padding-right: 0">
                              <div class="input-group inline-group">
                                 <input type="text" class="form-control m-b input-sm" id="search_input" name="keyword" value="{{ keyword }}" placeholder="Search">
                                 <input type="text" style="display: none">

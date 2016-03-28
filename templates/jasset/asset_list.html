@@ -8,7 +8,7 @@
         <div class="col-sm-12">
             <div class="ibox float-e-margins" id="all">
                 <div class="ibox-title">
-                    <h5> 主机详细信息列表</h5>
+                    <h5> 主机详细信息列表 </h5>
                     <div class="ibox-tools">
                         <a class="collapse-link">
                             <i class="fa fa-chevron-up"></i>
@@ -178,6 +178,7 @@
 
                                     <td class="text-center" data-editable='false'>
                                         <a href="{% url 'asset_edit' %}?id={{ asset.id }}" class="btn btn-xs btn-info">编辑</a>
+                                        <a value="{% url 'asset_init' %}?id={{ asset.id }}" class="btn btn-xs btn-success asset_init">初始化</a>
                                         <a value="{{ asset.id }}" class="conn btn btn-xs btn-warning">连接</a>
                                         <a value="{% url 'asset_del' %}?id={{ asset.id }}" class="btn btn-xs btn-danger asset_del">删除</a>
                                     </td>
@@ -282,6 +283,34 @@
                         type: "post",
                         data: {asset_id: asset_id},
                         url: "{% url 'asset_change_passwd' %}?asset_id=" + asset_id,
+                        success: function (data) {
+                            if (data.indexOf('New passwd:') > -1) {
+                                alert(data);  //'更新成功，新密码：' +
+                                //$("#asset_passwd_"+asset_id).html(data);
+                            } else {
+                                alert('更新失败，错误是：' + data);
+                            }
+                            parent.location.reload();
+                        }
+                    });
+                }
+            }
+            else {
+                alert('参数错误!');
+            }
+        });
+
+        $('.asset_init').click(function(){
+            var asset_id = $(this).attr('id');
+            //alert('asset_id.. = ' + asset_id);
+
+            if (asset_id != ''){
+                if (confirm("确定要初始化?")) {
+                    layer.msg('操作中，请等待...', {time: 200000});
+                    $.ajax({
+                        type: "post",
+                        data: {asset_id: asset_id},
+                        url: "{% url 'asset_init' %}?asset_id=" + asset_id,
                         success: function (data) {
                             if (data.indexOf('New passwd:') > -1) {
                                 alert(data);  //'更新成功，新密码：' +

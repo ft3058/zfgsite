@@ -348,12 +348,19 @@ def asset_add_post(request):
         password = q['password'].strip()
         check_code = q['checkCode'].strip()
 
+        # delete exist asset
+        try:
+            old_obj = get_object(Asset, ip=ip)
+            if old_obj:
+                old_obj.delete()
+        except:
+            pass
+
         obj = Asset()
         obj.ip = ip
         obj.hostname = ip
         obj.port = port
         obj.username = username
-        # obj.password = password
         obj.passwd = password
         password_encode = CRYPTOR.encrypt(password)
         obj.password = password_encode
@@ -476,6 +483,7 @@ def asset_add(request):
                     password = request.POST.get('password', '')
                     password_encode = CRYPTOR.encrypt(password)
                     asset_save.password = password_encode
+                    asset_save.passwd = password
                 if not ip:
                     asset_save.ip = hostname
                 asset_save.is_active = True if is_active else False
@@ -487,6 +495,35 @@ def asset_add(request):
                 esg = u'主机 %s 添加失败' % hostname
 
     return my_render('jasset/asset_add.html', locals(), request)
+
+
+@require_role('admin')
+def asset_init(request):
+    asset_id = unicode(request.POST.get('asset_id', ''))
+    if asset_id:
+        obj = get_object(Asset, id=int(asset_id))
+        if obj:
+            # host, port, username, password, new_pwd = '111.7.165.43', 16543, 'root', 'qq@20171328', '123456bgf'  # qq@20171328'
+            host = obj.ip
+            port = obj.port
+            username = obj.username
+            password = obj.passwd
+
+            # find all group1
+
+
+            tag, txt = init_server(host, port, username, password)
+            if tag == 'ok':
+                print 'succ'  # s2jBv2JzDt
+                return HttpResponse('New passwd: ' + new_pwd)  # 'ok-' +
+            else:
+                print 'fail', txt
+                return HttpResponse(txt)
+        else:
+            print 'cannot find asset !'
+            return HttpResponse('cannot find asset ! ')
+    else:
+        return HttpResponse('asset_id is empty, return!')
 
 
 @require_role('admin')
@@ -709,7 +746,7 @@ def asset_list(request):
 
 
 @require_role('user')
-def asset_list_domain(request):
+def asset_list_domain_bak(request):
     """
     asset list domain view
     """
@@ -856,7 +893,114 @@ def asset_list_domain(request):
     #     return my_render('jasset/asset_cu_list.html', locals(), request)
 
 
+@require_role('user')
+def asset_list_domain(request):
+    """
+    asset list domain view
+    """
+    q = request.GET
+    header_title, path1, path2 = u'查看资产', u'资产管理', u'查看资产(域管理)'
+    username = request.user.username
+    user_perm = request.session['role_id']
 
+    # -----------------------------------------------------
+    module_name = q.get('module_name', '')
+    module_name_list = []
+    path_name_list = []
+    filtered_assets = []
+    selected_group1 = None
+
+    group1_list = AssetGroup1.objects.all()
+    for gp1 in group1_list:
+        if gp1.module_path and isinstance(gp1.module_path, basestring):
+            path_str = gp1.module_path
+            pairs = path_str.split(',')
+            for pair in pairs:
+                modu_name1 = pair.split('=')[0].strip()
+                path_name1 = pair.split('=')[-1].strip()
+                if modu_name1 not in module_name_list:
+                    module_name_list.append([modu_name1, gp1])
+                if path_name1 not in path_name_list:
+                    path_name_list.append([path_name1, gp1])
+                if module_name == modu_name1:
+                    selected_group1 = gp1
+
+
+    keyword = request.GET.get('keyword', '')
+    export = request.GET.get("export", False)
+    group_id = request.GET.get("group_id", '')
+    idc_id = request.GET.get("idc_id", '')
+    asset_id_all = request.GET.getlist("id", '')
+
+    if module_name:
+        asset_find = Asset.objects.filter(group1=selected_group1)
+    else:
+        asset_find = Asset.objects.exclude(group1__isnull=True)
+
+    '''
+    if user_perm != 0:
+        asset_find = Asset.objects.all()
+    else:
+        asset_id_all = []
+        user = get_object(User, username=username)
+        asset_perm = get_group_user_perm(user) if user else {'asset': ''}
+        user_asset_perm = asset_perm['asset'].keys()
+        for asset in user_asset_perm:
+            asset_id_all.append(asset.id)
+        asset_find = Asset.objects.filter(pk__in=asset_id_all)
+        asset_group_all = list(asset_perm['asset_group'])'''
+
+
+
+    if keyword:
+        '''
+        asset_find = asset_find.filter(
+            Q(hostname__contains=keyword) |
+            Q(other_ip__contains=keyword) |
+            Q(ip__contains=keyword) |
+            Q(remote_ip__contains=keyword) |
+            Q(comment__contains=keyword) |
+            Q(username__contains=keyword) |
+            Q(group__name__contains=keyword) |
+            Q(cpu__contains=keyword) |
+            Q(memory__contains=keyword) |
+            Q(disk__contains=keyword) |
+            Q(brand__contains=keyword) |
+            Q(cabinet__contains=keyword) |
+            Q(sn__contains=keyword) |
+            Q(system_type__contains=keyword) |
+            Q(system_version__contains=keyword))'''
+        new_list = []
+        print 'len: ', len(asset_find)
+        for i in asset_find:
+            print '----',  i.ip
+            if keyword in i.hostname or keyword in i.ip:
+                new_list.append(i)
+        asset_find = new_list
+
+    if export:
+        if asset_id_all:
+            asset_find = []
+            for asset_id in asset_id_all:
+                asset = get_object(Asset, id=asset_id)
+                if asset:
+                    asset_find.append(asset)
+        s = write_excel(asset_find)
+        if s[0]:
+            file_name = s[1]
+        smg = u'excel文件已生成，请点击下载!'
+        return my_render('jasset/asset_excel_download.html', locals(), request)
+
+    assets_list, p, assets, page_range, current_page, show_first, show_end = pages(asset_find, request)
+    new_list = []
+    for k1, k2 in module_name_list:
+        new_list.append({'k1': k1, 'k2': k2.name})
+    module_name_list = new_list
+
+    # if user_perm != 0:
+    return my_render('jasset/asset_list_domain.html', locals(), request)
+    # else:
+    #     return my_render('jasset/asset_cu_list.html', locals(), request)
 
 
 

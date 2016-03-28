@@ -23,52 +23,26 @@ def rsync_status_list(request):
     username = request.user.username
     user_perm = request.session['role_id']
 
-    # -----------------------------------------------------
-    path1 = q.get('path1', '')
-    path2 = q.get('path2', '')
-    path3 = q.get('path3', '')
-    path4 = q.get('path4', '')
-    path5 = q.get('path5', '')
-    path6 = q.get('path6', '')
-    path7 = q.get('path7', '')
-    path8 = q.get('path8', '')
     module_name = q.get('module_name', '')
+    module_name_list = []
+    path_name_list = []
+    filtered_assets = []
+    selected_group1 = None
 
-    path1_list = []
-    path2_list = []
-    path3_list = []
-    path4_list = []
-    path5_list = []
-    path6_list = []
-    path7_list = []
-    path8_list = []
-    module_name_all = []
-
-    domain_list = Domains.objects.all()
-    for d in domain_list:
-        if d.path1 and d.path1 not in path1_list:
-            path1_list.append(d.path1)
-        if d.path2 and d.path2 not in path2_list:
-            path2_list.append(d.path2)
-        if d.path3 and d.path3 not in path3_list:
-            path3_list.append(d.path3)
-        if d.path4 and d.path4 not in path4_list:
-            path4_list.append(d.path4)
-        if d.path5 and d.path5 not in path5_list:
-            path5_list.append(d.path5)
-        if d.path6 and d.path6 not in path6_list:
-            path6_list.append(d.path6)
-        if d.path7 and d.path7 not in path7_list:
-            path7_list.append(d.path7)
-        if d.path8 and d.path8 not in path8_list:
-            path8_list.append(d.path8)
-        # add module
-        if d.module_name and d.module_name not in module_name_all:
-            module_name_all.append(d.module_name)
-
-    print 'path1_list = ', path1_list
-    print 'path2_list = ', path2_list
-    print 'path3_list = ', path3_list
+    group1_list = AssetGroup1.objects.all()
+    for gp1 in group1_list:
+        if gp1.module_path and isinstance(gp1.module_path, basestring):
+            path_str = gp1.module_path
+            pairs = path_str.split(',')
+            for pair in pairs:
+                modu_name1 = pair.split('=')[0].strip()
+                path_name1 = pair.split('=')[-1].strip()
+                if modu_name1 not in module_name_list:
+                    module_name_list.append([modu_name1, gp1])
+                if path_name1 not in path_name_list:
+                    path_name_list.append([path_name1, gp1])
+                if module_name == modu_name1:
+                    selected_group1 = gp1
 
     keyword = request.GET.get('keyword', '')
     export = request.GET.get("export", False)
@@ -76,44 +50,11 @@ def rsync_status_list(request):
     idc_id = request.GET.get("idc_id", '')
     asset_id_all = request.GET.getlist("id", '')
 
-    if user_perm != 0:
-        asset_find = Asset.objects.all()
-    else:
-        asset_id_all = []
-        user = get_object(User, username=username)
-        asset_perm = get_group_user_perm(user) if user else {'asset': ''}
-        user_asset_perm = asset_perm['asset'].keys()
-        for asset in user_asset_perm:
-            asset_id_all.append(asset.id)
-        asset_find = Asset.objects.filter(pk__in=asset_id_all)
-        asset_group_all = list(asset_perm['asset_group'])
-
-    domains_list = Domains.objects.all()
-
     if module_name:
-        domains_list = domains_list.filter(module_name=module_name)
-    if path1:
-        domains_list = domains_list.filter(path1=path1)
-    if path2:
-        domains_list = domains_list.filter(path2=path2)
-    if path3:
-        domains_list = domains_list.filter(path3=path3)
-    if path4:
-        domains_list = domains_list.filter(path4=path4)
-    if path5:
-        domains_list = domains_list.filter(path5=path5)
-    if path6:
-        domains_list = domains_list.filter(path6=path6)
-    if path7:
-        domains_list = domains_list.filter(path7=path7)
-    if path8:
-        domains_list = domains_list.filter(path8=path8)
+        asset_find = Asset.objects.filter(group1=selected_group1)
+    else:
+        asset_find = Asset.objects.exclude(group1__isnull=True)
 
-    asset_find = []
-    for d in domains_list:
-        asset_finds = d.asset_set.all()
-        for a in asset_finds:
-            asset_find.append(a)
 
     if keyword:
         '''
@@ -167,8 +108,12 @@ def rsync_status_list(request):
             at.result_tag = 'Null'
             at.file_num = 'Null'
 
-
     assets_list, p, assets, page_range, current_page, show_first, show_end = pages(asset_find, request)
+    new_list = []
+    for k1, k2 in module_name_list:
+        new_list.append({'k1': k1, 'k2': k2.name})
+    module_name_list = new_list
+
     # if user_perm != 0:
     return my_render('jmonitor/rsync_status_list.html', locals(), request)
     # else:
@@ -221,11 +166,23 @@ def rsync_status_check(request):
             print u'current log id: ', log_id
 
             try:
-                print u'compareing ip: ', at.ip
-                down_module_key_dict = rc.get_module_key_dict(at.ip, at.port, at.username, at.passwd)
                 result_tag = u'正常'
+                print u'compareing ip: ', at.ip
 
-                for k, path in down_module_key_dict.items():
+                # down_module_key_dict = rc.get_module_key_dict(at.ip, at.port, at.username, at.passwd)
+                gp1_list = at.group1.all()
+                path_list = []
+                for gp1 in gp1_list:
+                    if gp1 and gp1.module_path:
+                        path_str = gp1.module_path
+                        pairs = path_str.split(',')
+                        for pair in pairs:
+                            modu_name1 = pair.split('=')[0].strip()
+                            path_name1 = pair.split('=')[-1].strip()
+                            if path_name1 and path_name1 not in path_list:
+                                path_list.append([modu_name1, path_name1])
+
+                for k, path in path_list:
                     msg = ''
                     rsync_log = get_object(RsyncCheckLog, pk=log_id)
                     if rsync_log:
@@ -277,6 +234,7 @@ def rsync_status_check(request):
 
                     except Exception, e1:
                         msg = str(e1)
+                        result_tag = u'检测异常'
 
                     if not msg:
                         msg = u'命令执行完成！'
