@@ -339,3 +339,10 @@ def rsync_status_detail(request):
     file_err_size_list_count = len(file_err_size_list)
     file_err_time_list_count = len(file_err_time_list)
     return my_render('jmonitor/rsync_detail.html', locals(), request)
+
+
+@require_role('user')
+def oplog_status(request):
+    """
+    show all logs
+    """
