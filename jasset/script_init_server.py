@@ -79,12 +79,13 @@ def install_softs(host, port, username, password, timeout=10):
     except Exception, e:
         return 'fail', str(e)
 
-def test_cmd_exists(s, kw='install.sh'):
+def test_cmd_exists(s, kw='sh install.sh'):
     ssh = s.invoke_shell()
     ssh.send('ps -ef | grep sh\n')
     time.sleep(1)
     resp = ssh.recv(9999)
-    # print 'resp: ', resp
+    print '+++++++++++++++++++++++++++++++++++++++++++++++++++++'
+    print 'resp: ', resp
     if kw in resp:
         return True
     return False
