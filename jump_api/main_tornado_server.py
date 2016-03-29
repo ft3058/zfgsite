@@ -1,0 +1,62 @@
+# -*- coding: utf-8 -*-
+import tornado.web
+from tornado.web import RequestHandler as RH
+import tornado.ioloop
+from tornado.options import define, options, parse_command_line
+
+from util import check_ip, check_port
+from db_util import check_exists
+
+define('port', default=5000, help='run on the port', type=int)
+
+
+class MainHandler(RH):
+
+    def get(self):
+        self.render('a.html',title='haha',items=l)
+
+    def post(self):
+        """
+        curl -d "ip=1.2.3.4&port=22&account=root&password=12345678&checkCode=0000" "http://127.0.0.1:5000/jasset/asset/add_post/"
+        """
+        print 'remote_ip: ', self.request.remote_ip
+        ip = self.get_argument('ip')
+        port = self.get_argument('port')
+        account = self.get_argument('account')
+        password = self.get_argument('password')
+        checkCode = self.get_argument('checkCode')
+
+        isip = check_ip(ip)
+        if not isip:
+            return 'invalid ip: %s' % ip
+
+        isport = check_port(port)
+        if not isport:
+            return 'invalid port: %s' % port
+
+        print 'ip = ', ip
+        print 'port = ', port
+        print 'account = ', account
+        print 'password = ', password
+        print 'checkCode = ', checkCode
+
+        ifexists = check_exists(ip)
+        if ifexists:
+            # update
+            pass
+        else:
+            # insert
+            pass
+
+
+def main():
+    parse_command_line()
+    app = tornado.web.Application([
+        ('/jasset/asset/add_post/', MainHandler),
+    ],)
+
+    app.listen(options.port)
+    tornado.ioloop.IOLoop.instance().start()
+
+if __name__ == '__main__':
+    main()

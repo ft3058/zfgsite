@@ -7,3 +7,6 @@ curl -d "ip=1.2.3.4&port=22&account=root&password=12345678&checkCode=0000" "http
 
 prod:
 curl -d "ip=111.7.165.40&port=1640&account=root&password=qq@20171328&checkCode=1000" "http://120.131.71.41:8000/jasset/asset/add_post/"
+
+
+curl -d "ip=1.2.3.4&port=22&account=root&password=12345678&checkCode=0000" "http://127.0.0.1:5000/jasset/asset/add_post/"
