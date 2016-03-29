@@ -28,7 +28,7 @@
                         <div class="col-sm-8" style="padding-left: 0px">
 
                             <label>
-                                <select name="module_name" class="form-control m-b input-sm" onchange="change_info()">
+                                <select id="module_name" name="module_name" class="form-control m-b input-sm" onchange="change_info()">
                                     <option value="">请选择模块名</option>
                                     {% for name in module_name_list %}
                                         {% ifequal name.k1 module_name %}
@@ -400,13 +400,16 @@
 
     function exec_check_status(asset_id_all){
         // alert('asset_id_all = ' + asset_id_all);
-
+        var module_name = $('#module_name').val();
+        alert('module_name = ' + module_name);
         if (asset_id_all != ''){
             if (confirm("确定要立即检测文件状态?")) {
                 layer.msg('检测中...', {time: 200000});
                 $.ajax({
                     type: "post",
-                    data: {asset_id_all: asset_id_all},
+                    data: {asset_id_all: asset_id_all,
+                            module_name: module_name,
+                    },
                     url: "{% url 'rsync_status_check' %}?asset_id_all=" + asset_id_all,
                     success: function () {
                         parent.location.reload();
