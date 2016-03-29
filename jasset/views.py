@@ -10,6 +10,7 @@ from jasset.models import Asset, IDC, AssetGroup, AssetGroup1, ASSET_TYPE, ASSET
 from jperm.perm_api import get_group_asset_perm, get_group_user_perm
 from jperm.models import PermRuleDomain
 from util import get_random_str
+from script_init_server import init_server
 
 
 @require_role('admin')
@@ -510,12 +511,20 @@ def asset_init(request):
             password = obj.passwd
 
             # find all group1
+            gp1_list = obj.group1.all()
+            script_path = ''
+            for gp1 in gp1_list:
+                if gp1 and gp1.module_path:
+                    script_path = gp1.script_path
+                    l = script_path.split(',')
+                    script_path = l[0].strip()
+            if not script_path:
+                return HttpResponse('cannot find script_path ! ')
 
-
-            tag, txt = init_server(host, port, username, password)
+            tag, txt = init_server(host, port, username, password, script_path)
             if tag == 'ok':
                 print 'succ'  # s2jBv2JzDt
-                return HttpResponse('New passwd: ' + new_pwd)  # 'ok-' +
+                return HttpResponse('ok')  # 'ok-' +
             else:
                 print 'fail', txt
                 return HttpResponse(txt)
@@ -589,7 +598,7 @@ def asset_edit(request):
                 if use_default_auth:
                     af_save.username = ''
                     af_save.password = ''
-                    af_save.port = None
+                    # af_save.port = None
                 else:
                     if password:
                         af_save.passwd = password

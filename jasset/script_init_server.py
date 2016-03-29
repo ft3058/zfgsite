@@ -4,9 +4,8 @@ from datetime import datetime as dt
 import paramiko
 
 
-def init_server(host, port, username, password, timeout=10):
+def install_softs(host, port, username, password, timeout=10):
     """
-    :return:
     """
     try:
         s = paramiko.SSHClient()
@@ -117,38 +116,52 @@ def copy_files_and_restart_service(host, port, username, password, script_dir):
     time.sleep(5)
     s.close()
 
+
+def init_server(host, port, username, password, script_path):
+    try:
+        tag, res = install_softs(host, port, username, password)
+
+        print 'install tag, res = ', tag, res
+        if tag == 'ok' or 'SSH session not active' in res:
+            # connect first
+            retry_times = 0
+            port = get_new_port_by_ip(host)
+            print 'new port: ', port
+            while retry_times <= 99:
+                try:
+                    ssh = get_ssh(host, port, username, password)
+                    print 'connect succ..'
+                    ssh.close()
+                    break
+                except Exception, e:
+                    print '----------------------------------'
+                    print 'connect error:', str(e)
+                    print 'retry_times = ', retry_times
+                    retry_times += 1
+                    time.sleep(5)
+            else:
+                return 'fail', 'connect time out after retart !!, retry times: %d' % retry_times
+
+            # script_dir = '/var/serconf/nginx/yxdown.com/phone/apple'
+            print 'start copy file....'
+            copy_files_and_restart_service(host, port, username, password, script_path)
+            return 'ok', 'init server complete !!'
+        else:
+            return tag, res
+    except Exception, e:
+        txt = 'exception while init server: %s' % str(e)
+        return 'fail', txt
+
 if __name__ == '__main__':
     ip = '111.7.165.40'
     port = get_new_port_by_ip(ip)
     print 'port: ', port
     host, port, username, password = ip, port, 'root', 'qq@20171328'
+    script_dir = '/var/serconf/nginx/yxdown.com/phone/apple'
+    init_server(host, port, username, password, script_dir)
 
-    tag, res = init_server(host, port, username, password)
     # ssh = get_ssh(host, port, username, password)
     # exists = test_cmd_exists(ssh, kw='aaa')
-    print 'install tag, res = ', tag, res
-    if tag == 'ok' or 'SSH session not active' in res:
-        # connect first
-        wait_second = 0
-        while wait_second <= 60*10:
-            try:
-                ssh = get_ssh(host, port, username, password)
-                print 'connect succ..'
-                ssh.close()
-                break
-            except Exception, e:
-                print '----------------------------------'
-                print 'connect error:', str(e)
-                print 'wait_second = ', wait_second
-                wait_second += 5
-                time.sleep(5)
-
-        script_dir = '/var/serconf/nginx/yxdown.com/phone/apple'
-        print 'start copy file....'
-        copy_files_and_restart_service(host, port, username, password, script_dir)
-        print 'complete init server !!!!'
-    else:
-        print 'exception while init server'
 
     '''
     script_dir = '/var/serconf/nginx/yxdown.com/phone/apple'

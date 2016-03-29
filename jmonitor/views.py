@@ -215,7 +215,6 @@ def rsync_status_check(request):
                         else:
                             print 'no error.....'
 
-
                         tmp = str(rsync_log.file_num) if rsync_log.file_num else ''
                         rsync_log.file_num = tmp + ' [path=%s %d/%d] |' % (path, file_count, repo_file_count)
 

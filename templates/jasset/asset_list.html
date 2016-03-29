@@ -178,7 +178,7 @@
 
                                     <td class="text-center" data-editable='false'>
                                         <a href="{% url 'asset_edit' %}?id={{ asset.id }}" class="btn btn-xs btn-info">编辑</a>
-                                        <a value="{% url 'asset_init' %}?id={{ asset.id }}" class="btn btn-xs btn-success asset_init">初始化</a>
+                                        <a value="{{ asset.id }}" host="{{asset.hostname}}" class="btn btn-xs btn-success asset_init">初始化</a>
                                         <a value="{{ asset.id }}" class="conn btn btn-xs btn-warning">连接</a>
                                         <a value="{% url 'asset_del' %}?id={{ asset.id }}" class="btn btn-xs btn-danger asset_del">删除</a>
                                     </td>
@@ -301,24 +301,25 @@
         });
 
         $('.asset_init').click(function(){
-            var asset_id = $(this).attr('id');
+            var asset_id = $(this).attr('value');
+            var host = $(this).attr('host');
             //alert('asset_id.. = ' + asset_id);
 
             if (asset_id != ''){
-                if (confirm("确定要初始化?")) {
+                if (confirm("确定要初始化资产[ " + host + " ]?")) {
                     layer.msg('操作中，请等待...', {time: 200000});
                     $.ajax({
                         type: "post",
                         data: {asset_id: asset_id},
                         url: "{% url 'asset_init' %}?asset_id=" + asset_id,
                         success: function (data) {
-                            if (data.indexOf('New passwd:') > -1) {
-                                alert(data);  //'更新成功，新密码：' +
+                            if (data.indexOf('ok') > -1) {
+                                alert('[' + host + '] 初始化成功!');  //'init succ：' +
                                 //$("#asset_passwd_"+asset_id).html(data);
                             } else {
-                                alert('更新失败，错误是：' + data);
+                                alert('初始化失败：' + data);
                             }
-                            parent.location.reload();
+                            //parent.location.reload();
                         }
                     });
                 }
