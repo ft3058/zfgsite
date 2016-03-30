@@ -62,9 +62,9 @@ class MainHandler(RH):
             else:
                 print 'insert: ', ip, password, passwd
                 insert_asset(ip, port, account, passwd, password, checkCode)
-            return 'success'
+            self.write('success')
         except Exception, e:
-            return str(e)
+            self.write(str(e))
 
 
 def main():
@@ -76,6 +76,7 @@ def main():
     print 'jump server api run at port: ', PORT
     app.listen(options.port)
     tornado.ioloop.IOLoop.instance().start()
+
 
 if __name__ == '__main__':
     main()

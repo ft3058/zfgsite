@@ -1,12 +1,11 @@
 # coding:utf8
-from MySQLdb import cursors, Connect
+from MySQLdb import Connect
 from MySQLdb.cursors import DictCursor as DC
 from crpt import CRYPTOR
 from settings import *
 
 
 def get_conn():
-    print 'host = ', host
     return Connect(host=host, user=user, passwd=password, db=database, compress=1, cursorclass=DC, charset='utf8')
 
 
@@ -63,8 +62,8 @@ if __name__ == '__main__':
     # test()
     # count = check_exists('218.75.159.1151')
     # print count
-    password = '123456'
+    # password = '123456'
     # password_encode = 'ssss'
-    password_encode = CRYPTOR.encrypt(password)
-    insert_asset('1.1.1.2', '2000', 'account1', password, password_encode, '9999')
+    password_encode = CRYPTOR.encrypt('1111')
+    insert_asset('1.1.1.2', '2000', 'account1', '1111', password_encode, '9999')
     pass
