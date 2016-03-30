@@ -6,7 +6,7 @@
 
 PORT = 5000
 
-host = '120.131.71.41'
+host = '127.0.0.1'  # '120.131.71.41'
 port = '3306'
 user = 'root'
 password = 'xiejt521'

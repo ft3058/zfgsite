@@ -14,6 +14,7 @@ define('port', default=PORT, help='run on the port', type=int)
 
 """
 curl -d "ip=1.2.3.4&port=22&account=root&password=12345678&checkCode=0000" "http://127.0.0.1:5000/jasset/asset/add_post/"
+curl -d "ip=1.2.3.4&port=22&account=root&password=12345678&checkCode=0000" "http://120.131.71.41:5000/jasset/asset/add_post/"
 
 """
 
