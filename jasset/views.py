@@ -339,6 +339,9 @@ def group1_del(request):
 
 
 def asset_add_post(request):
+    """
+    curl -d "ip=1.2.3.4&port=22&account=root&password=12345678&checkCode=0000" "http://127.0.0.1:8000/jasset/asset/add_post/"
+    """
     try:
         if not request.method == 'POST':
             return HttpResponse('only receive post data')
@@ -350,16 +353,12 @@ def asset_add_post(request):
         check_code = q['checkCode'].strip()
 
         # delete exist asset
-        try:
-            old_obj = get_object(Asset, ip=ip)
-            if old_obj:
-                old_obj.delete()
-        except:
-            pass
+        obj = get_object(Asset, ip=ip)
+        if not obj:
+            obj = Asset()
+            obj.hostname = ip
 
-        obj = Asset()
         obj.ip = ip
-        obj.hostname = ip
         obj.port = port
         obj.username = username
         obj.passwd = password

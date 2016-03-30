@@ -2,6 +2,7 @@
 import time
 from datetime import datetime as dt
 import paramiko
+import traceback
 
 
 def install_softs(host, port, username, password, timeout=10):
@@ -62,13 +63,17 @@ def install_softs(host, port, username, password, timeout=10):
         print 'wait for install.sh complete ... '
 
         t1 = time.time()
+        not_found_time = 0
         while 1:
             if test_cmd_exists(s):
                 print 'install.sh exists, continue', dt.now()
             else:
-                print 'not exists... break', dt.now()
-                break
-            time.sleep(2)
+                not_found_time += 1
+                print 'install.sh not found times = [ %d ] ---->' % not_found_time, dt.now()
+                if not_found_time > 3:
+                    print 'not_found_time > 3, break'
+                    break
+            time.sleep(3)
 
         t2 = time.time()
         print 'all second: ', int(t2 - t1)
@@ -80,15 +85,19 @@ def install_softs(host, port, username, password, timeout=10):
         return 'fail', str(e)
 
 def test_cmd_exists(s, kw='sh install.sh'):
-    ssh = s.invoke_shell()
-    ssh.send('ps -ef | grep sh\n')
-    time.sleep(1)
-    resp = ssh.recv(9999)
-    print '+++++++++++++++++++++++++++++++++++++++++++++++++++++'
-    print 'resp: ', resp
-    if kw in resp:
-        return True
-    return False
+    try:
+        ssh = s.invoke_shell()
+        ssh.send('ps -ef | grep install.sh\n')
+        time.sleep(1)
+        resp = ssh.recv(9999)
+        print '+++++++++++++++++++++++++++++++++++++++++++++++++++++'
+        print 'resp: ', resp
+        if kw in resp:
+            return True
+        return False
+    except Exception, e:
+        print traceback.print_exc()
+        return False
 
 def get_ssh(host, port, username, password,timeout=10):
     s = paramiko.SSHClient()
@@ -107,16 +116,36 @@ def get_new_port_by_ip(ip):
 def copy_files_and_restart_service(host, port, username, password, script_dir):
     s = get_ssh(host, port, username, password)
     ssh = s.invoke_shell()
-    ssh.send('cd %s\n' % script_dir)
+    cmd = 'cd %s\n' % script_dir
+    print 'run CMD: ', cmd
+    ssh.send(cmd)
     time.sleep(0.5)
-    ssh.send('/bin/cp *.sh /root \n')
+    print 'complete..'
+
+    cmd = '/bin/cp *.sh /root \n'
+    print 'run CMD: ', cmd
+    ssh.send(cmd)
     time.sleep(0.5)
-    ssh.send('/bin/rm /usr/local/nginx/conf/vhost/*.conf \n')
+    print 'complete..'
+
+    cmd = '/bin/rm /usr/local/nginx/conf/vhost/*.conf \n'
+    print 'run CMD: ', cmd
+    ssh.send(cmd)
     time.sleep(0.5)
-    ssh.send('/bin/cp *.conf /usr/local/nginx/conf/vhost/ \n')
+    print 'complete..'
+
+    cmd = '/bin/cp *.conf /usr/local/nginx/conf/vhost/ \n'
+    print 'run CMD: ', cmd
+    ssh.send(cmd)
     time.sleep(0.5)
-    ssh.send('service nginx restart \n')
+    print 'complete..'
+
+    cmd = 'service nginx restart \n'
+    print 'run CMD: ', cmd
+    ssh.send(cmd)
     time.sleep(1)
+    print 'complete..'
+
     s.close()
 
 

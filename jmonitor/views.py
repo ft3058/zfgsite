@@ -130,6 +130,7 @@ def rsync_status_check(request):
         # asset_id_all = request.GET.get('asset_id_all', '')
         # arg =  287 name =  admin - check status
         asset_id_all = unicode(request.POST.get('asset_id_all', ''))
+        module_name = request.POST.get('module_name', '').strip()
         name = unicode(request.user.username) + ' - ' + u'check status'
         print 'asset_id_all = ', asset_id_all, 'name = ', name
         # asset_ansible_update(asset_list, name)
@@ -180,7 +181,12 @@ def rsync_status_check(request):
                             modu_name1 = pair.split('=')[0].strip()
                             path_name1 = pair.split('=')[-1].strip()
                             if path_name1 and path_name1 not in path_list:
-                                path_list.append([modu_name1, path_name1])
+                                # check all module name if module_name is ''
+                                if not module_name:
+                                    path_list.append([modu_name1, path_name1])
+                                else:
+                                    if module_name == modu_name1:
+                                        path_list.append([modu_name1, path_name1])
 
                 for k, path in path_list:
                     msg = ''

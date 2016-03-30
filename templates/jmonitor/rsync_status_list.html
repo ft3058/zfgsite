@@ -401,7 +401,8 @@
     function exec_check_status(asset_id_all){
         // alert('asset_id_all = ' + asset_id_all);
         var module_name = $('#module_name').val();
-        alert('module_name = ' + module_name);
+        // alert('module_name = ' + module_name);
+
         if (asset_id_all != ''){
             if (confirm("确定要立即检测文件状态?")) {
                 layer.msg('检测中...', {time: 200000});
