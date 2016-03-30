@@ -63,8 +63,9 @@ def install_softs(host, port, username, password, timeout=10):
         print 'wait for install.sh complete ... '
 
         t1 = time.time()
-        not_found_time = 0
+        retry_times = 0
         while 1:
+            '''
             if test_cmd_exists(s):
                 print 'install.sh exists, continue', dt.now()
             else:
@@ -73,6 +74,24 @@ def install_softs(host, port, username, password, timeout=10):
                 if not_found_time > 3:
                     print 'not_found_time > 3, break'
                     break
+            '''
+            try:
+                retry_times += 1
+                ssh.send('ps -ef | grep install.sh\n')
+                time.sleep(1)
+                resp = ssh.recv(9999)
+                print '++++++++++++++++++++++++out start+++++++++++++++++++++++++++'
+                print 'retry times: %d' % retry_times
+                print resp
+                print '++++++++++++++++++++++++out end+++++++++++++++++++++++++++++'
+                print
+                if 'reboot NOW' in resp:
+                    return 'ok', 'wait for restart !'
+            except Exception, e:
+                if 'Socket is closed' in str(e):
+                    return 'ok', 'wait for restart !'
+                else:
+                    return 'fail', str(e)
             time.sleep(3)
 
         t2 = time.time()
