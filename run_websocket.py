@@ -498,7 +498,7 @@ if __name__ == '__main__':
     server = tornado.httpserver.HTTPServer(app)
     server.bind(options.port, options.host)
     # server.listen(options.port)
-    processes_num = 1  # 5
+    processes_num = 5  # 5
     print u'processes_num = ', processes_num
     server.start(num_processes=processes_num)
     print "Run server on %s:%s" % (options.host, options.port)
