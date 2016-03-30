@@ -5,7 +5,6 @@
 """
 
 PORT = 5000
-MONGODB_URI = "mongodb://127.0.0.1:27017"
 
 host = '120.131.71.41'
 port = '3306'
