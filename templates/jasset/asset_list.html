@@ -1,5 +1,8 @@
 {% extends 'base.html' %}
 {% load mytags %}
+{% block self_head_css_js %}
+<script src="/static/js/ZeroClipboard.min.js"></script>
+{% endblock %}
 {% block content %}
 {% include 'nav_cat_bar.html' %}
 
@@ -159,6 +162,7 @@
                                     <td class="text-center">
                                         <span id="asset_passwd_{{asset.id}}">{{asset.passwd}}</span>
                                         <a class="gen_new_pass" asset_id="{{asset.id}}">生成新密码</a>
+                                        <a class="zclip" data-clipboard-target="asset_passwd_{{asset.id}}"  data-toggle="tooltip" data-placement="left" title="复制密码"><i class="fa fa-copy"></i></a>
                                     </td>
 
                                     <!--
@@ -210,6 +214,15 @@
 
 {% block self_footer_js %}
 <script>
+
+    // 复制密码
+    var clip = new ZeroClipboard( $(".zclip") );
+    // 复制密码提示,并没有什么用
+    $(".zclip").click(function(){
+        layer.msg('复制完成.');
+    });
+
+
     $(document).ready(function(){
         $('.asset_del').click(function(){
             var row = $(this).closest('tr');
