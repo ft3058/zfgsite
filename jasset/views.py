@@ -578,6 +578,7 @@ def custom_cmd(request):
 
             smg = ''
             emg = ''
+            logged_user = request.user.username
             for ip in select_ips.split(':'):
                 obj = get_object(Asset, ip=ip)
                 if not obj:
@@ -596,8 +597,8 @@ def custom_cmd(request):
                     emg += u'<%s> 命令执行失败！ %s |' % (ip, desc)
                 '''
                 # async execute
-                copy_file_to_server(host, port, username, password, local_file_dir, remote_dir, fname_list)
-                smg += u'<%s> 命令已经提交成功！ |' % ip
+                copy_file_to_server(host, port, username, password, local_file_dir, remote_dir, fname_list, logged_user)
+                smg += u'<%s> 命令已经提交成功！| ' % ip
 
             return my_render('jasset/asset_custom_cmd.html', locals(), request)
     else:
