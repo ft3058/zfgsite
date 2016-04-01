@@ -352,6 +352,7 @@ def asset_add_post(request):
         password = q['password'].strip()
         check_code = q['checkCode'].strip()
 
+
         # delete exist asset
         obj = get_object(Asset, ip=ip)
         if not obj:

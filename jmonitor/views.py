@@ -120,7 +120,6 @@ def rsync_status_list(request):
     #     return my_render('jasset/asset_cu_list.html', locals(), request)
 
 
-
 @require_role("user")
 def rsync_status_check(request):
     """

@@ -1,7 +1,23 @@
 # coding:utf8
 import string
 import numbers
+import traceback
 from random import choice
+from jlog.models import CustomLog
+
+
+def write_log(user='', host='', ip='', cmd='', title='', result=''):
+    try:
+        clog = CustomLog(user=user,
+                         host=host,
+                         ip=ip,
+                         cmd=cmd,
+                         title=title,
+                         result=result)
+        clog.save()
+    except Exception, e:
+        print 'error: %s' % str(e)
+        print traceback.print_exc()
 
 
 def get_random_str(count=10):

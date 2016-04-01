@@ -47,7 +47,6 @@ class FileLog(models.Model):
     datetime = models.DateTimeField(auto_now=True)
 
 
-
 class RsyncCheckLog(models.Model):
     user = models.CharField(max_length=100)
     host = models.TextField(max_length=50, null=True)
