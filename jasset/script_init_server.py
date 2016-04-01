@@ -3,6 +3,9 @@ import time
 from datetime import datetime as dt
 import paramiko
 import traceback
+from util import write_log
+from jasset.models import Asset
+from jasset.asset_api import get_object
 
 
 def install_softs(host, port, username, password, timeout=10):
@@ -16,7 +19,10 @@ def install_softs(host, port, username, password, timeout=10):
 
         ssh = s.invoke_shell()
         time.sleep(1)
-        ssh.send('cd /tmp\n')
+
+        cmd = 'cd /tmp\n'
+        write_log(ip=host, cmd=cmd, title='install_softs')
+        ssh.send(cmd)
 
         buff = ''
         while 1:
@@ -27,10 +33,12 @@ def install_softs(host, port, username, password, timeout=10):
                 buff += resp
                 time.sleep(1)
                 # print 'buff1: %s' % buff
-        print 'entered /tmp'
+        write_log(ip=host, cmd=cmd, title='install_softs', result='entered /tmp')
 
         # install wget first
-        ssh.send('yum install wget -y\n')
+        cmd = 'yum install wget -y\n'
+        write_log(ip=host, cmd=cmd, title='install_softs')
+        ssh.send(cmd)
         while 1:
             if 'Nothing to do' in buff or 'Complete!' in buff:
                 print u'install wget succ..'
@@ -38,8 +46,12 @@ def install_softs(host, port, username, password, timeout=10):
             else:
                 resp = ssh.recv(9999)
                 buff += resp
+        write_log(ip=host, cmd=cmd, title='install_softs', result='succ')
+
         print 'start wget install.sh'
-        ssh.send('wget http://softck.yxdown.com/others/install/install.sh\n')
+        cmd = 'wget http://softck.yxdown.com/others/install/install.sh\n'
+        ssh.send(cmd)
+        write_log(ip=host, cmd=cmd, title='install_softs', result='succ')
 
         buff = ''
         while 1:
@@ -54,43 +66,39 @@ def install_softs(host, port, username, password, timeout=10):
             time.sleep(1)
 
         print 'start to run install.sh...'
-
-        ssh.send('nohup sh install.sh &\n')
+        cmd = 'nohup sh install.sh &\n'
+        write_log(ip=host, cmd=cmd, title='install_softs', result='succ')
+        ssh.send(cmd)
         time.sleep(1)
+
         ssh.send('\n')
         time.sleep(5)
-
         print 'wait for install.sh complete ... '
 
         t1 = time.time()
         retry_times = 0
         while 1:
-            '''
-            if test_cmd_exists(s):
-                print 'install.sh exists, continue', dt.now()
-            else:
-                not_found_time += 1
-                print 'install.sh not found times = [ %d ] ---->' % not_found_time, dt.now()
-                if not_found_time > 3:
-                    print 'not_found_time > 3, break'
-                    break
-            '''
             try:
                 retry_times += 1
-                ssh.send('ps -ef | grep install.sh\n')
+                cmd = 'ps -ef | grep install.sh\n'
+                ssh.send(cmd)
                 time.sleep(1)
                 resp = ssh.recv(9999)
                 print '++++++++++++++++++++++++out start+++++++++++++++++++++++++++'
                 print 'retry times: %d' % retry_times
                 print resp
+                write_log(ip=host, cmd=cmd, title='install_softs', result=resp)
                 print '++++++++++++++++++++++++out end+++++++++++++++++++++++++++++'
                 print
                 if 'reboot NOW' in resp:
+                    write_log(ip=host, cmd=cmd, title='install_softs', result="reboot NOW")
                     return 'ok', 'wait for restart !'
             except Exception, e:
                 if 'Socket is closed' in str(e):
+                    write_log(ip=host, cmd=cmd, title='install_softs', result="Socket is closed, wait for restart !")
                     return 'ok', 'wait for restart !'
                 else:
+                    write_log(ip=host, cmd=cmd, title='install_softs', result="fail, %s" % str(e))
                     return 'fail', str(e)
             time.sleep(3)
 
@@ -99,24 +107,11 @@ def install_softs(host, port, username, password, timeout=10):
         s.close()
         result = 'succ'
 
+        write_log(ip=host, cmd='', title='install_softs', result="complete all")
         return 'ok', result
     except Exception, e:
+        write_log(ip=host, cmd='', title='install_softs', result="Exception while install_softs(): %s" % str(e))
         return 'fail', str(e)
-
-def test_cmd_exists(s, kw='sh install.sh'):
-    try:
-        ssh = s.invoke_shell()
-        ssh.send('ps -ef | grep install.sh\n')
-        time.sleep(1)
-        resp = ssh.recv(9999)
-        print '+++++++++++++++++++++++++++++++++++++++++++++++++++++'
-        print 'resp: ', resp
-        if kw in resp:
-            return True
-        return False
-    except Exception, e:
-        print traceback.print_exc()
-        return False
 
 def get_ssh(host, port, username, password,timeout=10):
     s = paramiko.SSHClient()
@@ -125,45 +120,57 @@ def get_ssh(host, port, username, password,timeout=10):
     s.connect(hostname=host, port=int(port), username=username, password=password, timeout=timeout)
     return s
 
-def get_new_port_by_ip(ip):
+def get_new_port_by_ip__(ip):
+    """ manual """
     sp = ip.split('.')
     part1 = sp[-2] if len(sp[-2]) <= 2 else sp[-2][:2]
     part2 = sp[-1] if len(sp[-1]) <= 2 else sp[-1][:2]
     return int(part1+part2)
+
+def get_new_port_by_ip(ip):
+    """ get new password and port from db """
+    asset = get_object(Asset, ip=ip)
+    return asset.passwd, str(asset.port)
 
 
 def copy_files_and_restart_service(host, port, username, password, script_dir):
     s = get_ssh(host, port, username, password)
     ssh = s.invoke_shell()
     cmd = 'cd %s\n' % script_dir
+    write_log(ip=host, cmd=cmd, title='copy_file', result="")
     print 'run CMD: ', cmd
     ssh.send(cmd)
     time.sleep(0.5)
     print 'complete..'
 
     cmd = '/bin/cp *.sh /root \n'
+    write_log(ip=host, cmd=cmd, title='copy_file', result="")
     print 'run CMD: ', cmd
     ssh.send(cmd)
     time.sleep(0.5)
     print 'complete..'
 
     cmd = '/bin/rm /usr/local/nginx/conf/vhost/*.conf \n'
+    write_log(ip=host, cmd=cmd, title='copy_file', result="")
     print 'run CMD: ', cmd
     ssh.send(cmd)
     time.sleep(0.5)
     print 'complete..'
 
     cmd = '/bin/cp *.conf /usr/local/nginx/conf/vhost/ \n'
+    write_log(ip=host, cmd=cmd, title='copy_file', result="")
     print 'run CMD: ', cmd
     ssh.send(cmd)
     time.sleep(0.5)
     print 'complete..'
 
     cmd = 'service nginx restart \n'
+    write_log(ip=host, cmd=cmd, title='copy_file', result="")
     print 'run CMD: ', cmd
     ssh.send(cmd)
     time.sleep(1)
     print 'complete..'
+    write_log(ip=host, cmd='', title='copy_file', result="copy complete .. ")
 
     s.close()
 
@@ -176,26 +183,33 @@ def init_server(host, port, username, password, script_path):
         if tag == 'ok' or 'SSH session not active' in res:
             # connect first
             retry_times = 0
-            port = get_new_port_by_ip(host)
-            print 'new port: ', port
+            password, port = get_new_port_by_ip(host)
+            print 'new password, port : ', password, port
+            write_log(ip=host, cmd='', title='start connect', result="ip:%s -new:  password:%s port:%s" % (host, password, port))
+
             while retry_times <= 99:
                 try:
                     ssh = get_ssh(host, port, username, password)
                     print 'connect succ..'
+                    write_log(ip=host, cmd='paramiko get_ssh()', title='ping ssh', result="ssh connect succ")
                     ssh.close()
                     break
                 except Exception, e:
                     print '----------------------------------'
                     print 'connect error:', str(e)
                     print 'retry_times = ', retry_times
+                    write_log(ip=host, cmd='paramiko get_ssh()', title='ping ssh', result="ssh : connect error: %s" % str(e))
                     retry_times += 1
                     time.sleep(5)
             else:
+                write_log(ip=host, cmd='paramiko get_ssh()', title='ping ssh', result='connect time out after retart !!, retry times: %d' % retry_times)
                 return 'fail', 'connect time out after retart !!, retry times: %d' % retry_times
 
             # script_dir = '/var/serconf/nginx/yxdown.com/phone/apple'
             print 'start copy file....'
+            write_log(ip=host, cmd='', title='copy_file', result="start copy files")
             copy_files_and_restart_service(host, port, username, password, script_path)
+            write_log(ip=host, cmd='', title='copy_file', result="copy files succ, init server complete !!")
             return 'ok', 'init server complete !!'
         else:
             return tag, res

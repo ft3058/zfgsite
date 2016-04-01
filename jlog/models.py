@@ -47,7 +47,6 @@ class FileLog(models.Model):
     datetime = models.DateTimeField(auto_now=True)
 
 
-
 class RsyncCheckLog(models.Model):
     user = models.CharField(max_length=100)
     host = models.TextField(max_length=50, null=True)
@@ -63,6 +62,16 @@ class RsyncCheckLog(models.Model):
     file_err_size = models.TextField(default='', null=True)
     exec_seconds = models.CharField(max_length=10, null=True)
     result_tag = models.CharField(max_length=10, null=True)
+
+
+class CustomLog(models.Model):
+    user = models.CharField(max_length=100, default='', null=True)
+    host = models.TextField(default='', null=True)
+    ip = models.CharField(max_length=100, default='', null=True)
+    cmd = models.TextField(default='', null=True)
+    title = models.CharField(max_length=50, default='', null=True)
+    result = models.TextField(default='', null=True)
+    datetime = models.DateTimeField(auto_now=True)
 
 
 
