@@ -177,6 +177,7 @@ def copy_files_and_restart_service(host, port, username, password, script_dir):
 
 def init_server(host, port, username, password, script_path):
     try:
+        write_log(ip=host, user=username, title='start to install softs', result="%s-%s-%s-%s-%s" % (host, str(port), username, password, script_path))
         tag, res = install_softs(host, port, username, password)
 
         print 'install tag, res = ', tag, res
