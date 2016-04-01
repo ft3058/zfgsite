@@ -105,7 +105,8 @@ def get_group_asset_perm(ob):
     """
     perm = {}
     if isinstance(ob, Asset):
-        rule_all = PermRule.objects.filter(asset=ob)
+        # rule_all = PermRule.objects.filter(asset=ob)
+        rule_all = PermRule.objects.all()
     elif isinstance(ob, AssetGroup):
         rule_all = PermRule.objects.filter(asset_group=ob)
     else:
@@ -146,13 +147,18 @@ def get_group_asset_perm(ob):
     return perm
 
 
-def user_have_perm(user, asset):
+def user_have_perm_old(user, asset):
     user_perm_all = get_group_user_perm(user)
     user_assets = user_perm_all.get('asset').keys()
     if asset in user_assets:
         return user_perm_all.get('asset').get(asset).get('role')
     else:
         return []
+
+
+def user_have_perm(user, asset):
+    role = PermRole.objects.all()[0]
+    return role
 
 
 def gen_resource(ob, perm=None):

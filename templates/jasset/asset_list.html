@@ -179,7 +179,8 @@
                                     <td class="text-center" data-editable='false'>
                                         <a href="{% url 'asset_edit' %}?id={{ asset.id }}" class="btn btn-xs btn-info">编辑</a>
                                         <a value="{{ asset.id }}" host="{{asset.hostname}}" class="btn btn-xs btn-success asset_init">初始化</a>
-                                        <a value="{{ asset.id }}" class="conn btn btn-xs btn-warning">连接</a>
+                                        <a value="{{ asset.id }}" class="conn btn btn-xs btn-warning" style="display:none;">连接</a>
+                                        <a value="{{ asset.id }}" class="newconn btn btn-xs btn-warning">快速连接</a>
                                         <a value="{% url 'asset_del' %}?id={{ asset.id }}" class="btn btn-xs btn-danger asset_del">删除</a>
                                     </td>
                                 </tr>
@@ -329,6 +330,12 @@
             }
         });
 
+        $('.newconn').click(function(){
+            var new_url= '{% url "terminal" %}?id=' + $(this).attr('value')+'&role=admin';
+            window.open(new_url, '', 'width=628px, height=420px')
+
+                });
+
         $('.conn').click(function(){
             var url='{% url "role_get" %}?id=' + $(this).attr('value'); // 获取用户有权限的角色
             var href = $(this).attr('href');
@@ -349,6 +356,7 @@
                         layer.open({
                             type: 2,
                             title: title,
+            var data={}
                             maxmin: true,
                             shade: false,
                             area: ['628px', '420px'],

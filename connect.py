@@ -279,14 +279,14 @@ class Tty(object):
         """
         asset_info = get_asset_info(self.asset)
         role_key = get_role_key(self.user, self.role)  # 获取角色的key，因为ansible需要权限是600，所以统一生成用户_角色key
-        role_pass = CRYPTOR.decrypt(self.role.password)
+        role_pass = CRYPTOR.decrypt(self.role.password) # 生成一个加密密钥
         connect_info = {'user': self.user, 'asset': self.asset, 'ip': asset_info.get('ip'),
                         'port': int(asset_info.get('port')), 'role_name': self.role.name,
                         'role_pass': role_pass, 'role_key': role_key}
         logger.debug(connect_info)
         return connect_info
 
-    def get_connection(self):
+    def get_connection(self):   # 替换了原来的函数
         """
         获取连接成功后的ssh
         """
@@ -297,6 +297,51 @@ class Tty(object):
         # ssh.load_system_host_keys()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         try:
+            print 'connect_info',connect_info
+            role_key = connect_info.get('role_key')
+            asset = Asset.objects.get(ip=connect_info.get('ip'))
+            if role_key and os.path.isfile(role_key):
+                try:
+                    ssh.connect(connect_info.get('ip'),
+                                port=connect_info.get('port'),
+                                username=connect_info.get('role_name'),
+                                password=connect_info.get('role_pass'),
+                                key_filename=role_key,
+                                look_for_keys=False)
+                    return ssh
+                except (paramiko.ssh_exception.AuthenticationException, paramiko.ssh_exception.SSHException):
+                    logger.warning(u'使用ssh key %s 失败, 尝试只使用密码' % role_key)
+                    pass
+
+            ssh.connect(connect_info.get('ip'),
+                        port=connect_info.get('port'),
+                        username = asset.username,
+                        password = asset.passwd,
+                        # username=connect_info.get('role_name'),
+                        # password=connect_info.get('role_pass'),
+                        allow_agent=False,
+                        look_for_keys=False)
+
+        except paramiko.ssh_exception.AuthenticationException, paramiko.ssh_exception.SSHException:
+            raise ServerError('认证失败 Authentication Error.')
+        except socket.error:
+            raise ServerError('端口可能不对 Connect SSH Socket Port Error, Please Correct it.')
+        else:
+            self.ssh = ssh
+            return ssh
+
+    def get_connection_bak(self): # 原来的连接,为了绕过验证，放弃
+        """
+        获取连接成功后的ssh
+        """
+        connect_info = self.get_connect_info()
+
+        # 发起ssh连接请求 Make a ssh connection
+        ssh = paramiko.SSHClient()
+        # ssh.load_system_host_keys()
+        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        try:
+            print 'connect_info',connect_info
             role_key = connect_info.get('role_key')
             if role_key and os.path.isfile(role_key):
                 try:
@@ -325,7 +370,6 @@ class Tty(object):
         else:
             self.ssh = ssh
             return ssh
-
 
 class SshTty(Tty):
     """

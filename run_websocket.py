@@ -288,13 +288,13 @@ class WebTerminalHandler(tornado.websocket.WebSocketHandler):
         return True
 
     @require_auth('user')
-    def open(self):
+    def open_bak(self): # 原来的版本，为了绕过权限放弃。 
         logger.debug('Websocket: Open request')
         role_name = self.get_argument('role', 'sb')
         asset_id = self.get_argument('id', 9999)
         asset = get_object(Asset, id=asset_id)
         if asset:
-            roles = user_have_perm(self.user, asset)
+            roles = user_have_perm(self.user, asset)    # 跳转到jperm/perm_api :149
             logger.debug(roles)
             logger.debug('系统用户: %s' % role_name)
             login_role = ''
@@ -329,6 +329,30 @@ class WebTerminalHandler(tornado.websocket.WebSocketHandler):
             except RuntimeError:
                 pass
 
+    @require_auth('user')
+    def open(self): # 新的函数，绕过验证
+        logger.debug('Websocket: Open request')
+        role_name = self.get_argument('role', 'sb')
+        asset_id = self.get_argument('id', 9999)
+        asset = get_object(Asset, id=asset_id)
+
+        login_role = user_have_perm(self.user, asset)  # 跳转到jperm/perm_api :149
+        self.term = WebTty(self.user, asset, login_role, login_type='web')
+        self.term.remote_ip = self.request.remote_ip
+        self.ssh = self.term.get_connection()   # 这句需要修改
+    
+        self.channel = self.ssh.invoke_shell(term='xterm')
+        WebTerminalHandler.tasks.append(MyThread(target=self.forward_outbound))
+        WebTerminalHandler.clients.append(self)
+
+        for t in WebTerminalHandler.tasks:
+            if t.is_alive():
+                continue
+            try:
+                t.setDaemon(True)
+                t.start()
+            except RuntimeError:
+                pass
     def on_message(self, message):
         data = json.loads(message)
         if not data:
