@@ -336,7 +336,7 @@ class WebTerminalHandler(tornado.websocket.WebSocketHandler):
         asset_id = self.get_argument('id', 9999)
         asset = get_object(Asset, id=asset_id)
 
-        login_role = user_have_perm(self.user, asset)  # 跳转到jperm/perm_api :149
+        login_role = user_have_perm(self.user, asset)  # 跳转到jperm/perm_api :149, 被修改过，将传回一个可用的role
         self.term = WebTty(self.user, asset, login_role, login_type='web')
         self.term.remote_ip = self.request.remote_ip
         self.ssh = self.term.get_connection()   # 这句需要修改

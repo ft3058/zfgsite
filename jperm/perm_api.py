@@ -158,6 +158,7 @@ def user_have_perm_old(user, asset):
 
 def user_have_perm(user, asset):
     role = PermRole.objects.all()[0]
+    # role = PermRole.objects.get(id=7)
     return role
 
 

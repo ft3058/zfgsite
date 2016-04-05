@@ -286,32 +286,45 @@ class Tty(object):
         logger.debug(connect_info)
         return connect_info
 
+    def get_connect_info_new(self): # 修改权限
+        """
+        获取需要登陆的主机的信息和映射用户的账号密码
+        """
+        asset_info = get_asset_info(self.asset)
+        connect_info = {'user': self.user, 'asset': self.asset, 'ip': asset_info.get('ip'),
+                        'port': int(asset_info.get('port')), 'role_name': self.role.name,
+                       }
+        logger.debug(connect_info)
+        return connect_info
+
     def get_connection(self):   # 替换了原来的函数
         """
         获取连接成功后的ssh
         """
-        connect_info = self.get_connect_info()
+        connect_info = self.get_connect_info_new()
 
         # 发起ssh连接请求 Make a ssh connection
         ssh = paramiko.SSHClient()
         # ssh.load_system_host_keys()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         try:
-            print 'connect_info',connect_info
-            role_key = connect_info.get('role_key')
+            # role_key = connect_info.get('role_key')
             asset = Asset.objects.get(ip=connect_info.get('ip'))
-            if role_key and os.path.isfile(role_key):
-                try:
-                    ssh.connect(connect_info.get('ip'),
-                                port=connect_info.get('port'),
-                                username=connect_info.get('role_name'),
-                                password=connect_info.get('role_pass'),
-                                key_filename=role_key,
-                                look_for_keys=False)
-                    return ssh
-                except (paramiko.ssh_exception.AuthenticationException, paramiko.ssh_exception.SSHException):
-                    logger.warning(u'使用ssh key %s 失败, 尝试只使用密码' % role_key)
-                    pass
+            # if role_key and os.path.isfile(role_key):
+            try:
+                ssh.connect(connect_info.get('ip'),
+                            port=connect_info.get('port'),
+                            username = asset.username,
+                            password = asset.passwd,
+                            # username=connect_info.get('role_name'),
+                            # password=connect_info.get('role_pass'),
+                            # key_filename=role_key,
+                            # look_for_keys=False
+                            )
+                return ssh
+            except (paramiko.ssh_exception.AuthenticationException, paramiko.ssh_exception.SSHException):
+                logger.warning(u'使用ssh key %s 失败, 尝试只使用密码' % role_key)
+                pass
 
             ssh.connect(connect_info.get('ip'),
                         port=connect_info.get('port'),
