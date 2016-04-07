@@ -11,6 +11,7 @@ from jperm.perm_api import get_group_asset_perm, get_group_user_perm
 from jperm.models import PermRuleDomain
 from util import get_random_str
 from script_init_server import init_server
+from script_copy_files import copy_file_to_server
 
 
 @require_role('admin')
@@ -536,6 +537,68 @@ def asset_init(request):
 
 
 @require_role('admin')
+def custom_cmd(request):
+    import getpass
+    local_file_dir = LOCAL_FILE_DIR  # "/root/scripts"
+    if getpass.getuser() == 'u1404':
+        local_file_dir = '/home/u1404/scripts'
+    print 'local_file_dir = ', local_file_dir
+
+    select_ips = request.session.get('select_ips', '')
+    # select_ips = check_assets
+    # asset_all = ['abc.png', 'defaaa.txt', '12345678.sh']
+    asset_all = []
+    for f in os.listdir(local_file_dir):
+        if os.path.isfile(os.path.join(local_file_dir, f)):
+            asset_all.append(f)
+
+    if request.method == 'POST':
+        q = request.POST
+        if 'remote_path' not in q:
+            select_ips = unicode(q.get('check_assets', ''))
+            request.session['select_ips'] = select_ips
+            return HttpResponse('ok')
+        else:
+            select_ips = unicode(q.get('select_ips', ''))
+            if not select_ips:
+                emg = u'已选择IP不能为空!'
+                return my_render('jasset/asset_custom_cmd.html', locals(), request)
+            remote_dir = unicode(q.get('remote_path', ''))
+            # local_file_dir = unicode(q.get('local_file_dir', ''))
+            if not remote_dir:
+                emg = u'远程文件目录不能为空!'
+                return my_render('jasset/asset_custom_cmd.html', locals(), request)
+
+            asset_select = request.POST.getlist('asset_select', [])
+            fname_list = asset_select
+            print 'added file list:', ','.join(fname_list)
+            if not fname_list:
+                emg = u'请选择要复制的文件并移向右边!'
+                return my_render('jasset/asset_custom_cmd.html', locals(), request)
+
+            smg = ''
+            emg = ''
+            for ip in select_ips.split(':'):
+                obj = get_object(Asset, ip=ip)
+                if not obj:
+                    emg += u'<%s> asset is not exists！ %s |' % ip
+                    continue
+                host = obj.ip
+                port = obj.port
+                username = obj.username
+                password = obj.passwd
+                print 'start ip: ', ip
+                tag, desc = copy_file_to_server(host, port, username, password, local_file_dir, remote_dir, fname_list)
+                if tag == 'ok':
+                    smg += u'<%s> 命令已经执行成功！ |' % ip
+                else:
+                    emg += u'<%s> 命令执行失败！ %s |' % (ip, desc)
+            return my_render('jasset/asset_custom_cmd.html', locals(), request)
+    else:
+        return my_render('jasset/asset_custom_cmd.html', locals(), request)
+
+
+@require_role('admin')
 def asset_add_batch(request):
     header_title, path1, path2 = u'添加资产', u'资产管理', u'批量添加'
     return my_render('jasset/asset_add_batch.html', locals(), request)
@@ -576,6 +639,9 @@ def asset_edit(request):
     asset = get_object(Asset, id=asset_id)
     if asset:
         password_old = asset.password
+    else:
+        return HttpResponse('no this asset, id = %s' % str(asset_id))
+
     # asset_old = copy_model_instance(asset)
     af = AssetForm(instance=asset)
     if request.method == 'POST':

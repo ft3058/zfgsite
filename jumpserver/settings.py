@@ -23,7 +23,7 @@ else:
     config.read(os.path.join(BASE_DIR, 'jumpserver.conf'))  # jumpserver_prod.conf
 
 KEY_DIR = os.path.join(BASE_DIR, 'keys')
-
+LOCAL_FILE_DIR = config.get('other', 'local_file_dir')
 
 DB_HOST = config.get('db', 'host')
 DB_PORT = config.getint('db', 'port')

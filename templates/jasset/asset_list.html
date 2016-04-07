@@ -194,8 +194,9 @@
                                 <input type="button" id="asset_del" class="btn btn-danger btn-sm"  name="del_button" value="删除"/>
                                 <a value="{% url 'asset_edit_batch' %}" type="button" class="btn btn-sm btn-warning iframe">修改</a>
                                 <input type="button" id="asset_update" class="btn btn-info btn-sm"  name="update_button" value="更新"/>
-{#                                <input type="button" id="asset_update_all" class="btn btn-primary btn-sm"  name="update_button" value="更新全部"/>#}
-                                <input type="button" id="exec_cmd" class="btn btn-sm btn-primary"  name="exec_cmd" value="执行命令"/>
+                                {#<input type="button" id="asset_update_all" name="update_button" class="btn btn-primary btn-sm" value="更新全部"/>#}
+                                <input type="button" id="exec_cmd" name="exec_cmd" class="btn btn-sm btn-primary"  value="执行命令"/>
+                                <input type="button" id="exec_custom_cmd" name="exec_custom_cmd" class="btn btn-sm btn-primary"  value="复制文件"/>
                             </div>
                             {% include 'paginator.html' %}
                         </div>
@@ -301,6 +302,42 @@
             }
         });
 
+
+        // ------------------------------------------------------------
+        $('#exec_custom_cmd').click(function(){
+            var check_array = [];
+            $(".gradeX input:checked").closest('tr').find('.hostname a').each(function() {
+                check_array.push($(this).text())
+            });
+            check_assets = check_array.join(':');
+
+            //alert('check_assets.. = ' + check_assets);
+
+            if (check_assets != '') {
+                if (confirm("确定进入自定义命令页面?")) {
+
+                    $.ajax({
+                        type: "post",
+                        data: {check_assets: check_assets},
+                        url: "{% url 'custom_cmd' %}",
+                        success: function (data) {
+                            if (data.indexOf('ok') > -1) {
+                                //alert('成功!');
+                                //parent.location.reload();
+                                window.open("{% url 'custom_cmd' %}", '_self');
+                            } else {
+                                alert('失败：' + data);
+                            }
+
+                        }
+                    });
+                }
+            }
+            else {
+                alert('参数错误!');
+            }
+        });
+
         $('.asset_init').click(function(){
             var asset_id = $(this).attr('value');
             var host = $(this).attr('host');
@@ -321,6 +358,7 @@
                                 alert('初始化失败：' + data);
                             }
                             parent.location.reload();
+
                         }
                     });
                 }

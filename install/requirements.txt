@@ -19,3 +19,4 @@ django_crontab==0.6.0
 south
 guincorn
 virtualenvwrapper
+pexpect
