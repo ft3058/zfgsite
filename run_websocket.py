@@ -26,6 +26,7 @@ import select
 # from jumpserver.api import ServerError
 from connect import Tty, User, Asset, PermRole, logger, get_object, PermRole, gen_resource
 from connect import TtyLog, Log, Session, user_have_perm, get_group_user_perm, MyRunner, ExecLog
+from jasset.models import AssetParent
 
 try:
     import simplejson as json
@@ -208,8 +209,8 @@ class ExecHandler(tornado.websocket.WebSocketHandler):
     def check_origin(self, origin):
         return True
 
-    @require_auth('user')
-    def open(self):
+    @require_auth('user') # 为了绕过权限，被放弃2016-4-11
+    def open_old(self):
         logger.debug('Websocket: Open exec request')
         role_name = self.get_argument('role', 'sb')
         self.remote_ip = self.request.remote_ip
@@ -223,6 +224,38 @@ class ExecHandler(tornado.websocket.WebSocketHandler):
         self.assets = self.perm.get('role').get(self.role).get('asset')
 
         res = gen_resource({'user': self.user, 'asset': self.assets, 'role': self.role})
+        self.runner = MyRunner(res)
+        message = '有权限的主机: ' + ', '.join([asset.hostname for asset in self.assets])
+        self.__class__.clients.append(self)
+        self.write_message(message)
+
+    @require_auth('user')
+    def open(self):
+        """ 新的修改权限 2016-4-11
+        删除所有的权限认证，得到选中的主机列表，查询所有[{hostname,ip,port,password}],传递给MyRunner
+        """
+
+        logger.debug('Websocket: Open exec request')
+        role_name = self.get_argument('role', 'sb')
+        assets_name = self.get_argument('check_assets', None)
+
+        if not assets_name:
+            raise Exception('Please choice one host')
+        self.remote_ip = self.request.remote_ip
+        logger.debug('Web执行命令: 请求系统用户 %s' % role_name)
+
+        res = []
+        for ip in assets_name.split(':'):
+            asset = Asset.objects.get(ip=ip)
+
+            res.append({
+                'hostname': asset.hostname,
+                'ip' : asset.ip,
+                'password' : asset.passwd,
+                'port' : asset.port,
+                'username': asset.username
+            })
+        print 'res=' ,res
         self.runner = MyRunner(res)
         message = '有权限的主机: ' + ', '.join([asset.hostname for asset in self.assets])
         self.__class__.clients.append(self)
@@ -344,12 +377,8 @@ class WebTerminalHandler(tornado.websocket.WebSocketHandler):
         if isinstance(result, tuple) and result[0] == 'fail':
             self.write_message(json.dumps({'data':result[1]}))
             raise Exception(result[1])
-        #     self.channel.send(result[1])
-        #     time.sleep(1)
-        #     raise Exception(result[1])
-        #
-        self.ssh = result
 
+        self.ssh = result
         self.channel = self.ssh.invoke_shell(term='xterm')
         WebTerminalHandler.tasks.append(MyThread(target=self.forward_outbound))
         WebTerminalHandler.clients.append(self)
@@ -362,8 +391,8 @@ class WebTerminalHandler(tornado.websocket.WebSocketHandler):
                 t.start()
             except RuntimeError:
                 pass
+
     def on_message(self, message):
-        # self.write_message('1')
         data = json.loads(message)
         if not data:
             return

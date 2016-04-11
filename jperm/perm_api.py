@@ -185,7 +185,7 @@ def gen_resource(ob, perm=None):
 
             for asset in assets:
                 asset_info = get_asset_info(asset)
-                role_key = get_role_key(user, role)
+                # role_key = get_role_key(user, role)
                 info = {'hostname': asset.hostname,
                         'ip': asset.ip,
                         'port': asset_info.get('port', 22),
@@ -193,8 +193,8 @@ def gen_resource(ob, perm=None):
                         'password': CRYPTOR.decrypt(role.password)
                        }
 
-                if os.path.isfile(role_key):
-                    info['ssh_key'] = role_key
+                # if os.path.isfile(role_key):
+                #     info['ssh_key'] = role_key
 
                 res.append(info)
         else:
@@ -207,15 +207,15 @@ def gen_resource(ob, perm=None):
                 except IndexError:
                     continue
 
-                role_key = get_role_key(user, role)
+                # role_key = get_role_key(user, role)
                 info = {'hostname': asset.hostname,
                         'ip': asset.ip,
                         'port': asset_info.get('port', 22),
                         'username': role.name,
                         'password': CRYPTOR.decrypt(role.password),
                         }
-                if os.path.isfile(role_key):
-                    info['ssh_key'] = role_key
+                # if os.path.isfile(role_key):
+                #     info['ssh_key'] = role_key
 
                 res.append(info)
 
