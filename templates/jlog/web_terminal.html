@@ -97,7 +97,7 @@
                         term.write('\r');
                     },
                     onClose: function() {
-                        term.write('Connection Reset By Peer');
+                        term.write('EOF');
                     },
                     onData: function(data) {
                         term.write(data);

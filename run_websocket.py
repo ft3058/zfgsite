@@ -340,13 +340,14 @@ class WebTerminalHandler(tornado.websocket.WebSocketHandler):
         login_role = user_have_perm(self.user, asset)  # 跳转到jperm/perm_api :149, 被修改过，将传回一个可用的role
         self.term = WebTty(self.user, asset, login_role, login_type='web')
         self.term.remote_ip = self.request.remote_ip
-        # self.ssh = self.term.get_connection()
         result = self.term.get_connection()
         if isinstance(result, tuple) and result[0] == 'fail':
-            self.channel.send(result[1])
-            time.sleep(1)
+            self.write_message(json.dumps({'data':result[1]}))
             raise Exception(result[1])
-
+        #     self.channel.send(result[1])
+        #     time.sleep(1)
+        #     raise Exception(result[1])
+        #
         self.ssh = result
 
         self.channel = self.ssh.invoke_shell(term='xterm')
@@ -362,6 +363,7 @@ class WebTerminalHandler(tornado.websocket.WebSocketHandler):
             except RuntimeError:
                 pass
     def on_message(self, message):
+        # self.write_message('1')
         data = json.loads(message)
         if not data:
             return
