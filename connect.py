@@ -313,7 +313,7 @@ class Tty(object):
             # if role_key and os.path.isfile(role_key):
             try:
                 ssh.connect(connect_info.get('ip'),
-                            port=connect_info.get('port'),
+                            port = asset.port,
                             username = asset.username,
                             password = asset.passwd,
                             # username=connect_info.get('role_name'),
@@ -327,7 +327,7 @@ class Tty(object):
                 pass
 
             ssh.connect(connect_info.get('ip'),
-                        port=connect_info.get('port'),
+                        port=asset.port,
                         username = asset.username,
                         password = asset.passwd,
                         # username=connect_info.get('role_name'),
