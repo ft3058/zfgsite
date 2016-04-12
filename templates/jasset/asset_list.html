@@ -215,9 +215,12 @@
 {% block self_footer_js %}
 <script>
 
-// copy password
-
+    // 复制密码
     var clip = new ZeroClipboard( $(".zclip") );
+    // 复制密码提示,并没有什么用
+    $(".zclip").click(function(){
+        layer.msg('复制完成.');
+    });
 
 
     $(document).ready(function(){
