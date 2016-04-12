@@ -160,8 +160,7 @@
                                     <td class="text-center">{{ asset.port }}</td>
                                     <td class="text-center">{{ asset.username }}</td>
                                     <td class="text-center">
-                                        <span id="asset_passwd_{{asset.id}}" class="zclip">{{asset.passwd}}</span>
-
+                                        <span id="asset_passwd_{{asset.id}}">{{asset.passwd}}</span>
                                         <a class="gen_new_pass" asset_id="{{asset.id}}">生成新密码</a>
                                         <a class="zclip" data-clipboard-target="asset_passwd_{{asset.id}}"  data-toggle="tooltip" data-placement="left" title="复制密码"><i class="fa fa-copy"></i></a>
                                     </td>
