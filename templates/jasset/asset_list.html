@@ -163,7 +163,7 @@
                                         <span id="asset_passwd_{{asset.id}}" class="zclip">{{asset.passwd}}</span>
 
                                         <a class="gen_new_pass" asset_id="{{asset.id}}">生成新密码</a>
-                                        <a class="zclip" data-clipboard-target="asset_passwd_{{asset.id}}">Copy</a>
+                                        <a class="zclip" data-clipboard-target="asset_passwd_{{asset.id}}"  data-toggle="tooltip" data-placement="left" title="复制密码"><i class="fa fa-copy"></i></a>
                                     </td>
 
                                     <!--
@@ -217,27 +217,7 @@
 <script>
 
 // copy password
- <!--jQuery(document).ready(function($) {-->
-    <!--$("body")-->
-      <!--.on("click", ".zclip", function(/* ClipboardEvent */ e) {-->
-        <!--console.log('inzclip');-->
-        <!--e.clipboardData.clearData();-->
-        <!--e.clipboardData.setData("text/plain", $(this).data("zclip-text"));-->
-        <!--e.preventDefault();-->
-      <!--});-->
-  <!--});-->
 
- <!--$(".zclip").zclip({-->
-        <!--path: "ZeroClipboard.swf",-->
-        <!--copy: function(){-->
-        <!--return $(this).parent().find(".input").val();-->
-        <!--},-->
-        <!--afterCopy:function(){/* 复制成功后的操作 */-->
-            <!--var $copysuc = $("<div class='copy-tips'><div class='copy-tips-wrap'>☺ 复制成功</div></div>");-->
-            <!--$("body").find(".copy-tips").remove().end().append($copysuc);-->
-            <!--$(".copy-tips").fadeOut(3000);-->
-        <!--}-->
-    <!--});-->
     var clip = new ZeroClipboard( $(".zclip") );
 
 
