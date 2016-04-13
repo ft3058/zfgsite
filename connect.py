@@ -310,6 +310,7 @@ class Tty(object):
         try:
             # role_key = connect_info.get('role_key')
             asset = Asset.objects.get(ip=connect_info.get('ip'))
+            # if role_key and os.path.isfile(role_key):
 
             ssh.connect(connect_info.get('ip'),
                         port=asset.port,
@@ -317,9 +318,8 @@ class Tty(object):
                         password = asset.passwd,
                         # username=connect_info.get('role_name'),
                         # password=connect_info.get('role_pass'),
-                        # allow_agent=False,
-                        # look_for_keys=False
-            )
+                        allow_agent=False,
+                        look_for_keys=False)
 
         except paramiko.ssh_exception.AuthenticationException, paramiko.ssh_exception.SSHException:
             tag, res = 'fail', '认证失败 (可能错误:密码错误)'
