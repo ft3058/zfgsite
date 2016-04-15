@@ -257,7 +257,7 @@ class ExecHandler(tornado.websocket.WebSocketHandler):
             })
         print 'res=' ,res
         self.runner = MyRunner(res)
-        message = '有权限的主机: ' + ', '.join([asset.hostname for asset in self.assets])
+        message = '选中%s台主机: '%(assets_name.count(':')+1) + assets_name
         self.__class__.clients.append(self)
         self.write_message(message)
 

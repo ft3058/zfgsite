@@ -311,20 +311,6 @@ class Tty(object):
             # role_key = connect_info.get('role_key')
             asset = Asset.objects.get(ip=connect_info.get('ip'))
             # if role_key and os.path.isfile(role_key):
-            try:
-                ssh.connect(connect_info.get('ip'),
-                            port = asset.port,
-                            username = asset.username,
-                            password = asset.passwd,
-                            # username=connect_info.get('role_name'),
-                            # password=connect_info.get('role_pass'),
-                            # key_filename=role_key,
-                            # look_for_keys=False
-                            )
-                return ssh
-            except (paramiko.ssh_exception.AuthenticationException, paramiko.ssh_exception.SSHException):
-                logger.warning(u'使用ssh key 失败, 尝试只使用密码')
-                pass
 
             ssh.connect(connect_info.get('ip'),
                         port=asset.port,
