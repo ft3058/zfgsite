@@ -162,7 +162,11 @@
                                     -->
 
                                     <td class="text-center" data-editable='false'>
-                                        <a value="{{ asset.id }}" class="conn btn btn-xs btn-warning">连接</a>
+                                        <a value="{{ asset.id }}" class="conn btn btn-xs btn-warning" style="display:none;">连接</a>
+                                        <a value="{{ asset.id }}" class="newconn btn btn-xs btn-warning">快速连接</a>
+
+
+
                                     </td>
                                 </tr>
                             {% endfor %}
@@ -245,6 +249,14 @@
             return false
 
         });
+
+        $('.newconn').click(function(){                                      
+            var new_url= '{% url "terminal" %}?id=' + $(this).attr('value')+'&role=admin';
+            window.open(new_url, '', 'width=628px, height=420px')
+        });
+
+
+
 
         $('.conn').click(function(){
             var url='{% url "role_get" %}?id=' + $(this).attr('value'); // 获取用户有权限的角色
