@@ -697,17 +697,21 @@ def perm_role_push(request):
         # 1. 以秘钥 方式推送角色
         if key_push:
             ret["pass_push"] = task.add_user(role.name, CRYPTOR.decrypt(role.password))
+            print '--1--', ret
             ret["key_push"] = task.push_key(role.name, os.path.join(role.key_path, 'id_rsa.pub'))
+            print '--2--', ret
 
         # 2. 推送账号密码
         elif password_push:
             ret["pass_push"] = task.add_user(role.name, CRYPTOR.decrypt(role.password))
+            print '--3--', ret
 
         # 3. 推送sudo配置文件
         if password_push or key_push:
             sudo_list = set([sudo for sudo in role.sudo.all()])  # set(sudo1, sudo2, sudo3)
             if sudo_list:
                 ret['sudo'] = task.push_sudo_file([role], sudo_list)
+                print '--4--', ret
 
         logger.debug('推送role结果: %s' % ret)
         success_asset = {}
