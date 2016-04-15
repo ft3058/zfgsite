@@ -5,6 +5,7 @@
 import time, os
 import paramiko
 from threading import Thread
+from util import write_log
 from jumpserver.settings import *
 
 '''
@@ -26,8 +27,9 @@ class CopyThread(Thread):
         self.local_dir = ''
         self.remote_dir = ''
         self.fname_list = ''
+        self.logged_user = ''
 
-    def open(self, host, port, username, password, local_dir, remote_dir, fname_list):
+    def set_params(self, host, port, username, password, local_dir, remote_dir, fname_list, logged_user):
         self.host = host
         self.port = port
         self.username = username
@@ -35,12 +37,12 @@ class CopyThread(Thread):
         self.local_dir = local_dir
         self.remote_dir = remote_dir
         self.fname_list = fname_list
+        self.logged_user = logged_user
 
     def run(self):
         """
         """
         try:
-
             s = get_ssh(IP, PORT, USERNAME, PASSWORD)
             ssh = s.invoke_shell()
 
@@ -87,21 +89,24 @@ class CopyThread(Thread):
             print 'scp complete..'
             s.close()
 
+            write_log(self.logged_user, self.host, self.host, scp_cmd, 'copy file', 'success')
             return 'ok', 'success'
         except Exception, e:
             # print traceback.print_exc()
             try:
                 s.close()
-            except: pass
+            except Exception, e1:
+                write_log(self.logged_user, self.host, self.host, '', 'copy file', str(e1))
+            write_log(self.logged_user, self.host, self.host, '', 'copy file', str(e))
             return 'fail', str(e)
 
 
-def copy_file_to_server(host, port, username, password, local_dir, remote_dir, fname_list):
+def copy_file_to_server(host, port, username, password, local_dir, remote_dir, fname_list, logged_user):
     """
     user rsync for copy
     """
     ct = CopyThread()
-    ct.open(host, port, username, password, local_dir, remote_dir, fname_list)
+    ct.set_params(host, port, username, password, local_dir, remote_dir, fname_list, logged_user)
     ct.start()
 
 
