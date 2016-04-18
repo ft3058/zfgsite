@@ -571,7 +571,8 @@ def custom_cmd(request):
             remote_path = remote_dir
             asset_select = request.POST.getlist('asset_select', [])
             fname_list = asset_select
-            print 'added file list:', ','.join(fname_list)
+            print '^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^'
+            print '====fname_list:==== ' + ','.join(fname_list)
             if not fname_list:
                 emg = u'请选择要复制的文件并移向右边!'
                 return my_render('jasset/asset_custom_cmd.html', locals(), request)
