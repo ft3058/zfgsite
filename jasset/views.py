@@ -570,12 +570,14 @@ def custom_cmd(request):
             remote_dir = remote_dir if remote_dir.endswith('/') else remote_dir+'/'
             remote_path = remote_dir
             asset_select = request.POST.getlist('asset_select', [])
+            if not asset_select or len(asset_select) == 0 or ''.join(asset_select).strip() == '':
+                emg = u'请选择要复制的文件并移向右边!'
+                return my_render('jasset/asset_custom_cmd.html', locals(), request)
+
             fname_list = asset_select
             print '^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^'
             print '====fname_list:==== ' + ','.join(fname_list)
-            if not fname_list:
-                emg = u'请选择要复制的文件并移向右边!'
-                return my_render('jasset/asset_custom_cmd.html', locals(), request)
+
 
             smg = ''
             emg = ''
