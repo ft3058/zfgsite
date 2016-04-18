@@ -281,7 +281,7 @@ def perm_rule_domains_add(request):
 
 
 @require_role('admin')
-def perm_rule_edit(request):
+def perm_rule_edit_old(request):
     """
     edit rule page
     """
@@ -334,6 +334,82 @@ def perm_rule_edit(request):
                 if need_push_asset:
                     raise ServerError(u'没有推送系统用户 %s 的主机 %s'
                                       % (role.name, ','.join([asset.hostname for asset in need_push_asset])))
+
+                # 仅授权成功的，写回数据库(授权规则,用户,用户组,资产,资产组,用户角色)
+                rule.user = users_obj
+                rule.user_group = user_groups_obj
+                rule.asset = assets_obj
+                rule.asset_group = asset_groups_obj
+                rule.role = roles_obj
+            rule.name = rule_name
+            rule.comment = rule_comment
+            rule.save()
+            msg = u"更新授权规则：%s成功" % rule.name
+
+        except ServerError, e:
+            error = e
+
+    return my_render('jperm/perm_rule_edit.html', locals(), request)
+
+
+@require_role('admin')
+def perm_rule_edit(request):
+    """
+    edit rule page
+    """
+    # 渲染数据
+    header_title, path1, path2 = "授权规则", "规则管理", "添加规则"
+
+    # 根据rule_id 取得rule对象
+    rule_id = request.GET.get("id")
+    rule = get_object(PermRule, id=rule_id)
+
+    # 渲染数据, 获取所选的rule对象
+
+    users = User.objects.all()
+    user_groups = UserGroup.objects.all()
+    assets = Asset.objects.all()
+    asset_groups = AssetGroup.objects.all()
+    roles = PermRole.objects.all()
+
+    if request.method == 'POST' and rule_id:
+        # 获取用户选择的 用户,用户组,资产,资产组,用户角色
+        rule_name = request.POST.get('name')
+        rule_comment = request.POST.get("comment")
+        users_select = request.POST.getlist('user', [])
+        user_groups_select = request.POST.getlist('user_group', [])
+        assets_select = request.POST.getlist('asset', [])
+        asset_groups_select = request.POST.getlist('asset_group', [])
+        roles_select = request.POST.getlist('role', [])
+
+        try:
+            if not rule_name or not roles_select:
+                raise ServerError(u'系统用户和关联系统用户不能为空')
+
+            assets_obj = [Asset.objects.get(id=asset_id) for asset_id in assets_select]
+            asset_groups_obj = [AssetGroup.objects.get(id=group_id) for group_id in asset_groups_select]
+            group_assets_obj = []
+            for asset_group in asset_groups_obj:
+                group_assets_obj.extend(list(asset_group.asset_set.all()))
+            calc_assets = set(group_assets_obj) | set(assets_obj)  # 授权资产和资产组包含的资产
+
+            # 获取需要授权的用户列表
+            users_obj = [User.objects.get(id=user_id) for user_id in users_select]
+            user_groups_obj = [UserGroup.objects.get(id=group_id) for group_id in user_groups_select]
+
+            # 获取授予的角色列表
+            roles_obj = [PermRole.objects.get(id=role_id) for role_id in roles_select]
+            need_push_asset = set()
+            for role in roles_obj:
+                asset_no_push = get_role_push_host(role=role)[1]  # 获取某角色已经推送的资产
+                need_push_asset.update(set(calc_assets) & set(asset_no_push))
+
+                # need to un note
+                '''
+                if need_push_asset:
+                    raise ServerError(u'没有推送系统用户 %s 的主机 %s'
+                                      % (role.name, ','.join([asset.hostname for asset in need_push_asset])))
+                                      '''
 
                 # 仅授权成功的，写回数据库(授权规则,用户,用户组,资产,资产组,用户角色)
                 rule.user = users_obj
