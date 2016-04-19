@@ -519,8 +519,10 @@ def asset_init(request):
                     script_path = gp1.script_path
                     l = script_path.split(',')
                     script_path = l[0].strip()
+            '''
             if not script_path:
                 return HttpResponse('cannot find script_path ! ')
+            '''
 
             tag, txt = init_server(host, port, username, password, script_path)
             if tag == 'ok':

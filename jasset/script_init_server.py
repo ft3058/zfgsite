@@ -190,11 +190,16 @@ def copy_files_and_restart_service(host, port, username, password, script_dir):
 
 def init_server(host, port, username, password, script_path):
     try:
+        # 1. install software
         write_log(ip=host, user=username, title='start to install softs', result="%s-%s-%s-%s-%s" % (host, str(port), username, password, script_path))
         tag, res = install_softs(host, port, username, password)
 
         print 'install tag, res = ', tag, res
-        if tag == 'ok' or 'SSH session not active' in res:
+        if not script_path and tag == 'ok':
+            return 'ok', 'install.sh run success!'
+
+        # 2. copy file and restart nginx
+        elif tag == 'ok' or 'SSH session not active' in res:
             # connect first
             retry_times = 0
             password, port = get_new_port_by_ip(host)
