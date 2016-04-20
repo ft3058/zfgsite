@@ -19,6 +19,10 @@ sys_user
 ssh root@111.38.14.140 -p 14140
 ssh sys_user@111.38.14.140  -p 14140
 
+server info:
+120.131.71.41
+32812
+Q9Nf8KkU53gc6zT
 
 
 

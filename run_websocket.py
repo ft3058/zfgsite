@@ -64,6 +64,32 @@ def require_auth(role='user'):
                             return func(request, *args, **kwargs)
                 else:
                     logger.debug('Websocket: session expired: %s' % session_key)
+            else:
+                # get auth by username
+                username = request.get_argument('username', '')
+
+                # session = get_object(Session, session_key=session_key)
+                logger.debug('session is null, create session by username: %s' % username)
+
+                # if session and datetime.datetime.now() < session.expire_date:
+                if username:
+                    # user_id = session.get_decoded().get('_auth_user_id')
+                    # user = get_object(User, id=user_id)
+                    user = get_object(User, username=username)
+                    if user:
+                        logger.debug('Websocket: user [ %s ] request websocket' % user.username)
+                        request.user = user
+                        if role == 'admin':
+                            if user.role in ['SU', 'GA']:
+                                return func(request, *args, **kwargs)
+                            logger.debug('Websocket: user [ %s ] is not admin.' % user.username)
+                        else:
+                            return func(request, *args, **kwargs)
+                    else:
+                        logger.debug('get Null User by username:' + username)
+                else:
+                    logger.debug('Websocket: username is null...')
+
             try:
                 request.close()
             except AttributeError:

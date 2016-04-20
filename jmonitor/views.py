@@ -307,7 +307,7 @@ def rsync_status_detail(request):
             for path in paths:
                 # ['[path=/a/b 1.txt,2.txt]', '[path=/c/d 8.bak,9.bak]']
                 path = path.replace('[path=', '').replace(']', '')
-                print '-path-', path
+                # print '-path-', path
                 path_head = path.split(' ')[0].replace('(', '').replace(')', '')
                 path_tail = path.split(' ')[-1]
                 for l in path_tail.split(','):

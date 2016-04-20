@@ -363,13 +363,16 @@ def web_terminal(request):
     """
     asset_id = request.GET.get('id')
     role_name = request.GET.get('role')
+    username = request.user.username
+    print 'username ==== ', username
     asset = get_object(Asset, id=asset_id)
+
     if asset:
         print 'asset = ', asset
         hostname = asset.hostname
         print 'hostname = ', hostname
 
-    web_terminal_uri = 'ws://%s/terminal?id=%s&role=%s' % (WEB_SOCKET_HOST, asset_id, role_name)
+    web_terminal_uri = 'ws://%s/terminal?id=%s&role=%s&username=%s' % (WEB_SOCKET_HOST, asset_id, role_name, username)
     print 'web_terminal_uri = %s ' % web_terminal_uri
 
     return render_to_response('jlog/web_terminal.html', locals())
