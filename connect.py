@@ -327,6 +327,9 @@ class Tty(object):
         except socket.error:
             tag, res = 'fail', 'socket.error (可能错误:端口不对)'
             return tag, res
+        except Exception as e:
+            tag, res = 'fail', 'Server 500 Error: %s'% e
+            return tag, res
         else:
             self.ssh = ssh
             return ssh
