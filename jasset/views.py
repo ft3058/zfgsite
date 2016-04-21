@@ -11,7 +11,7 @@ from jperm.perm_api import get_group_asset_perm, get_group_user_perm
 from jperm.models import PermRuleDomain
 from util import get_random_str
 from script_init_server import init_server
-from script_copy_files import copy_file_to_server, copyall
+from script_copy_files import copy_file_to_server
 
 
 @require_role('admin')
@@ -603,11 +603,8 @@ def custom_cmd(request):
                     emg += u'<%s> 命令执行失败！ %s |' % (ip, desc)
                 '''
                 # async execute
-                # copy_file_to_server(host, port, username, password, local_file_dir, remote_dir, fname_list, logged_user)
-                if copyall(host, port, username, password, local_file_dir, remote_dir, fname_list):
-                    smg += u'<%s> 命令已经提交成功！| ' % ip
-                else:
-                    emg += u'<%s> 命令执行失败！ %s |' % (ip, fname_list)
+                copy_file_to_server(host, port, username, password, local_file_dir, remote_dir, fname_list, logged_user)
+                smg += u'<%s> 命令已经提交成功！| ' % ip
 
             return my_render('jasset/asset_custom_cmd.html', locals(), request)
     else:
