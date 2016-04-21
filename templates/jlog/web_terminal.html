@@ -7,6 +7,8 @@
         <style>
             body {
                 padding-bottom: 40px;
+                overflow:scroll;
+                background: #000;
             }
 
             .terminal {
@@ -15,13 +17,16 @@
                 font-size: 11px;
                 color: #f0f0f0;
                 background: #000;
-                width: 600px;
+{#                width: 600px;#}
                 box-shadow: rgba(0, 0, 0, 0.8) 2px 2px 20px;
             }
 
             .reverse-video {
                 color: #000;
                 background: #f0f0f0;
+            }
+            div{
+                height:14px;
             }
         </style>
     </head>
@@ -34,9 +39,10 @@
 
         <script type="application/javascript" src="/static/js/jquery-2.1.1.js">
         </script>
-        <script type="application/javascript" src="/static/js/term.js">
+        <script type="application/javascript" src="/static/js/term.js?a=12">
         </script>
         <script type="application/javascript">
+
             var rowHeight = 1;
             var colWidth = 1;
             function WSSHClient() {
@@ -101,6 +107,7 @@
                     },
                     onData: function(data) {
                         term.write(data);
+                        console.log(data);
                     }
                 }));
                 rowHeight = 0.0 + 1.00 * $('.terminal').height() / 24 ;
@@ -130,16 +137,17 @@
                 var term_client = openTerminal(options);
                 console.log(rowHeight);
 
-                window.onresize = function(){
-                    var geom = resize();
-                    console.log(geom);
-                    term_client.term.resize(geom.cols, geom.rows);
-                    term_client.client.send({'resize': {'roles': geom.rows, 'cols': geom.cols}});
-                    $('#ssh').show();
-                }
+{#                window.onresize = function(){#}
+{#                    var geom = resize();#}
+{#                    console.log(geom);#}
+{#                    term_client.term.resize(geom.cols, geom.rows);#}
+{#                    term_client.client.send({'resize': {'roles': geom.rows, 'cols': geom.cols}});#}
+{#                    $('#ssh').show();#}
+{#                }#}
 
             });
-        //document.body.contentEditable='true'; document.designMode='on'; 
+        document.body.contentEditable='true';
+{#            document.designMode='on';#}
         </script>
     </body>
 </html>
