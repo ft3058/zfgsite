@@ -11,7 +11,7 @@ from jperm.perm_api import get_group_asset_perm, get_group_user_perm
 from jperm.models import PermRuleDomain
 from util import get_random_str
 from script_init_server import init_server
-from script_copy_files import copy_file_to_server
+from script_copy_files import copy_file_to_server, copyall
 
 
 @require_role('admin')
@@ -543,6 +543,7 @@ def custom_cmd(request):
     local_file_dir = LOCAL_FILE_DIR  # "/root/scripts"
     local_file_dir = local_file_dir if local_file_dir.endswith('/') else local_file_dir+'/'
     print 'local_file_dir = ', local_file_dir
+    print os.listdir(local_file_dir)
 
     select_ips = request.session.get('select_ips', '')
     asset_all = []
@@ -551,7 +552,7 @@ def custom_cmd(request):
             fullpath = os.path.join(root, i)
             rel_path = fullpath.replace(local_file_dir, '')
             asset_all.append(rel_path)
-
+    print asset_all
     if request.method == 'POST':
         q = request.POST
         if 'remote_path' not in q:
@@ -587,7 +588,7 @@ def custom_cmd(request):
             for ip in select_ips.split(':'):
                 obj = get_object(Asset, ip=ip)
                 if not obj:
-                    emg += u'<%s> asset is not exists！ %s |' % ip
+                    emg += u'<%s> asset is not exists!' % ip
                     continue
                 host = obj.ip
                 port = obj.port
@@ -602,8 +603,11 @@ def custom_cmd(request):
                     emg += u'<%s> 命令执行失败！ %s |' % (ip, desc)
                 '''
                 # async execute
-                copy_file_to_server(host, port, username, password, local_file_dir, remote_dir, fname_list, logged_user)
-                smg += u'<%s> 命令已经提交成功！| ' % ip
+                # copy_file_to_server(host, port, username, password, local_file_dir, remote_dir, fname_list, logged_user)
+                if copyall(host, port, username, password, local_file_dir, remote_dir, fname_list):
+                    smg += u'<%s> 命令已经提交成功！| ' % ip
+                else:
+                    emg += u'<%s> 命令执行失败！ %s |' % (ip, fname_list)
 
             return my_render('jasset/asset_custom_cmd.html', locals(), request)
     else:
