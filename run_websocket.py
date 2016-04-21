@@ -41,6 +41,8 @@ define("host", default='0.0.0.0', help="run port on given host", type=str)
 def require_auth(role='user'):
     def _deco(func):
         def _deco2(request, *args, **kwargs):
+            username = request.get_argument('username', '')  # get auth by username
+
             if request.get_cookie('sessionid'):
                 session_key = request.get_cookie('sessionid')
             else:
@@ -64,14 +66,29 @@ def require_auth(role='user'):
                             return func(request, *args, **kwargs)
                 else:
                     logger.debug('Websocket: session expired: %s' % session_key)
-            else:
-                # get auth by username
-                username = request.get_argument('username', '')
+                    # session = get_object(Session, session_key=session_key)
+                    logger.debug('session is expired, create session by username: %s' % username)
+                    if username:
+                        # user_id = session.get_decoded().get('_auth_user_id')
+                        # user = get_object(User, id=user_id)
+                        user = get_object(User, username=username)
+                        if user:
+                            logger.debug('Websocket: user [ %s ] request websocket' % user.username)
+                            request.user = user
+                            if role == 'admin':
+                                if user.role in ['SU', 'GA']:
+                                    return func(request, *args, **kwargs)
+                                logger.debug('Websocket: user [ %s ] is not admin.' % user.username)
+                            else:
+                                return func(request, *args, **kwargs)
+                        else:
+                            logger.debug('get Null User by username:' + username)
+                    else:
+                        logger.debug('Websocket: username is null...')
 
+            else:
                 # session = get_object(Session, session_key=session_key)
                 logger.debug('session is null, create session by username: %s' % username)
-
-                # if session and datetime.datetime.now() < session.expire_date:
                 if username:
                     # user_id = session.get_decoded().get('_auth_user_id')
                     # user = get_object(User, id=user_id)
