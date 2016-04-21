@@ -6,7 +6,8 @@ import sys
 
 SCRIPT_NAME = 'run_websocket.py'
 SELF_NAME = 'use_socket.py'
-PYTHON_PATH = '/home/wxd/env_jump_wxd/bin/python'
+# PYTHON_PATH = '/home/wxd/env_jump_wxd/bin/python'
+PYTHON_PATH = '/root/env_jump/bin/python'
 USAGE = u'usage: %s %s [start|kill] \n' % (PYTHON_PATH, SELF_NAME)
 
 
