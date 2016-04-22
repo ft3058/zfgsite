@@ -27,6 +27,7 @@ import select
 from connect import Tty, User, Asset, PermRole, logger, get_object, PermRole, gen_resource
 from connect import TtyLog, Log, Session, user_have_perm, get_group_user_perm, MyRunner, ExecLog
 from jasset.models import AssetParent
+from jumpserver.models import db
 
 try:
     import simplejson as json
@@ -42,7 +43,8 @@ def require_auth(role='user'):
     def _deco(func):
         def _deco2(request, *args, **kwargs):
             username = request.get_argument('username', '')  # get auth by username
-
+            db.close_connection()
+            print 'close_connection()@2016-4-22'
             if request.get_cookie('sessionid'):
                 session_key = request.get_cookie('sessionid')
             else:

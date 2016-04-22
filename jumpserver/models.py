@@ -1,7 +1,7 @@
 # coding: utf-8
 
 from django.db import models
-
+from django import db
 
 class Setting(models.Model):
     name = models.CharField(max_length=100)

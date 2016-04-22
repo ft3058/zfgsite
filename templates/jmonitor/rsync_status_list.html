@@ -97,7 +97,8 @@
                                     <td class="text-center">{{asset.last_dt}}</td>
                                     <td class="text-center" data-editable='false'>
                                         <a href="{% url 'rsync_status_detail' %}?id={{ asset.id }}" class="btn btn-xs btn-success">详细结果</a>
-                                        <a value="{{ asset.id }}" class="conn btn btn-xs btn-info">终端连接</a>
+{#                                        <a value="{{ asset.id }}" class="conn btn btn-xs btn-info">终端连接</a>#}
+                                        <a value="{{ asset.id }}" class="newconn btn btn-xs btn-warning">快速连接</a>
                                         <a value="{% url 'rsync_status_check' %}?id={{ asset.id }}" class="btn btn-xs btn-danger asset_check" onclick="exec_check_status('{{ asset.id }}')">立即检测</a>
                                     </td>
                                 </tr>
@@ -182,6 +183,12 @@
             return false
 
         });
+
+        $('.newconn').click(function(){
+            var new_url= '{% url "terminal" %}?id=' + $(this).attr('value')+'&role=admin';
+            window.open(new_url, '', 'width=828px, height=420px')
+        });
+
 
         $('.conn').click(function(){
             var url='{% url "role_get" %}?id=' + $(this).attr('value'); // 获取用户有权限的角色
