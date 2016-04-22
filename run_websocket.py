@@ -365,7 +365,7 @@ class WebTerminalHandler(tornado.websocket.WebSocketHandler):
         return True
 
     @require_auth('user')
-    def open_bak(self): # 原来的版本，为了绕过权限放弃。 
+    def open_bak(self):  # 原来的版本，为了绕过权限放弃。
         logger.debug('Websocket: Open request')
         role_name = self.get_argument('role', 'sb')
         asset_id = self.get_argument('id', 9999)
@@ -407,7 +407,7 @@ class WebTerminalHandler(tornado.websocket.WebSocketHandler):
                 pass
 
     @require_auth('user')
-    def open(self): # 新的函数，绕过验证
+    def open(self):  # 新的函数，绕过验证
         logger.debug('Websocket: Open request')
         role_name = self.get_argument('role', 'sb')
         asset_id = self.get_argument('id', 9999)
@@ -461,7 +461,7 @@ class WebTerminalHandler(tornado.websocket.WebSocketHandler):
                 self.term.vim_data = ''
                 self.term.data = ''
                 self.term.input_mode = False
-            print u'received data at:', dt.now()
+            # print u'received data at:', dt.now()
             self.channel.send(data['data'])
         else:
             pass
