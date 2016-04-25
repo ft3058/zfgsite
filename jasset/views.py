@@ -552,7 +552,7 @@ def custom_cmd(request):
             fullpath = os.path.join(root, i)
             rel_path = fullpath.replace(local_file_dir, '')
             asset_all.append(rel_path)
-    print asset_all
+    # print asset_all
     if request.method == 'POST':
         q = request.POST
         if 'remote_path' not in q:
