@@ -1,4 +1,4 @@
-env: centos6.5
+env: centos6.5 ----
 
 su root
 yum – y install python-setuptools
