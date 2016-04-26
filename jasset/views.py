@@ -578,8 +578,8 @@ def custom_cmd(request):
                 return my_render('jasset/asset_custom_cmd.html', locals(), request)
 
             fname_list = asset_select
-            print '^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^'
-            print '====fname_list:==== ' + ','.join(fname_list)
+            # print '^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^'
+            # print '====fname_list:==== ' + ','.join(fname_list)
 
 
             smg = ''
@@ -594,7 +594,7 @@ def custom_cmd(request):
                 port = obj.port
                 username = obj.username
                 password = obj.passwd
-                print 'start ip: ', ip
+                # print 'start ip: ', ip
                 '''
                 tag, desc = copy_file_to_server(host, port, username, password, local_file_dir, remote_dir, fname_list)
                 if tag == 'ok':
@@ -602,7 +602,6 @@ def custom_cmd(request):
                 else:
                     emg += u'<%s> 命令执行失败！ %s |' % (ip, desc)
                 '''
-                # async execute
                 copy_file_to_server(host, port, username, password, local_file_dir, remote_dir, fname_list, logged_user)
                 smg += u'<%s> 命令已经提交成功！| ' % ip
 

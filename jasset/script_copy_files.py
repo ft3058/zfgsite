@@ -8,12 +8,12 @@ from threading import Thread
 from util import write_log
 from jumpserver.settings import *
 
-'''
-IP = '127.0.0.1'
+"""
+IP = '192.168.4.234'
 PORT = 22
-USERNAME = 'root'
-PASSWORD = '114418'
-'''
+USERNAME = 'twotiger'
+PASSWORD = '123456'
+"""
 
 
 class CopyThread(Thread):
@@ -51,7 +51,7 @@ class CopyThread(Thread):
             scp_cmd = "rsync -avH -progress '-e ssh -p %s' %s %s@%s:%s" % (str(self.port), files, self.username, self.host, self.remote_dir)
             # scp_cmd = "/usr/bin/scp -P %s %s %s@%s:%s" % (str(port), files, username, host, remote_dir)
 
-            print 'scp_cmd = ', scp_cmd
+            # print 'scp_cmd = ', scp_cmd
             ssh.send(scp_cmd + '\n')
 
             buff = ''
@@ -61,32 +61,32 @@ class CopyThread(Thread):
                     ssh.send('yes\n')
                     buff = ''
                     time.sleep(1)
-                    print 'send yes..'
+                    # print 'send yes..'
                 elif 'password:' in buff:
                     ssh.send(self.password+'\n')
                     buff = ''
                     time.sleep(1)
                     flag = True
-                    print 'send password..'
+                    # print 'send password..'
                 elif ('# ' in buff or '$ ' in buff) and flag:
-                    print '******************************'
-                    print buff
-                    print '^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^'
-                    print 'succ'
+                    # print '******************************'
+                    # print buff
+                    # print '^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^'
+                    # print 'succ'
                     break
 
                 else:
-                    print 'receiving data...'
+                    # print 'receiving data...'
                     resp = ssh.recv(9999)
                     buff += resp
 
-                print '------------------------------------------'
-                print 'buff = ', buff
-                print '++++++++++++++++++++++++++++++++++++++++++'
-                print
+                # print '------------------------------------------'
+                # print 'buff = ', buff
+                # print '++++++++++++++++++++++++++++++++++++++++++'
+                # print
                 time.sleep(1)
 
-            print 'scp complete..'
+            # print 'scp complete..'
             s.close()
 
             write_log(self.logged_user, self.host, self.host, scp_cmd, 'copy file', 'success')
