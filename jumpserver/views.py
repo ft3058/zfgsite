@@ -358,8 +358,6 @@ def exec_cmd(request):
 def web_terminal(request):
     """
     http://127.0.0.1:8000/terminal/?id=3&role=wxd
-    :param request:
-    :return:
     """
     asset_id = request.GET.get('id')
     role_name = request.GET.get('role')
