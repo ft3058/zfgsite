@@ -349,11 +349,13 @@ def oplog_status(request):
 
     header_title, path1, path2 = u'操作日志', u'状态监控', u'日志查看'
     username = request.user.username
+    users = User.objects.all()
 
-    findtype = request.GET.get('findtype')
+    find_type = request.GET.get('findtype', '')
+    find_user = request.GET.get('finduser', '')
 
-    if findtype == 'asset_init': # 搜索 初始化
-        find_log_list = list(CustomLog.objects.filter(user=username, title=findtype).order_by('-datetime')[:50])
+    if find_type or find_user: # 搜索 初始化
+        find_log_list = list(CustomLog.objects.filter(user=find_user, title=find_type).order_by('-datetime')[:50])
     else:
         find_log_list = list(CustomLog.objects.filter(user=username).order_by('-datetime')[:50])
     return my_render('jmonitor/oplog_status.html', locals(), request)

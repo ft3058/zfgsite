@@ -524,21 +524,21 @@ def asset_init(request):
                 return HttpResponse('cannot find script_path ! ')
             '''
 
-            tag, txt = init_server(host, port, username, password, script_path)
+            tag, txt = init_server(host, port, username, password, script_path, request.user.username)
             if tag == 'ok':
-                print 'succ'  # s2jBv2JzDt
-                write_log(request.user.name, host, host, '', 'asset_init', 'success')
+                # print 'succ'  # s2jBv2JzDt
+                write_log(request.user.username, host, host, '', 'asset_init', 'success')
                 return HttpResponse('ok')  # 'ok-' +
             else:
-                print 'fail', txt
-                write_log(request.user.name, host, host, txt, 'asset_init', 'fail')
+                # print 'fail', txt
+                write_log(request.user.username, host, host, txt, 'asset_init', 'fail')
                 return HttpResponse(txt)
         else:
-            print 'cannot find asset !'
-            write_log(request.user.name, '', '', "cannot find asset !", 'asset_init', 'fail')
+            # print 'cannot find asset !'
+            write_log(request.user.username, '', '', "cannot find asset !", 'asset_init', 'fail')
             return HttpResponse('cannot find asset ! ')
     else:
-        write_log(request.user.name, '', '', "asset_id is empty, return!", 'asset_init', 'fail')
+        write_log(request.user.username, '', '', "asset_id is empty, return!", 'asset_init', 'fail')
         return HttpResponse('asset_id is empty, return!')
 
 

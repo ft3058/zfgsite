@@ -8,20 +8,20 @@ from jasset.models import Asset
 from jasset.asset_api import get_object
 
 
-def install_softs(host, port, username, password, timeout=10):
+def install_softs(host, port, username, password, oper_user, timeout=10):
     """
     """
     try:
         s = paramiko.SSHClient()
         s.load_system_host_keys()
         s.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        s.connect(hostname=host, port=int(port), username=username, password=password, timeout=timeout)
+        s.connect(hostname=host, port=int(port), username=oper_user, password=password, timeout=timeout)
 
         ssh = s.invoke_shell()
         time.sleep(1)
 
         cmd = 'cd /tmp\n'
-        write_log(ip=host, cmd=cmd, title='install_softs')
+        # write_log(ip=host, cmd=cmd, title='asset_init')
         ssh.send(cmd)
 
         buff = ''
@@ -33,32 +33,32 @@ def install_softs(host, port, username, password, timeout=10):
                 buff += resp
                 time.sleep(1)
                 # print 'buff1: %s' % buff
-        write_log(ip=host, cmd=cmd, title='install_softs', result='entered /tmp')
-
+        # write_log(ip=host, cmd=cmd, title='asset_init', result='success')
         # install wget first
         cmd = 'yum install wget -y\n'
-        write_log(ip=host, cmd=cmd, title='install_softs')
+        # write_log(ip=host, cmd=cmd, title='asset_init')
         ssh.send(cmd)
         while 1:
             if 'Nothing to do' in buff or 'Complete!' in buff:
-                print u'install wget succ..'
+                # print u'install wget succ..'
                 break
             else:
                 resp = ssh.recv(9999)
                 buff += resp
-        write_log(ip=host, cmd=cmd, title='install_softs', result='succ')
+                write_log(ip=host, cmd=resp, title='asset_init', result='wait', user=oper_user) # 安装 wget失败
+        # write_log(ip=host, cmd=cmd, title='asset_init', result='success')
 
-        print 'start wget install.sh'
+        # print 'start wget install.sh'
         cmd = 'wget http://softck.yxdown.com/others/install/install.sh\n'
         ssh.send(cmd)
-        write_log(ip=host, cmd=cmd, title='install_softs', result='succ')
-
+        # write_log(ip=host, cmd=cmd, title='asset_init', result='success')
         buff = ''
         while 1:
             if ('saved' in buff or '已保存' in buff) and '# ' in buff:
                 print u'down install.sh succ..'
                 break
             else:
+                write_log(ip=host, cmd=buff, title='asset_init', result='wait', user=oper_user) # wget 下载失败
                 resp = ssh.recv(9999)
                 buff += resp
             print '------------------'
@@ -67,7 +67,7 @@ def install_softs(host, port, username, password, timeout=10):
 
         print 'start to run install.sh...'
         cmd = 'nohup sh install.sh &\n'
-        write_log(ip=host, cmd=cmd, title='install_softs', result='succ')
+        write_log(ip=host, cmd=cmd, title='asset_init', result='success' ,user=oper_user)
         ssh.send(cmd)
         time.sleep(1)
 
@@ -84,14 +84,14 @@ def install_softs(host, port, username, password, timeout=10):
                 ssh.send(cmd)
                 time.sleep(1)
                 resp = ssh.recv(9999)
-                print '++++++++++++++++++++++++out start+++++++++++++++++++++++++++'
-                print 'retry times: %d' % retry_times
-                print resp
-                write_log(ip=host, cmd=cmd, title='install_softs', result=resp)
-                print '++++++++++++++++++++++++out end+++++++++++++++++++++++++++++'
-                print
+                # print '++++++++++++++++++++++++out start+++++++++++++++++++++++++++'
+                # print 'retry times: %d' % retry_times
+                # print resp
+                write_log(ip=host, cmd=cmd, title='asset_init', result=resp)
+                # print '++++++++++++++++++++++++out end+++++++++++++++++++++++++++++'
+                # print
                 if 'reboot NOW' in resp:
-                    write_log(ip=host, cmd=cmd, title='install_softs', result="reboot NOW")
+                    write_log(ip=host, cmd=cmd, title='install_softs', result="reboot NOW", user=oper_user)
                     return 'ok', 'wait for restart !'
             except Exception, e:
                 if 'Socket is closed' in str(e):
@@ -188,13 +188,13 @@ def copy_files_and_restart_service(host, port, username, password, script_dir):
             pass
 
 
-def init_server(host, port, username, password, script_path):
+def init_server(host, port, username, password, script_path, oper_user):
     try:
         # 1. install software
-        write_log(ip=host, user=username, title='start to install softs', result="%s-%s-%s-%s-%s" % (host, str(port), username, password, script_path))
-        tag, res = install_softs(host, port, username, password)
+        write_log(ip=host, user=oper_user, title='asset_init', result="%s-%s-%s-%s-%s" % (host, str(port), username, password, script_path))
+        tag, res = install_softs(host, port, username, password, oper_user)
 
-        print 'install tag, res = ', tag, res
+        # print 'install tag, res = ', tag, res
         if not script_path and tag == 'ok':
             return 'ok', 'install.sh run success!'
 
@@ -203,20 +203,20 @@ def init_server(host, port, username, password, script_path):
             # connect first
             retry_times = 0
             password, port = get_new_port_by_ip(host)
-            print 'new password, port : ', password, port
+            # print 'new password, port : ', password, port
             write_log(ip=host, cmd='', title='start connect', result="ip:%s -new:  password:%s port:%s" % (host, password, port))
 
             while retry_times <= 99:
                 try:
                     ssh = get_ssh(host, port, username, password)
-                    print 'connect succ..'
+                    # print 'connect succ..'
                     write_log(ip=host, cmd='paramiko get_ssh()', title='ping ssh', result="ssh connect succ")
                     ssh.close()
                     break
                 except Exception, e:
-                    print '----------------------------------'
-                    print 'connect error:', str(e)
-                    print 'retry_times = ', retry_times
+                    # print '----------------------------------'
+                    # print 'connect error:', str(e)
+                    # print 'retry_times = ', retry_times
                     write_log(ip=host, cmd='paramiko get_ssh()', title='ping ssh', result="ssh : connect error: %s" % str(e))
                     retry_times += 1
                     try:
@@ -228,7 +228,7 @@ def init_server(host, port, username, password, script_path):
                 return 'fail', 'connect time out after retart !!, retry times: %d' % retry_times
 
             # script_dir = '/var/serconf/nginx/yxdown.com/phone/apple'
-            print 'start copy file....'
+            # print 'start copy file....'
             write_log(ip=host, cmd='', title='copy_file', result="start copy files")
             copy_files_and_restart_service(host, port, username, password, script_path)
             write_log(ip=host, cmd='', title='copy_file', result="copy files succ, init server complete !!")

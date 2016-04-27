@@ -15,7 +15,7 @@ import ConfigParser
 import getpass
 
 
-ipinfo = os.popen('ip add')
+ipinfo = os.popen('ip add').read()
 
 config = ConfigParser.ConfigParser()
 

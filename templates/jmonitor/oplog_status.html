@@ -14,12 +14,7 @@
         <div class="col-sm-12">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
-                    搜索日志类型:
-                  <select id="findtype" name="findtype" onchange="gradeChange()">
-                      <option value ="copy file">复制</option>
-                      <option value ="asset_init">初始化</option>
-                    </select>
-{#                    <h5> {{asset.ip}} </h5>#}
+
                     <div class="ibox-tools">
 
                         <a class="collapse-link">
@@ -38,8 +33,34 @@
 
 
                 <div class="ibox-content ibox-heading">
+
+                    <form class="">
+                        <label>搜索类型</label>
+                        <select id="findtype" name="findtype">
+                            <option value ="copy file">复制文件</option>
+                            <option value="asset_init" {% ifequal find_type "asset_init" %}selected="selected"{% endifequal %}>初始化</option>
+                        </select>
+                        <select id="finduser" name="finduser">
+                            {% for user in users %}
+                                <option value ="{{ user.username }}"
+                                        {% if find_user %}
+                                        {% ifequal find_user user.username %}selected="selected"{% endifequal %}
+                                        {% else %}
+                                        {% ifequal username user.username %}selected="selected"{% endifequal %}
+                                        {% endif %}
+                                        >
+                                    {{ user.username }}
+                                </option>
+                            {% endfor %}
+
+    {#                      <option value ="copy file">复制文件</option>#}
+    {#                      <option value="asset_init" {% ifequal findtype "asset_init" %}selected="selected"{% endifequal %}>初始化</option>#}
+                        </select>
+                        <input type="submit"/>
+                    </form>
+
                     <!--h3> 操作日志 </h3-->
-                    <small><i class="fa fa-map-marker"></i> </small>
+{#                    <small><i class="fa fa-map-marker"></i> </small>#}
                 </div>
                 <div class="ibox-content">
                     <div>
@@ -88,12 +109,7 @@
             $('#more').css('display', 'block');
         });
 
-    })
-        function gradeChange(){
-            var objS = document.getElementById("findtype");
-            var grade = objS.value;
-            window.location.href="{% url 'oplog_status' %}?findtype="+grade;
-        }
+    });
 </script>
 
 
