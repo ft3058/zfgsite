@@ -24,10 +24,29 @@ def get_cmd_val(addr, community_index, community_name, oid, port=161):
     # '.1.3.6.1.4.1.2021.10.1.3.1'
     '1.3.6.1.2.1.1.1.0'
     """
-    res = cmdgen.CommandGenerator().getCmd(
-        cmdgen.CommunityData(community_index, community_name, 0),
-        cmdgen.UdpTransportTarget((addr, port)), oid)
-    return res
+    try:
+        res = cmdgen.CommandGenerator().getCmd(
+            cmdgen.CommunityData(community_index, community_name, 0),
+            cmdgen.UdpTransportTarget((addr, port)), oid)
+        return res
+    except Exception, e:
+        print u'get cmd error: %s' % str(e)
+        return (str(e), )
+
+def get_next_cmd_val(addr, community_index, community_name, oid, port=161):
+    """
+    # '1.3.6.1.4.1.11.2.3.1.1.13'
+    # '.1.3.6.1.4.1.2021.10.1.3.1'
+    '1.3.6.1.2.1.1.1.0'
+    """
+    try:
+        res = cmdgen.CommandGenerator().nextCmd(
+            cmdgen.CommunityData(community_index, community_name, 0),
+            cmdgen.UdpTransportTarget((addr, port)), oid)
+        return res
+    except Exception, e:
+        print u'get cmd error: %s' % str(e)
+        return (str(e), )
 
 
 def test_oids():

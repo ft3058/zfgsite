@@ -38,8 +38,18 @@ server_list = [
 S = server_list[2]
 
 
+OIDS_bak = {
+    'tcp_conn_count': '.1.3.6.1.2.1.6.9.0',
+    'disc_total_size': '.1.3.6.1.2.1.25.2.3.1.5',
+    'disc_used_size': '.1.3.6.1.2.1.25.2.3.1.6',
 
-OIDS = {
+    'all_interface': '.1.3.6.1.2.1.31.1.1.1.1',
+    # 'ifInOctets': '.1.3.6.1.2.1.2.2.1.10',
+    # 'ifOutOctets': '.1.3.6.1.2.1.31.1.1.1.6',
+    'ifHCInOctets': '.1.3.6.1.2.1.31.1.1.1.6',  # 64bit
+    'ifHCOutOctets': '.1.3.6.1.2.1.31.1.1.1.10',# 64bit
+
+    # --------------------------
     # SNMPv2-MIB::sysDescr.0 = Linux localhost.localdomain 2.6.32-504.el6.x86_64 #1 SMP Wed Oct 15 04:27:16 UTC 2014 x86_64
     'sys_info': (1,3,6,1,2,1,1,1,0),
     'load': (1,3,6,1,4,1,2021,10,1,3,1),
@@ -52,6 +62,7 @@ OIDS = {
     # from cacti
     'hrDiskIOIndex': (1,3,6,1,4,1,2021,13,15,1,1,1),
     'hrStorageIndex': (1,3,6,1,2,1,25,2,3,1,1),
+    'hrStorageDescr': '.1.3.6.1.2.1.25.2.3.1.3',
 
     # SNMPv2-MIB::sysUpTime.0 = 901903107
     'sysUpTime': (1, 3, 6, 1, 2, 1, 1, 3, 0),
@@ -61,3 +72,17 @@ OIDS = {
     'snmpTrapEnterprise': (1, 3, 6, 1, 6, 3, 1, 1, 4, 3, 0),
     # '_genTrap = ObjectIdentifier((1, 3, 6, 1, 6, 3, 1, 1, 5, 1))
 }
+
+OIDS = {
+    # 'tcp_conn_count':   '.1.3.6.1.2.1.6.9.0',
+    'tcp_conn_count':   (1,3,6,1.2,1,6,9,0),
+    'disc_total_size':  '.1.3.6.1.2.1.25.2.3.1.5',
+    'disc_used_size':   '.1.3.6.1.2.1.25.2.3.1.6',
+
+    'all_interface':    '.1.3.6.1.2.1.31.1.1.1.1',
+    'ifHCInOctets':     '.1.3.6.1.2.1.31.1.1.1.6',
+    'ifHCOutOctets':    '.1.3.6.1.2.1.31.1.1.1.10',
+}
+
+CHECK_KEY_LIST = OIDS.keys()
+COMMUNITY_NAME = 'yxdown'
