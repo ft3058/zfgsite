@@ -1,3 +1,4 @@
+# coding:utf8
 """
 Django settings for jumpserver project.
 
@@ -13,15 +14,30 @@ import os
 import ConfigParser
 import getpass
 
+
+ipinfo = os.popen('ip add')
+
 config = ConfigParser.ConfigParser()
 
 BASE_DIR = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 
+# 本地,生产环境 自动化设置
 if getpass.getuser() == 'wxd':
     config.read(os.path.join(BASE_DIR, 'jumpserver.conf'))
+elif '192.168.4.234' in ipinfo:
+    config.read(os.path.join(BASE_DIR, 'dgllocal.conf'))
+    IP = '192.168.4.234'
+    PORT = 22
+    USERNAME = 'twotiger'
+    PASSWORD = '123456'
 else:
     config.read(os.path.join(BASE_DIR, 'jumpserver.conf'))  # jumpserver_prod.conf
 
+try:
+    from local_settings import *
+except Exception, e:
+    pass
+# 自动化设置完毕
 KEY_DIR = os.path.join(BASE_DIR, 'keys')
 LOCAL_FILE_DIR = config.get('other', 'local_file_dir')
 
@@ -48,6 +64,8 @@ KEY = config.get('base', 'key')
 URL = config.get('base', 'url')
 LOG_LEVEL = config.get('base', 'log')
 WEB_SOCKET_HOST = config.get('websocket', 'web_socket_host')
+
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/
@@ -165,9 +183,3 @@ CRONJOBS = [
 
 # paginator
 MAX_PAGE_SHOW_NUM = 40  # default 20
-
-
-try:
-    from local_settings import *
-except Exception, e:
-    print 'django settings error: %s' % str(e)

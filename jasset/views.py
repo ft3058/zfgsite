@@ -9,7 +9,7 @@ from jasset.forms import AssetForm, IdcForm
 from jasset.models import Asset, IDC, AssetGroup, AssetGroup1, ASSET_TYPE, ASSET_STATUS, Domains
 from jperm.perm_api import get_group_asset_perm, get_group_user_perm
 from jperm.models import PermRuleDomain
-from util import get_random_str
+from util import get_random_str, write_log
 from script_init_server import init_server
 from script_copy_files import copy_file_to_server
 
@@ -527,14 +527,18 @@ def asset_init(request):
             tag, txt = init_server(host, port, username, password, script_path)
             if tag == 'ok':
                 print 'succ'  # s2jBv2JzDt
+                write_log(request.user.name, host, host, '', 'asset_init', 'success')
                 return HttpResponse('ok')  # 'ok-' +
             else:
                 print 'fail', txt
+                write_log(request.user.name, host, host, txt, 'asset_init', 'fail')
                 return HttpResponse(txt)
         else:
             print 'cannot find asset !'
+            write_log(request.user.name, '', '', "cannot find asset !", 'asset_init', 'fail')
             return HttpResponse('cannot find asset ! ')
     else:
+        write_log(request.user.name, '', '', "asset_id is empty, return!", 'asset_init', 'fail')
         return HttpResponse('asset_id is empty, return!')
 
 

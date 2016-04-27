@@ -346,8 +346,14 @@ def oplog_status(request):
     """
     show all logs
     """
+
     header_title, path1, path2 = u'操作日志', u'状态监控', u'日志查看'
     username = request.user.username
 
-    find_log_list = list(CustomLog.objects.filter(user=username).order_by('-datetime')[:50])
+    findtype = request.GET.get('findtype')
+
+    if findtype == 'asset_init': # 搜索 初始化
+        find_log_list = list(CustomLog.objects.filter(user=username, title=findtype).order_by('-datetime')[:50])
+    else:
+        find_log_list = list(CustomLog.objects.filter(user=username).order_by('-datetime')[:50])
     return my_render('jmonitor/oplog_status.html', locals(), request)

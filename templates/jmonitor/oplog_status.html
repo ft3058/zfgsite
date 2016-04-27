@@ -14,8 +14,14 @@
         <div class="col-sm-12">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
-                    <h5> {{asset.ip}} </h5>
+                    搜索日志类型:
+                  <select id="findtype" name="findtype" onchange="gradeChange()">
+                      <option value ="copy file">复制</option>
+                      <option value ="asset_init">初始化</option>
+                    </select>
+{#                    <h5> {{asset.ip}} </h5>#}
                     <div class="ibox-tools">
+
                         <a class="collapse-link">
                             <i class="fa fa-chevron-up"></i>
                         </a>
@@ -80,8 +86,14 @@
         $('#show').click(function(){
             $('#show').css('display', 'none');
             $('#more').css('display', 'block');
-        })
+        });
+
     })
+        function gradeChange(){
+            var objS = document.getElementById("findtype");
+            var grade = objS.value;
+            window.location.href="{% url 'oplog_status' %}?findtype="+grade;
+        }
 </script>
 
 
