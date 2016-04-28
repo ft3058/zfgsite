@@ -24,6 +24,7 @@ from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
 
 from jasset.models import Asset
+from util import success
 
 q = Queue()
 THREAD_NUM = 1
@@ -34,19 +35,6 @@ def init_all_assets():
     assets = Asset.objects.filter(ip='112.123.169.32')  # 111.7.165.42 218.75.155.46
     for t in assets:
         q.put({'ip': t.ip})
-
-def success((errorStatus, errorIndex, varBinds), hostname):
-    if errorStatus:
-        print('%s: %s at %s' % (hostname,
-                                errorStatus.prettyPrint(),
-                                errorIndex and varBinds[int(errorIndex) - 1][0] or '?'))
-    else:
-        for varBind in varBinds:
-            print(' = '.join([x.prettyPrint() for x in varBind]))
-
-
-def failure(errorIndication, hostname):
-    print('%s failure: %s' % (hostname, errorIndication))
 
 
 class SnmpThread(Thread):
@@ -74,8 +62,9 @@ class SnmpThread(Thread):
                     if len(res) == 1:
                         print 'ERROR: %s' % res[0]
                     else:
-                        errorIndication, errorStatus, errorIndex, varBinds = res
-                        print 'key:', dic['oid'], errorIndication, errorStatus, errorIndex, varBinds
+                        result = success(res, ip, dic)
+                        print 'result = ', result
+
 
         print u'%s is ended..'
 

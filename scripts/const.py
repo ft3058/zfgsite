@@ -75,11 +75,11 @@ OIDS_bak = {
 
 OID_LIST = [
     {'name': 'tcp_conn_count',  'oid': '.1.3.6.1.2.1.6.9.0',        'method': 'get'},
-    {'name': 'disc_total_size', 'oid': '.1.3.6.1.2.1.25.2.3.1.5',   'method': 'walk'},
-    {'name': 'disc_used_size',  'oid': '.1.3.6.1.2.1.25.2.3.1.6',   'method': 'walk'},
-    {'name': 'all_interface',   'oid': '.1.3.6.1.2.1.31.1.1.1.1',   'method': 'walk'},
-    {'name': 'ifHCInOctets',    'oid': '.1.3.6.1.2.1.31.1.1.1.6' ,  'method': 'walk'},
-    {'name': 'ifHCOutOctets',   'oid': '.1.3.6.1.2.1.31.1.1.1.10' , 'method': 'walk'},
+    # {'name': 'disc_total_size', 'oid': '.1.3.6.1.2.1.25.2.3.1.5',   'method': 'walk'},
+    # {'name': 'disc_used_size',  'oid': '.1.3.6.1.2.1.25.2.3.1.6',   'method': 'walk'},
+    # {'name': 'all_interface',   'oid': '.1.3.6.1.2.1.31.1.1.1.1',   'method': 'walk'},
+    # {'name': 'ifHCInOctets',    'oid': '.1.3.6.1.2.1.31.1.1.1.6' ,  'method': 'walk'},
+    # {'name': 'ifHCOutOctets',   'oid': '.1.3.6.1.2.1.31.1.1.1.10' , 'method': 'walk'},
 
 ]
 
