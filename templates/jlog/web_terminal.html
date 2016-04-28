@@ -17,7 +17,8 @@
                 font-size: 11px;
                 color: #f0f0f0;
                 background: #000;
-{#                width: 600px;#}
+                width: 1600px;
+                height: 800px;
                 box-shadow: rgba(0, 0, 0, 0.8) 2px 2px 20px;
             }
 
@@ -45,6 +46,8 @@
 
             var rowHeight = 1;
             var colWidth = 1;
+            var WW = 250;
+            var HH = 60;
             function WSSHClient() {
             }
 
@@ -87,12 +90,12 @@
 
             function openTerminal(options) {
                 var client = new WSSHClient();
-                var term = new Terminal(80, 24, function(key) {
+                var term = new Terminal(WW, HH, function(key) {
                     client.send(key);
                 });
                 term.open();
                 $('.terminal').detach().appendTo('#term');
-                term.resize(80, 24);
+                term.resize(WW, HH);
                 term.write('Connecting...');
                 client.connect($.extend(options, {
                     onError: function(error) {
@@ -109,12 +112,12 @@
                         term.write(data);
                     }
                 }));
-                rowHeight = 0.0 + 1.00 * $('.terminal').height() / 24 ;
-                colWidth = 0.0 + 1.00 * $('.terminal').width() / 80;
+                rowHeight = 0.0 + 1.00 * $('.terminal').height() / HH ;
+                colWidth = 0.0 + 1.00 * $('.terminal').width() / WW;
                 return {'term': term, 'client': client};
             }
 
-            function resize(){
+            function resize() {
                 $('.terminal').css('width', window.innerWidth-25);
                 console.log(window.innerWidth);
                 console.log(window.innerWidth-10);
@@ -123,7 +126,6 @@
 
                 return {rows: rows, cols: cols};
             }
-
 
         </script>
 

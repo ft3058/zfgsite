@@ -115,7 +115,8 @@ class PyCrypt(object):
 def test11():
     KEY = '88aaaf7ffe3c6c04'
     CRYPTOR = PyCrypt(KEY)
-    s = '1c135838b11cf2288ef750357b631591acd0b6aadb2de1ebe75be614e60d5fba'
+    # s = '1c135838b11cf2288ef750357b631591acd0b6aadb2de1ebe75be614e60d5fba'
+    s = '64dc9d9f9f90627c998d90f6c0b0534067f77fa6f169ff6ca972bf25cc3243fd'
 
     passwd = CRYPTOR.decrypt(s)
     print 'passwd = ', passwd
@@ -143,14 +144,18 @@ def update_to_new_password(ip, password):
     return True
 
 if __name__ == '__main__':
-    rows = get_no_password()
+    # rows = get_no_password()
+    test11()
 
+    '''
     for row in rows:
         print row['ip'], row['username'], row['passwd']
         new_password = update_pass(row['passwd'])
         print new_password
         update_to_new_password(row['ip'], new_password)
         print 'update succ'
+        '''
+
 
 
 

@@ -61,11 +61,10 @@ def install_softs(host, port, username, password, oper_user, timeout=10):
                 write_log(ip=host, cmd=buff, title='asset_init', result='wait 2', user=oper_user) # wget 下载
                 resp = ssh.recv(9999)
                 buff += resp
-            print '------------------'
-            print 'buff: ', buff
+            # print '------------------'
+            # print 'buff: ', buff
             time.sleep(1)
 
-        print 'start to run install.sh...'
         cmd = 'nohup sh install.sh &\n'
         write_log(ip=host, cmd=cmd, title='asset_init', result='success' ,user=oper_user)
         ssh.send(cmd)
@@ -87,7 +86,6 @@ def install_softs(host, port, username, password, oper_user, timeout=10):
                 # print '++++++++++++++++++++++++out start+++++++++++++++++++++++++++'
                 # print 'retry times: %d' % retry_times
                 # print resp
-                # write_log(ip=host, cmd=cmd, title='asset_init', result=resp)
                 # print '++++++++++++++++++++++++out end+++++++++++++++++++++++++++++'
                 # print
                 if 'reboot NOW' in resp:
@@ -104,7 +102,7 @@ def install_softs(host, port, username, password, oper_user, timeout=10):
 
         s.close()
 
-        # t2 = time.time()
+
         # print 'all second: ', int(t2 - t1)
         result = 'succ'
 
@@ -147,38 +145,38 @@ def copy_files_and_restart_service(host, port, username, password, script_dir):
         ssh = s.invoke_shell()
         cmd = 'cd %s\n' % script_dir
         write_log(ip=host, cmd=cmd, title='copy_file', result="")
-        print 'run CMD: ', cmd
+        # print 'run CMD: ', cmd
         ssh.send(cmd)
         time.sleep(0.5)
-        print 'complete..'
+        # print 'complete..'
 
         cmd = '/bin/cp *.sh /root \n'
         write_log(ip=host, cmd=cmd, title='copy_file', result="")
-        print 'run CMD: ', cmd
+        # print 'run CMD: ', cmd
         ssh.send(cmd)
         time.sleep(0.5)
-        print 'complete..'
+        # print 'complete..'
 
         cmd = '/bin/rm /usr/local/nginx/conf/vhost/*.conf \n'
         write_log(ip=host, cmd=cmd, title='copy_file', result="")
-        print 'run CMD: ', cmd
+        # print 'run CMD: ', cmd
         ssh.send(cmd)
         time.sleep(0.5)
-        print 'complete..'
+        # print 'complete..'
 
         cmd = '/bin/cp *.conf /usr/local/nginx/conf/vhost/ \n'
         write_log(ip=host, cmd=cmd, title='copy_file', result="")
-        print 'run CMD: ', cmd
+        # print 'run CMD: ', cmd
         ssh.send(cmd)
         time.sleep(0.5)
-        print 'complete..'
+        # print 'complete..'
 
         cmd = 'service nginx restart \n'
         write_log(ip=host, cmd=cmd, title='copy_file', result="")
-        print 'run CMD: ', cmd
+        # print 'run CMD: ', cmd
         ssh.send(cmd)
         time.sleep(1)
-        print 'complete..'
+        # print 'complete..'
         write_log(ip=host, cmd='', title='copy_file', result="copy complete .. ")
         s.close()
     except:
@@ -242,7 +240,7 @@ def init_server(host, port, username, password, script_path, oper_user):
 if __name__ == '__main__':
     ip = '111.7.165.40'
     port = get_new_port_by_ip(ip)
-    print 'port: ', port
+    # print 'port: ', port
     host, port, username, password = ip, port, 'root', 'qq@20171328'
     script_dir = '/var/serconf/nginx/yxdown.com/phone/apple'
     init_server(host, port, username, password, script_dir)
@@ -255,4 +253,4 @@ if __name__ == '__main__':
     print 'start copy file....'
     copy_files_and_restart_service(host, port, username, password, script_dir)
     '''
-    print u'succ'
+    # print u'succ'

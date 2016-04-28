@@ -182,4 +182,5 @@ CRONJOBS = [
 ]
 
 # paginator
+
 MAX_PAGE_SHOW_NUM = 40  # default 20
