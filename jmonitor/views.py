@@ -353,9 +353,19 @@ def oplog_status(request):
 
     find_type = request.GET.get('findtype', '')
     find_user = request.GET.get('finduser', '')
+    result = request.GET.get('result', '')
+    findip = request.GET.get('findip', '')
+
+    if findip:
+        find_log_list = list(CustomLog.objects.filter(ip=findip).order_by('-datetime')[:50])
+        return my_render('jmonitor/oplog_status.html', locals(), request)
 
     if find_type or find_user: # 搜索 初始化
-        find_log_list = list(CustomLog.objects.filter(user=find_user, title=find_type).order_by('-datetime')[:50])
+        if result in ['success', 'fail']:
+            find_log_list = list(CustomLog.objects.filter(user=find_user, title=find_type, result=result).order_by('-datetime')[:50])
+        else:
+            find_log_list = list(CustomLog.objects.filter(user=find_user, title=find_type).order_by('-datetime')[:100])
     else:
-        find_log_list = list(CustomLog.objects.filter(user=username).order_by('-datetime')[:50])
+        # 默认搜索登陆用户后50个成功的
+        find_log_list = list(CustomLog.objects.filter(user=username, result='fail').order_by('-datetime')[:50])
     return my_render('jmonitor/oplog_status.html', locals(), request)

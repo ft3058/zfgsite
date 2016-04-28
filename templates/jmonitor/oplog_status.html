@@ -35,12 +35,12 @@
                 <div class="ibox-content ibox-heading">
 
                     <form class="">
-                        <label>搜索类型</label>
+                        <label>搜索类型:</label>
                         <select id="findtype" name="findtype">
                             <option value ="copy file">复制文件</option>
                             <option value="asset_init" {% ifequal find_type "asset_init" %}selected="selected"{% endifequal %}>初始化</option>
                         </select>
-                        <select id="finduser" name="finduser">
+                        用户:<select id="finduser" name="finduser">
                             {% for user in users %}
                                 <option value ="{{ user.username }}"
                                         {% if find_user %}
@@ -56,9 +56,20 @@
     {#                      <option value ="copy file">复制文件</option>#}
     {#                      <option value="asset_init" {% ifequal findtype "asset_init" %}selected="selected"{% endifequal %}>初始化</option>#}
                         </select>
+
+                    操作结果:<select name="result">
+                        <option value="fail" {% ifequal result 'fail' %}selected="selected"{% endifequal %}>fail</option>
+                        <option value="success" {% ifequal result 'success' %}selected="selected"{% endifequal %}>success</option>
+                        <option value="all" {% ifequal result 'all' %}selected="selected"{% endifequal %}>all</option>
+                    </select>
                         <input type="submit"/>
                     </form>
 
+
+                <form><label>搜索IP:</label>
+                <input name="findip" type="text" />
+                    <input type="submit"/>
+</form>
                     <!--h3> 操作日志 </h3-->
 {#                    <small><i class="fa fa-map-marker"></i> </small>#}
                 </div>

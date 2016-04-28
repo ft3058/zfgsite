@@ -15,13 +15,13 @@ def install_softs(host, port, username, password, oper_user, timeout=10):
         s = paramiko.SSHClient()
         s.load_system_host_keys()
         s.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        s.connect(hostname=host, port=int(port), username=oper_user, password=password, timeout=timeout)
+        s.connect(hostname=host, port=int(port), username=username, password=password, timeout=timeout)
 
         ssh = s.invoke_shell()
         time.sleep(1)
 
         cmd = 'cd /tmp\n'
-        # write_log(ip=host, cmd=cmd, title='asset_init')
+
         ssh.send(cmd)
 
         buff = ''
@@ -45,7 +45,7 @@ def install_softs(host, port, username, password, oper_user, timeout=10):
             else:
                 resp = ssh.recv(9999)
                 buff += resp
-                write_log(ip=host, cmd=resp, title='asset_init', result='wait', user=oper_user) # 安装 wget失败
+                write_log(ip=host, cmd=resp, title='asset_init', result='wait 1', user=oper_user) # 安装
         # write_log(ip=host, cmd=cmd, title='asset_init', result='success')
 
         # print 'start wget install.sh'
@@ -55,10 +55,10 @@ def install_softs(host, port, username, password, oper_user, timeout=10):
         buff = ''
         while 1:
             if ('saved' in buff or '已保存' in buff) and '# ' in buff:
-                print u'down install.sh succ..'
+                # print u'down install.sh succ..'
                 break
             else:
-                write_log(ip=host, cmd=buff, title='asset_init', result='wait', user=oper_user) # wget 下载失败
+                write_log(ip=host, cmd=buff, title='asset_init', result='wait 2', user=oper_user) # wget 下载
                 resp = ssh.recv(9999)
                 buff += resp
             print '------------------'
@@ -73,7 +73,7 @@ def install_softs(host, port, username, password, oper_user, timeout=10):
 
         ssh.send('\n')
         time.sleep(5)
-        print 'wait for install.sh complete ... '
+        # print 'wait for install.sh complete ... '
 
         t1 = time.time()
         retry_times = 0
@@ -87,11 +87,11 @@ def install_softs(host, port, username, password, oper_user, timeout=10):
                 # print '++++++++++++++++++++++++out start+++++++++++++++++++++++++++'
                 # print 'retry times: %d' % retry_times
                 # print resp
-                write_log(ip=host, cmd=cmd, title='asset_init', result=resp)
+                # write_log(ip=host, cmd=cmd, title='asset_init', result=resp)
                 # print '++++++++++++++++++++++++out end+++++++++++++++++++++++++++++'
                 # print
                 if 'reboot NOW' in resp:
-                    write_log(ip=host, cmd=cmd, title='install_softs', result="reboot NOW", user=oper_user)
+                    write_log(ip=host, cmd=cmd, title='asset_init', result="reboot NOW success", user=oper_user)
                     return 'ok', 'wait for restart !'
             except Exception, e:
                 if 'Socket is closed' in str(e):
@@ -104,14 +104,14 @@ def install_softs(host, port, username, password, oper_user, timeout=10):
 
         s.close()
 
-        t2 = time.time()
-        print 'all second: ', int(t2 - t1)
+        # t2 = time.time()
+        # print 'all second: ', int(t2 - t1)
         result = 'succ'
 
         write_log(ip=host, cmd='', title='install_softs', result="complete all")
         return 'ok', result
     except Exception, e:
-        write_log(ip=host, cmd='', title='install_softs', result="Exception while install_softs(): %s" % str(e))
+        write_log(ip=host, cmd='', title='install_softs', result="Exception while install_softs(): %s" % str(e), user=oper_user)
         try:
             s.close()
         except:
