@@ -9,6 +9,7 @@ from jasset.models import Asset, IDC, AssetGroup, AssetGroup1, ASSET_TYPE, ASSET
 from jperm.perm_api import get_group_asset_perm, get_group_user_perm
 from jperm.models import PermRuleDomain
 from jlog.models import RsyncCheckLog, CustomLog
+from jmonitor.models import TcpConnCount
 from rsync_util import *
 
 
@@ -370,10 +371,45 @@ def oplog_status(request):
         find_log_list = list(CustomLog.objects.filter(user=username, result='fail').order_by('-datetime')[:50])
     return my_render('jmonitor/oplog_status.html', locals(), request)
 
+
 def get_asset_group_tree(request):
-    pass
+    tree = []
+    groups = AssetGroup.objects.all()
+    for g in groups:
+        print 'g 1', g.name
+
+        g1s = AssetGroup1.objects.filter(group=g)
+        g1_asset_list = []
+        all_ass_num_in_group = 0
+        for g1 in g1s:
+            print g1.name
+
+            ass_list = Asset.objects.filter(group1=g1)
+            if ass_list:
+                g1s_ass_list = []
+                for a in ass_list:
+                    g1s_ass_list.append({'text': u'资产 - ' + a.ip})
+                g1_asset_list.append({'text': u'分组 - ' + g1.name + u' (%d)' % len(g1s_ass_list), 'nodes': g1s_ass_list})
+                all_ass_num_in_group += len(g1s_ass_list)
+            else:
+                g1_asset_list.append({'text': u'分组 - ' + g1.name + u' (0)'})
+
+        print '---------------------------------------'
+
+        if g1_asset_list:
+            tree.append({'text': u'资产组 - ' + g.name + u' [%d]' % all_ass_num_in_group, 'nodes': g1_asset_list})
+        else:
+            tree.append({'text': u'资产组 - ' + g.name + u' [0]'})
+
+    return HttpResponse(json.dumps(tree), content_type="application/json")
 
 
 @require_role('admin')
 def graph_index(request):
+
+    path1, path2 = u'状态监控', u'graph'
+    s = TcpConnCount.objects.all().order_by('cdt')
+    # start_dt =
+    data_list = ", ".join([str(x.cnt) for x in s])
+
     return my_render('jmonitor/graph_index.html', locals(), request)

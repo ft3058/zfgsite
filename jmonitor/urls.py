@@ -8,5 +8,7 @@ urlpatterns = patterns('',
     url(r'^rsync/status_check/$', rsync_status_check, name='rsync_status_check'),
     url(r"^rsync/status_detail/$", rsync_status_detail, name='rsync_status_detail'),
 
+    url(r'graph/get_tree/$', get_asset_group_tree, name='get_tree'),
+    url(r"^graph/graph_index/$", graph_index, name='graph_index'),
     url(r"^oplog/status/$", oplog_status, name='oplog_status'),
 )

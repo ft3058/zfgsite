@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+{% load mytags %}
+{% load humanize %}
+
+
+
+{% block self_head_css_js %}
+    <style>
+        .treeview .list-group-item{cursor:pointer}
+        .treeview span.indent{margin-left:10px;margin-right:10px}
+        .treeview span.icon{width:12px;margin-right:5px}
+        .treeview .node-disabled{color:silver;cursor:not-allowed}
+    </style>
+    <script type="text/javascript" src="http://cdn.hcharts.cn/jquery/jquery-1.8.3.min.js"></script>
+    <script type="text/javascript" src="http://cdn.hcharts.cn/highcharts/highcharts.js"></script>
+    <script type="text/javascript" src="http://cdn.hcharts.cn/highcharts/exporting.js"></script>
+
+
+    <script src="/static/js/bootstrap-treeview.js"></script>
+{% endblock %}
+
+
+{% block content %}
+    {% include 'nav_cat_bar.html' %}
+    <div class="wrapper wrapper-content animated fadeInRight">
+
+
+    <!-- new added -->
+    <div class="row">
+        <div class="col-sm-3">
+            <!--div id="tree"></div-->
+            <div id="tree1"></div>
+        </div>
+
+        <div class="col-sm-7 col-sm-offset-1">
+
+        <!--all graph-->
+        {% include 'jmonitor/data_tcp_conn_count.html' %}
+
+        </div>
+
+	<script>
+	function getTree() {
+	  // Some logic to retrieve, or generate tree structure
+		var data = [
+		  {
+			text: "Parent 1",
+			nodes: [
+			  {
+				text: "Child 1",
+				nodes: [
+				  {
+					text: "Grandchild 1"
+				  },
+				  {
+					text: "Grandchild 2"
+				  }
+				]
+			  },
+			  {
+				text: "Child 2"
+			  }
+			]
+		  },
+		  {
+			text: "Parent 2"
+		  },
+		  {
+			text: "Parent 3"
+		  },
+		  {
+			text: "Parent 4"
+		  },
+		  {
+			text: "Parent 5"
+		  }
+		];
+
+	  return data;
+	}
+
+	//$('#tree').treeview({data: getTree()});
+
+	$('#tree_test').treeview({
+	  // The naming convention for callback's is to prepend with `on`
+	  // and capitalize the first letter of the event name
+	  // e.g. nodeSelected -> onNodeSelected
+	  data: getTree(),
+	  onNodeSelected: function(event, data) {
+		// Your logic goes here
+		alert(data.text);
+	  },
+
+	  });
+
+      $.getJSON("/jmonitor/graph/get_tree/",function(result){
+        $('#tree1').treeview({
+          data: result, //getTree(),
+          onNodeSelected: function(event, data) {
+            alert(data.text + '-ttt');
+          },
+
+          });
+      });
+
+	</script>
+
+
+    </div>
+
+
+
+</div>
+
+
+
+{% endblock %}

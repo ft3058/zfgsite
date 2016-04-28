@@ -28,7 +28,7 @@ from jmonitor.models import TcpConnCount
 from util import *
 
 q = Queue()
-THREAD_NUM = 1
+THREAD_NUM = 10
 
 
 def parse_tcp_conn_count(res, ip, dic):
@@ -46,14 +46,21 @@ def parse_tcp_conn_count(res, ip, dic):
             '''
         # SNMPv2-SMI::mib-2.6.9.0 = 1415
         # SNMPv2-SMI::mib-2.6.9.0 = 1400
-        s = varBinds[0].prettyPrint()
-        print 's = ', s
-        cnt = int(s.split('=')[-1].strip())
-        obj = TcpConnCount()
-        obj.cnt=cnt
-        obj.ip=ip
-        obj.save()
-        print 'save succ'
+        if len(varBinds):
+            s = varBinds[0].prettyPrint()
+            print 's = ', s
+            cnt = int(s.split('=')[-1].strip())
+            obj = TcpConnCount()
+            obj.cnt=cnt
+            obj.ip=ip
+            obj.save()
+            print 'save succ'
+        else:
+            cnt = 0
+            obj = TcpConnCount()
+            obj.cnt=cnt
+            obj.ip=ip
+            obj.save()
 
 
 def success(res, ip, dic):
@@ -67,8 +74,8 @@ def failure(errorIndication, hostname):
 
 
 def init_all_assets():
-    # assets = Asset.objects.all()
-    assets = Asset.objects.filter(ip='112.123.169.32')  # 111.7.165.42 218.75.155.46
+    assets = Asset.objects.all()
+    # assets = Asset.objects.filter(ip='112.123.169.32')  # 111.7.165.42 218.75.155.46
     for t in assets:
         q.put({'ip': t.ip})
 
@@ -124,17 +131,11 @@ def test():
     pass
 
 if __name__ == '__main__':
-    '''
+
     while True:
         main()
-        time.sleep(60*5)'''
+        time.sleep(60*5)
     # test()
-    groups = AssetGroup.objects.all()
-    for g in groups:
-        print 'g 1', g.name
-        g1s = AssetGroup1.objects.filter(group=g)
-        for g1 in g1s:
-            print g1.name
-        print '---------------------------------------'
+
 
 
