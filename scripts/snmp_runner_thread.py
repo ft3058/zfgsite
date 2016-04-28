@@ -4,7 +4,7 @@
 | $ snmpget -v2c -c public demo.snmplabs.com SNMPv2-MIB::sysLocation.0
 from multiple-concurrent-queries.py
 """
-import os, sys
+import os, sys, time
 from Queue import Queue
 from threading import Thread
 from snmp_api import get_cmd_val, get_next_cmd_val
@@ -23,11 +23,47 @@ os.chdir(proj_path)
 from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
 
-from jasset.models import Asset
-from util import success
+from jasset.models import Asset, AssetGroup, AssetGroup1
+from jmonitor.models import TcpConnCount
+from util import *
 
 q = Queue()
 THREAD_NUM = 1
+
+
+def parse_tcp_conn_count(res, ip, dic):
+    hostname = ip
+    errorIndication, errorStatus, errorIndex, varBinds = res
+    print '+++', errorIndication, errorStatus, errorIndex, varBinds
+    if errorStatus:
+        print('%s: %s at %s' % (hostname,
+                                errorStatus.prettyPrint(),
+                                errorIndex and varBinds[int(errorIndex) - 1][0] or '?'))
+    else:
+        '''
+        for varBind in varBinds:
+            print(' = '.join([x.prettyPrint() for x in varBind]))
+            '''
+        # SNMPv2-SMI::mib-2.6.9.0 = 1415
+        # SNMPv2-SMI::mib-2.6.9.0 = 1400
+        s = varBinds[0].prettyPrint()
+        print 's = ', s
+        cnt = int(s.split('=')[-1].strip())
+        obj = TcpConnCount()
+        obj.cnt=cnt
+        obj.ip=ip
+        obj.save()
+        print 'save succ'
+
+
+def success(res, ip, dic):
+    if dic['name'] == 'tcp_conn_count':
+        return parse_tcp_conn_count(res, ip, dic)
+
+
+
+def failure(errorIndication, hostname):
+    print('%s failure: %s' % (hostname, errorIndication))
 
 
 def init_all_assets():
@@ -84,7 +120,21 @@ def main():
         t.join()
 
 
+def test():
+    pass
+
 if __name__ == '__main__':
-    main()
+    '''
+    while True:
+        main()
+        time.sleep(60*5)'''
+    # test()
+    groups = AssetGroup.objects.all()
+    for g in groups:
+        print 'g 1', g.name
+        g1s = AssetGroup1.objects.filter(group=g)
+        for g1 in g1s:
+            print g1.name
+        print '---------------------------------------'
 
 

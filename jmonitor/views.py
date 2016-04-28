@@ -369,3 +369,11 @@ def oplog_status(request):
         # 默认搜索登陆用户后50个成功的
         find_log_list = list(CustomLog.objects.filter(user=username, result='fail').order_by('-datetime')[:50])
     return my_render('jmonitor/oplog_status.html', locals(), request)
+
+def get_asset_group_tree(request):
+    pass
+
+
+@require_role('admin')
+def graph_index(request):
+    return my_render('jmonitor/graph_index.html', locals(), request)
