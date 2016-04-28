@@ -26,7 +26,7 @@ def get_cmd_val(addr, community_index, community_name, oid, port=161):
     """
     try:
         res = cmdgen.CommandGenerator().getCmd(
-            cmdgen.CommunityData(community_index, community_name, 0),
+            cmdgen.CommunityData(community_index, community_name, 1),
             cmdgen.UdpTransportTarget((addr, port)), oid)
         return res
     except Exception, e:
@@ -41,7 +41,7 @@ def get_next_cmd_val(addr, community_index, community_name, oid, port=161):
     """
     try:
         res = cmdgen.CommandGenerator().nextCmd(
-            cmdgen.CommunityData(community_index, community_name, 0),
+            cmdgen.CommunityData(community_index, community_name, 1),
             cmdgen.UdpTransportTarget((addr, port)), oid)
         return res
     except Exception, e:
@@ -141,10 +141,10 @@ if __name__ == '__main__':
     community_name = S['name']
     community_index = 'my-agent'
 
-    oid = OIDS['sys_info']
+    oid = OIDS['tcp_conn_count']
     # oid = OIDS['hrStorageIndex']
 
-    # get_server_info(addr, community_index, community_name, oid)
+    get_server_info(addr, community_index, community_name, oid)
     errorIndication, errorStatus, errorIndex, varBinds = get_cmd_val(addr, community_index, community_name, oid)
     for varBind in varBinds:
         print(' = '.join([x.prettyPrint() for x in varBind]))

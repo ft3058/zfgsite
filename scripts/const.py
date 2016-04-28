@@ -73,16 +73,14 @@ OIDS_bak = {
     # '_genTrap = ObjectIdentifier((1, 3, 6, 1, 6, 3, 1, 1, 5, 1))
 }
 
-OIDS = {
-    # 'tcp_conn_count':   '.1.3.6.1.2.1.6.9.0',
-    'tcp_conn_count':   (1,3,6,1.2,1,6,9,0),
-    'disc_total_size':  '.1.3.6.1.2.1.25.2.3.1.5',
-    'disc_used_size':   '.1.3.6.1.2.1.25.2.3.1.6',
+OID_LIST = [
+    {'name': 'tcp_conn_count',  'oid': '.1.3.6.1.2.1.6.9.0',        'method': 'get'},
+    {'name': 'disc_total_size', 'oid': '.1.3.6.1.2.1.25.2.3.1.5',   'method': 'walk'},
+    {'name': 'disc_used_size',  'oid': '.1.3.6.1.2.1.25.2.3.1.6',   'method': 'walk'},
+    {'name': 'all_interface',   'oid': '.1.3.6.1.2.1.31.1.1.1.1',   'method': 'walk'},
+    {'name': 'ifHCInOctets',    'oid': '.1.3.6.1.2.1.31.1.1.1.6' ,  'method': 'walk'},
+    {'name': 'ifHCOutOctets',   'oid': '.1.3.6.1.2.1.31.1.1.1.10' , 'method': 'walk'},
 
-    'all_interface':    '.1.3.6.1.2.1.31.1.1.1.1',
-    'ifHCInOctets':     '.1.3.6.1.2.1.31.1.1.1.6',
-    'ifHCOutOctets':    '.1.3.6.1.2.1.31.1.1.1.10',
-}
+]
 
-CHECK_KEY_LIST = OIDS.keys()
 COMMUNITY_NAME = 'yxdown'
