@@ -7,7 +7,7 @@ from multiple-concurrent-queries.py
 import os, sys, time
 from Queue import Queue
 from threading import Thread
-# from snmp_api import get_cmd_val, get_next_cmd_val
+from snmp_api import get_cmd_val, get_next_cmd_val
 from const import *
 
 proj_path = "/data/www/yxyw/jump"
@@ -31,20 +31,41 @@ q = Queue()
 THREAD_NUM = 10
 
 
-def parse_tcp_conn_count(retval, lines, ip, dic):
-    if retval == 0:
-        s = lines[0]
-        print 'lines[0]: %s' % s
-        cnt = int(s.split(':')[-1].strip())       
+def parse_tcp_conn_count(res, ip, dic):
+    hostname = ip
+    errorIndication, errorStatus, errorIndex, varBinds = res
+    print '+++', errorIndication, errorStatus, errorIndex, varBinds
+    if errorStatus:
+        print('%s: %s at %s' % (hostname,
+                                errorStatus.prettyPrint(),
+                                errorIndex and varBinds[int(errorIndex) - 1][0] or '?'))
     else:
-        print 'retval is error: val=', retval 
-        cnt = 0
+        '''
+        for varBind in varBinds:
+            print(' = '.join([x.prettyPrint() for x in varBind]))
+            '''
+        # SNMPv2-SMI::mib-2.6.9.0 = 1415
+        # SNMPv2-SMI::mib-2.6.9.0 = 1400
+        if len(varBinds):
+            s = varBinds[0].prettyPrint()
+            print 's = ', s
+            cnt = int(s.split('=')[-1].strip())
+            obj = TcpConnCount()
+            obj.cnt=cnt
+            obj.ip=ip
+            obj.save()
+            print 'save succ'
+        else:
+            cnt = 0
+            obj = TcpConnCount()
+            obj.cnt=cnt
+            obj.ip=ip
+            obj.save()
 
-    obj = TcpConnCount()
-    obj.cnt=cnt
-    obj.ip=ip
-    obj.save()
-    print 'save succ'
+
+def success(res, ip, dic):
+    if dic['name'] == 'tcp_conn_count':
+        return parse_tcp_conn_count(res, ip, dic)
 
 
 
@@ -78,17 +99,8 @@ class SnmpThread(Thread):
                 community_name = COMMUNITY_NAME1
                 if ip in NEW_ASSETS:
                     community_name = COMMUNITY_NAME2
-
-                # tcp conn
-                cmd = 'snmpwalk -v 2c -c %s %s .1.3.6.1.2.1.6.9.0' % (community_name, ip)
-                retval, lines = exec_cmd(cmd)
-                parse_tcp_conn_count(retval, lines, ip, dic)              
-
-                '''    
                 for dic in OID_LIST:
                     if dic['method'] == 'get':
-                        # res = get_cmd_val(ip, 'my-agent', community_name, dic['oid'])
-
                         res = get_cmd_val(ip, 'my-agent', community_name, dic['oid'])
                     elif dic['method'] == 'walk':
                         res = get_next_cmd_val(ip, 'my-agent', community_name, dic['oid'])
@@ -97,7 +109,7 @@ class SnmpThread(Thread):
                         print 'ERROR: %s' % res[0]
                     else:
                         result = success(res, ip, dic)
-                        print 'result = ', result'''
+                        print 'result = ', result
 
 
         print u'%s is ended..'

@@ -83,9 +83,21 @@ OID_LIST = [
 
 ]
 
+TCP_CONN_COUNT_OIDS = {
+    'tcp_conn_count': ['walk', '.1.3.6.1.2.1.6.9.0'],
+}
+
+HOST_DISK_OIDS = {
+    'Disk_Name':  ['walk', '.1.3.6.1.2.1.25.2.3.1.3'],
+    'Total_Size': ['walk', '.1.3.6.1.2.1.25.2.3.1.5'],
+    'Total_Used': ['walk', '.1.3.6.1.2.1.25.2.3.1.6']
+}
+
+
 COMMUNITY_NAME1 = 'yxdown'
 COMMUNITY_NAME2 = 'youxun'
 
+# use 'youxun' as community name
 NEW_ASSETS = [
     # ip
     '218.75.153.14',

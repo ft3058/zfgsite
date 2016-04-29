@@ -52,18 +52,18 @@
 
                   $("#graph_list").html('');
 
-                  alert('asset:' + name);
+                  // alert('asset:' + name);
                   // tcp
                   $.get("/jmonitor/graph/get_graph_html/?t=asset&t1=tcp&ip=" + name, function(result){
                     // alert(result);
                     $("#graph_list").append(result);
-                    alert('add succ');
+                    // alert('add succ');
                   });
                   // disk_usage
                   $.get("/jmonitor/graph/get_graph_html/?t=asset&t1=disk_usage&ip=" + name, function(result){
                     // alert(result);
                     $("#graph_list").append(result);
-                    alert('add succ');
+                    // alert('add succ');
                   });
 
             }
