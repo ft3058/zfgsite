@@ -1,5 +1,7 @@
 # coding:utf-8
 import traceback
+from datetime import datetime as dt
+from datetime import timedelta
 from django.db.models import Q
 from jasset.asset_api import *
 from jumpserver.api import *
@@ -385,16 +387,20 @@ def graph_index(request):
 @require_role('admin')
 def get_graph_html(request):
     G = request.GET
+    y = dt.now() - timedelta(days=1)
+
     t = G['t']
     if t == 'asset':
         t1 = G['t1']
         if t1 == 'tcp':
             ip = G['ip'].split(':')[-1].strip()
-            s = TcpConnCount.objects.filter(ip=ip).order_by('-cdt')[0:500]
+            objs = TcpConnCount.objects.filter(ip=ip, cdt__gt=y).order_by('-cdt')  # [0:500]
             # start_dt =
-            data_list = ", ".join([str(x.cnt) for x in s])
+            data_list = ", ".join([str(x.cnt) for x in objs])
             container_tcp_id = 'container_' + 'tcp_conn_' + ip.replace('.', '_')
             title = u'TCP连接数 - ' + ip
+
+            date_start_list = ', '.join([str(x) for x in [y.year, y.month, y.day, y.hour, y.minute, y.second]])
 
             return my_render('jmonitor/data_tcp_conn_count.html', locals(), request)
         elif t1 == 'disk_usage':

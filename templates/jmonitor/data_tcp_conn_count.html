@@ -19,7 +19,7 @@
                 gridLineColor:'gray',
                 gridLineWidth: 1,
                 type: 'datetime',
-                maxZoom: 24 * 3600000, //14 * 24 * 3600000, // fourteen days
+                maxZoom: 24 *2  * 3600*1000, //default show 2 days
                 title: {
                     text: null
                 }
@@ -63,8 +63,9 @@
             series: [{
                 type: 'area',
                 name: '数量',
-                pointInterval: 600 * 1000,
-                pointStart: Date.UTC(2016, 4, 28),
+                pointInterval: 600 * 1000,  // 5 minutes
+                //pointStart: Date.UTC(2016, 4, 28),
+                pointStart: Date.UTC({{date_start_list}}),
                 data: [
                     {{data_list}}
                 ]
