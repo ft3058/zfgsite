@@ -376,30 +376,24 @@ def get_asset_group_tree(request):
     tree = []
     groups = AssetGroup.objects.all()
     for g in groups:
-        print 'g 1', g.name
-
         g1s = AssetGroup1.objects.filter(group=g)
         g1_asset_list = []
         all_ass_num_in_group = 0
         for g1 in g1s:
-            print g1.name
-
             ass_list = Asset.objects.filter(group1=g1)
             if ass_list:
                 g1s_ass_list = []
                 for a in ass_list:
-                    g1s_ass_list.append({'text': u'资产 - ' + a.ip})
-                g1_asset_list.append({'text': u'分组 - ' + g1.name + u' (%d)' % len(g1s_ass_list), 'nodes': g1s_ass_list})
+                    g1s_ass_list.append({'text': u'资产 : ' + a.ip})
+                g1_asset_list.append({'text': u'分组 : ' + g1.name + u' [%d]' % len(g1s_ass_list), 'nodes': g1s_ass_list})
                 all_ass_num_in_group += len(g1s_ass_list)
             else:
-                g1_asset_list.append({'text': u'分组 - ' + g1.name + u' (0)'})
-
-        print '---------------------------------------'
+                g1_asset_list.append({'text': u'分组 : ' + g1.name + u' [0]'})
 
         if g1_asset_list:
-            tree.append({'text': u'资产组 - ' + g.name + u' [%d]' % all_ass_num_in_group, 'nodes': g1_asset_list})
+            tree.append({'text': u'资产组 : ' + g.name + u' [%d]' % all_ass_num_in_group, 'nodes': g1_asset_list})
         else:
-            tree.append({'text': u'资产组 - ' + g.name + u' [0]'})
+            tree.append({'text': u'资产组 : ' + g.name + u' [0]'})
 
     return HttpResponse(json.dumps(tree), content_type="application/json")
 
@@ -408,8 +402,23 @@ def get_asset_group_tree(request):
 def graph_index(request):
 
     path1, path2 = u'状态监控', u'graph'
-    s = TcpConnCount.objects.all().order_by('cdt')
-    # start_dt =
-    data_list = ", ".join([str(x.cnt) for x in s])
+    # s = TcpConnCount.objects.filter().order_by('-cdt')[500]
+    # data_list = ", ".join([str(x.cnt) for x in s])
 
     return my_render('jmonitor/graph_index.html', locals(), request)
+
+
+def get_graph_html(request):
+    G = request.GET
+    t = G['t']
+    if t == 'asset':
+        ip = G['ip'].split(':')[-1].strip()
+        s = TcpConnCount.objects.filter(ip=ip).order_by('-cdt')[0:500]
+        # start_dt =
+        data_list = ", ".join([str(x.cnt) for x in s])
+        container_id = 'container_' + 'tcp_conn_' + ip.replace('.', '_')
+
+        return my_render('jmonitor/data_tcp_conn_count.html', locals(), request)
+
+    else:
+        return HttpResponse('Empty graph')

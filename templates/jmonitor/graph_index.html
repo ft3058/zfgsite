@@ -28,81 +28,39 @@
     <!-- new added -->
     <div class="row">
         <div class="col-sm-3">
-            <!--div id="tree"></div-->
             <div id="tree1"></div>
         </div>
 
         <div class="col-sm-7 col-sm-offset-1">
 
-        <!--all graph-->
-        {% include 'jmonitor/data_tcp_conn_count.html' %}
+            <div id="graph_list"> </div>
 
         </div>
 
 	<script>
-	function getTree() {
-	  // Some logic to retrieve, or generate tree structure
-		var data = [
-		  {
-			text: "Parent 1",
-			nodes: [
-			  {
-				text: "Child 1",
-				nodes: [
-				  {
-					text: "Grandchild 1"
-				  },
-				  {
-					text: "Grandchild 2"
-				  }
-				]
-			  },
-			  {
-				text: "Child 2"
-			  }
-			]
-		  },
-		  {
-			text: "Parent 2"
-		  },
-		  {
-			text: "Parent 3"
-		  },
-		  {
-			text: "Parent 4"
-		  },
-		  {
-			text: "Parent 5"
-		  }
-		];
 
-	  return data;
-	}
-
-	//$('#tree').treeview({data: getTree()});
-
-	$('#tree_test').treeview({
-	  // The naming convention for callback's is to prepend with `on`
-	  // and capitalize the first letter of the event name
-	  // e.g. nodeSelected -> onNodeSelected
-	  data: getTree(),
-	  onNodeSelected: function(event, data) {
-		// Your logic goes here
-		alert(data.text);
-	  },
-
-	  });
-
-      $.getJSON("/jmonitor/graph/get_tree/",function(result){
+      $.getJSON("/jmonitor/graph/get_tree/",function(result) {
         $('#tree1').treeview({
-          data: result, //getTree(),
+          data: result,
           onNodeSelected: function(event, data) {
-            alert(data.text + '-ttt');
+
+            var name = data.text;
+            if (name.indexOf('资产组') > -1) {
+                // alert('资产组:' + name );
+            } else if (name.indexOf('分组') > -1) {
+                // alert('分组:' + name );
+            } else {
+                  alert('asset:' + name);
+                  $.get("/jmonitor/graph/get_graph_html/?t=asset&ip=" + name, function(result){
+                    alert(result);
+                    $("#graph_list").html(result);
+                    alert('add succ');
+                  });
+            }
           },
 
           });
       });
-
 	</script>
 
 
