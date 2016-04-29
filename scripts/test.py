@@ -28,5 +28,5 @@ with open('host_disk_info.txt') as f:
 				# HOST-RESOURCES-MIB::hrStorageUsed.37 = INTEGER: 478379861
 				dic['used_size'] = int(l.split(':')[-1].strip()) * int(dic['unit']) / (1024*1024*1024)
 
-print dic		
+print dic
 
