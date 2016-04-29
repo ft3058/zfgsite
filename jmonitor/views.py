@@ -408,6 +408,7 @@ def graph_index(request):
     return my_render('jmonitor/graph_index.html', locals(), request)
 
 
+@require_role('admin')
 def get_graph_html(request):
     G = request.GET
     t = G['t']
@@ -415,6 +416,7 @@ def get_graph_html(request):
         t1 = G['t1']
         if t1 == 'tcp':
             ip = G['ip'].split(':')[-1].strip()
+            print 'ip = ', ip
             s = TcpConnCount.objects.filter(ip=ip).order_by('-cdt')[0:500]
             # start_dt =
             data_list = ", ".join([str(x.cnt) for x in s])
