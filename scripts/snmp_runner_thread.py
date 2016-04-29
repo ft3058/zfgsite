@@ -24,7 +24,7 @@ from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
 
 from jasset.models import Asset, AssetGroup, AssetGroup1
-from jmonitor.models import TcpConnCount
+from jmonitor.models import TcpConnCount, DiskSize
 from util import *
 
 q = Queue()
@@ -46,6 +46,46 @@ def parse_tcp_conn_count(retval, lines, ip, dic):
     obj.save()
     print 'save succ'
 
+
+def get_disk_dic(lines):
+    dic = {}
+
+    for i in lines:
+        l = i.strip()
+        if l:
+            # lines.append(i.strip())
+            if 'hrStorageDescr' in l:
+                # HOST-RESOURCES-MIB::hrStorageDescr.37 = STRING: /home
+                name = l.split(':')[-1].strip()
+                if name == '/home':
+                    dic['name'] = '/home'
+                    dic['id'] = l.split('hrStorageDescr.')[-1].split('=')[0].strip()
+            elif 'hrStorageAllocationUnits.' in l and dic.get('id', 'nnnn') in l:
+                # HOST-RESOURCES-MIB::hrStorageAllocationUnits.37 = INTEGER: 4096 Bytes
+                dic['unit'] = l.split(':')[-1].strip().split(' ')[0].strip()
+            elif 'hrStorageSize.' in l and dic.get('id', 'nnnn') in l:
+                # HOST-RESOURCES-MIB::hrStorageSize.37 = INTEGER: 478383983
+                dic['total_size'] = int(l.split(':')[-1].strip()) * int(dic['unit']) / (1024*1024*1024)
+            elif 'hrStorageUsed.' in l and dic.get('id', 'nnnn') in l:
+                # HOST-RESOURCES-MIB::hrStorageUsed.37 = INTEGER: 478379861
+                dic['used_size'] = int(l.split(':')[-1].strip()) * int(dic['unit']) / (1024*1024*1024)
+
+    return dic    
+
+def parse_host_disk(retval, lines, ip, dic):
+    total_size, used_size = 0, 0
+    if retval == 0:
+        dic = get_disk_dic(lines)
+        if dic:
+            total_size, used_size = dic.get('total_size', 0), dic.get('used_size', 0)
+    else:
+        print 'retval is error: val=', retval 
+
+    obj = DiskSize()
+    obj.total = total_size
+    obj.used = used_size
+    obj.save()
+    print 'save disk size succ'    
 
 
 def failure(errorIndication, hostname):
@@ -84,23 +124,13 @@ class SnmpThread(Thread):
                 retval, lines = exec_cmd(cmd)
                 parse_tcp_conn_count(retval, lines, ip, dic)              
 
-                '''    
-                for dic in OID_LIST:
-                    if dic['method'] == 'get':
-                        # res = get_cmd_val(ip, 'my-agent', community_name, dic['oid'])
+                # disk size 
+                # snmpwalk -v 2c -c  yxdown 218.75.155.46 .1.3.6.1.2.1.25.2.3
+                cmd = 'snmpwalk -v 2c -c %s %s .1.3.6.1.2.1.25.2.3' % (community_name, ip)
+                retval, lines = exec_cmd(cmd)
+                parse_host_disk(retval, lines, ip, dic)    
 
-                        res = get_cmd_val(ip, 'my-agent', community_name, dic['oid'])
-                    elif dic['method'] == 'walk':
-                        res = get_next_cmd_val(ip, 'my-agent', community_name, dic['oid'])
-
-                    if len(res) == 1:
-                        print 'ERROR: %s' % res[0]
-                    else:
-                        result = success(res, ip, dic)
-                        print 'result = ', result'''
-
-
-        print u'%s is ended..'
+        print u'%s is ended..' % self.thread_name
 
 
 def main():

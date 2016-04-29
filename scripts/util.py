@@ -12,7 +12,18 @@ HOST-RESOURCES-MIB::hrStorageDescr.35 = STRING: /dev/shm
 HOST-RESOURCES-MIB::hrStorageDescr.36 = STRING: /boot
 HOST-RESOURCES-MIB::hrStorageDescr.37 = STRING: /home
 
+disk total:
+HOST-RESOURCES-MIB::hrStorageSize.1 = INTEGER: 8018388
+HOST-RESOURCES-MIB::hrStorageSize.3 = INTEGER: 12212684
+HOST-RESOURCES-MIB::hrStorageSize.6 = INTEGER: 8018388
+HOST-RESOURCES-MIB::hrStorageSize.7 = INTEGER: 493640
+HOST-RESOURCES-MIB::hrStorageSize.10 = INTEGER: 4194296
+HOST-RESOURCES-MIB::hrStorageSize.31 = INTEGER: 25803080
+HOST-RESOURCES-MIB::hrStorageSize.35 = INTEGER: 1002298
+HOST-RESOURCES-MIB::hrStorageSize.36 = INTEGER: 396672
+HOST-RESOURCES-MIB::hrStorageSize.37 = INTEGER: 93244370
 
+disk used:
 
 
 """
@@ -36,10 +47,11 @@ def exec_cmd(cmd):
 if __name__ == '__main__':
 	# cmd = 'snmpwalk -v 2c -c youxun 182.162.20.39 .1.3.6.1.2.1.25.2.3.1.3'
 	cmd = 'snmpwalk -v 2c -c youxun 182.162.20.39 .1.3.6.1.2.1.6.9.0'
+	cmd = 'snmpwalk -v 2c -c youxun 182.162.20.39 .1.3.6.1.2.1.25.2.3.1.6'
 	retval, lines = exec_cmd(cmd)
 	if retval == 0:
 		for l in lines:
-			print '-', l
+			print l
 	else:
 		print 'retval is error: val=', retval
 

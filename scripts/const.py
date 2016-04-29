@@ -90,7 +90,8 @@ TCP_CONN_COUNT_OIDS = {
 HOST_DISK_OIDS = {
     'Disk_Name':  ['walk', '.1.3.6.1.2.1.25.2.3.1.3'],
     'Total_Size': ['walk', '.1.3.6.1.2.1.25.2.3.1.5'],
-    'Total_Used': ['walk', '.1.3.6.1.2.1.25.2.3.1.6']
+    'Total_Used': ['walk', '.1.3.6.1.2.1.25.2.3.1.6'],
+    'all_info': ['walk', '.1.3.6.1.2.1.25.2.3'],
 }
 
 
