@@ -76,9 +76,7 @@ def rsync_status_list(request):
             Q(system_type__contains=keyword) |
             Q(system_version__contains=keyword))'''
         new_list = []
-        print 'len: ', len(asset_find)
         for i in asset_find:
-            print '----',  i.ip
             if keyword in i.hostname or keyword in i.ip:
                 new_list.append(i)
         asset_find = new_list
@@ -132,7 +130,6 @@ def rsync_status_check(request):
         asset_id_all = unicode(request.POST.get('asset_id_all', ''))
         module_name = request.POST.get('module_name', '').strip()
         name = unicode(request.user.username) + ' - ' + u'check status'
-        print 'asset_id_all = ', asset_id_all, 'name = ', name
         # asset_ansible_update(asset_list, name)
 
         if not asset_id_all.strip():
@@ -149,10 +146,6 @@ def rsync_status_check(request):
 
         # module_name = '391kComApk'
         rc.get_module_key_dict(IP, PORT, USERNAME, PASSWORD, setrepo=True)
-        print u'read rsyncd.conf succ ... '
-        # path = rc.module_path_dict.get(module_name)
-        # print u'start fetch repo files..'
-        # rc.fetch_repo_files(path)e
 
         for at in asset_list:
             rsync_log = RsyncCheckLog()
@@ -164,12 +157,9 @@ def rsync_status_check(request):
             rsync_log.save()
 
             log_id = rsync_log.pk
-            print u'current log id: ', log_id
 
             try:
                 result_tag = u'正常'
-                print u'compareing ip: ', at.ip
-
                 # down_module_key_dict = rc.get_module_key_dict(at.ip, at.port, at.username, at.passwd)
                 gp1_list = at.group1.all()
                 path_list = []
@@ -192,12 +182,9 @@ def rsync_status_check(request):
                     msg = ''
                     rsync_log = get_object(RsyncCheckLog, pk=log_id)
                     if rsync_log:
-                        print 'found a instance...'
+                        pass
                     else:
-                        print 'not found a instance... '
                         continue
-
-                    print '++++++++++++++++++++', k, path
 
                     try:
                         # exec cmd
@@ -206,20 +193,15 @@ def rsync_status_check(request):
                         rc.fetch_repo_files(path)
 
                         file_not_exists, file_err_size, file_err_time, file_count, repo_file_count = rc.compare_files(at, k, cmd)
-                        print 'not_exists count: ', len(file_not_exists)
-                        print 'err_size count: ', len(file_err_size)
-                        print 'err_time count: ', len(file_err_time)
-                        print 'total file count: %d/%d' % (file_count, repo_file_count)
-                        print 'file_not_exists = ', file_not_exists
-                        print 'file_err_size = ', file_err_size
-                        print 'file_err_time = ', file_err_time
+                        # print 'not_exists count: ', len(file_not_exists)
+                        # print 'err_size count: ', len(file_err_size)
+                        # print 'err_time count: ', len(file_err_time)
+                        # print 'total file count: %d/%d' % (file_count, repo_file_count)
+                        # print 'file_not_exists = ', file_not_exists
+                        # print 'file_err_size = ', file_err_size
+                        # print 'file_err_time = ', file_err_time
                         if file_not_exists or file_err_size or file_err_time:
                             result_tag = u'错误'
-                            print u'错误'
-                            print
-                            print
-                        else:
-                            print 'no error.....'
 
                         tmp = str(rsync_log.file_num) if rsync_log.file_num else ''
                         rsync_log.file_num = tmp + ' [path=%s %d/%d] |' % (path, file_count, repo_file_count)
@@ -269,12 +251,6 @@ def rsync_status_detail(request):
     header_title, path1, path2 = u'Rsync同步状态信息(最近一次检测)', u'Rsync管理', u'状态详情'
     asset_id = request.GET.get('id', '')
     asset = get_object(Asset, id=asset_id)
-    # print 'asset username = ', asset.username
-    # print 'asset passwd = ', asset.passwd None
-
-    # perm_info = get_group_asset_perm(asset)
-    # log = Log.objects.filter(host=asset.hostname)
-    # find rsync log
 
     logs = list(RsyncCheckLog.objects.filter(remote_ip=asset.ip).order_by('-id')[:1])
     file_not_exists_list = []
@@ -293,7 +269,7 @@ def rsync_status_detail(request):
             for path in paths:
                 # ['[path=/a/b 1.txt,2.txt]', '[path=/c/d 8.bak,9.bak]']
                 path = path.replace('[path=', '').replace(']', '')
-                print '-path-', path
+                
                 path_head = path.split(' ')[0].replace('(', '').replace(')', '')
                 path_tail = path.split(' ')[-1]
                 for l in path_tail.split(','):
@@ -308,7 +284,6 @@ def rsync_status_detail(request):
             for path in paths:
                 # ['[path=/a/b 1.txt,2.txt]', '[path=/c/d 8.bak,9.bak]']
                 path = path.replace('[path=', '').replace(']', '')
-                # print '-path-', path
                 path_head = path.split(' ')[0].replace('(', '').replace(')', '')
                 path_tail = path.split(' ')[-1]
                 for l in path_tail.split(','):
@@ -323,7 +298,6 @@ def rsync_status_detail(request):
             for path in paths:
                 # ['[path=/a/b 1.txt,2.txt]', '[path=/c/d 8.bak,9.bak]']
                 path = path.replace('[path=', '').replace(']', '')
-                print '-path-', path
                 path_head = path.split(' ')[0].replace('(', '').replace(')', '')
                 path_tail = path.split(' ')[-1]
                 for l in path_tail.split(','):
@@ -416,7 +390,6 @@ def get_graph_html(request):
         t1 = G['t1']
         if t1 == 'tcp':
             ip = G['ip'].split(':')[-1].strip()
-            print 'ip = ', ip
             s = TcpConnCount.objects.filter(ip=ip).order_by('-cdt')[0:500]
             # start_dt =
             data_list = ", ".join([str(x.cnt) for x in s])
