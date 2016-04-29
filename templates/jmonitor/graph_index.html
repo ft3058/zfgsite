@@ -3,7 +3,6 @@
 {% load humanize %}
 
 
-
 {% block self_head_css_js %}
     <style>
         .treeview .list-group-item{cursor:pointer}
@@ -14,7 +13,6 @@
     <script type="text/javascript" src="http://cdn.hcharts.cn/jquery/jquery-1.8.3.min.js"></script>
     <script type="text/javascript" src="http://cdn.hcharts.cn/highcharts/highcharts.js"></script>
     <script type="text/javascript" src="http://cdn.hcharts.cn/highcharts/exporting.js"></script>
-
 
     <script src="/static/js/bootstrap-treeview.js"></script>
 {% endblock %}
@@ -39,6 +37,7 @@
 
 	<script>
 
+
       $.getJSON("/jmonitor/graph/get_tree/",function(result) {
         $('#tree1').treeview({
           data: result,
@@ -50,12 +49,23 @@
             } else if (name.indexOf('分组') > -1) {
                 // alert('分组:' + name );
             } else {
+
+                  $("#graph_list").html('');
+
                   alert('asset:' + name);
-                  $.get("/jmonitor/graph/get_graph_html/?t=asset&ip=" + name, function(result){
-                    alert(result);
-                    $("#graph_list").html(result);
+                  // tcp
+                  $.get("/jmonitor/graph/get_graph_html/?t=asset&t1=tcp&ip=" + name, function(result){
+                    // alert(result);
+                    $("#graph_list").append(result);
                     alert('add succ');
                   });
+                  // disk_usage
+                  $.get("/jmonitor/graph/get_graph_html/?t=asset&t1=disk_usage&ip=" + name, function(result){
+                    // alert(result);
+                    $("#graph_list").append(result);
+                    alert('add succ');
+                  });
+
             }
           },
 

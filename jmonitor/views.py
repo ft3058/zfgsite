@@ -412,13 +412,22 @@ def get_graph_html(request):
     G = request.GET
     t = G['t']
     if t == 'asset':
-        ip = G['ip'].split(':')[-1].strip()
-        s = TcpConnCount.objects.filter(ip=ip).order_by('-cdt')[0:500]
-        # start_dt =
-        data_list = ", ".join([str(x.cnt) for x in s])
-        container_id = 'container_' + 'tcp_conn_' + ip.replace('.', '_')
+        t1 = G['t1']
+        if t1 == 'tcp':
+            ip = G['ip'].split(':')[-1].strip()
+            s = TcpConnCount.objects.filter(ip=ip).order_by('-cdt')[0:500]
+            # start_dt =
+            data_list = ", ".join([str(x.cnt) for x in s])
+            container_tcp_id = 'container_' + 'tcp_conn_' + ip.replace('.', '_')
+            title = u'TCP连接数 - ' + ip
 
-        return my_render('jmonitor/data_tcp_conn_count.html', locals(), request)
+            return my_render('jmonitor/data_tcp_conn_count.html', locals(), request)
+        elif t1 == 'disk_usage':
+            return HttpResponse('disk_usage')
+        elif t1 == 'ifdata':
+            return HttpResponse('ifdata')
+        else:
+            return HttpResponse('No data')
 
     else:
         return HttpResponse('Empty graph')

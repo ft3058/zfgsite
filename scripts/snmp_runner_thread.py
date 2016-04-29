@@ -96,11 +96,14 @@ class SnmpThread(Thread):
                 dic = q.get()
                 ip = dic['ip']
                 print 'ip: %s' % ip
+                community_name = COMMUNITY_NAME1
+                if ip in NEW_ASSETS:
+                    community_name = COMMUNITY_NAME2
                 for dic in OID_LIST:
                     if dic['method'] == 'get':
-                        res = get_cmd_val(ip, 'my-agent', COMMUNITY_NAME, dic['oid'])
+                        res = get_cmd_val(ip, 'my-agent', community_name, dic['oid'])
                     elif dic['method'] == 'walk':
-                        res = get_next_cmd_val(ip, 'my-agent', COMMUNITY_NAME, dic['oid'])
+                        res = get_next_cmd_val(ip, 'my-agent', community_name, dic['oid'])
 
                     if len(res) == 1:
                         print 'ERROR: %s' % res[0]

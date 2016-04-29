@@ -1,14 +1,14 @@
-<div id="{{container_id}}" style="min-width:700px;height:400px"></div>
+<div id="{{container_tcp_id}}" style="min-width:700px;height:400px"></div>
 
 <script>
 
-        $('#{{container_id}}').highcharts({
+        $('#{{container_tcp_id}}').highcharts({
             chart: {
                 zoomType: 'x',
                 spacingRight: 20
             },
             title: {
-                text: 'TCP连接数'
+                text: '{{title}}'
             },
             subtitle: {
                 text: document.ontouchstart === undefined ?
@@ -16,6 +16,8 @@
                     'Pinch the chart to zoom in'
             },
             xAxis: {
+                gridLineColor:'gray',
+                gridLineWidth: 1,
                 type: 'datetime',
                 maxZoom: 24 * 3600000, //14 * 24 * 3600000, // fourteen days
                 title: {
@@ -23,6 +25,8 @@
                 }
             },
             yAxis: {
+                gridLineColor:'gray',
+                gridLineWidth: 1,
                 title: {
                     text: '连接数量'
                 }
