@@ -402,7 +402,7 @@ def get_graph_html(request):
             objs = TcpConnCount.objects.filter(ip=ip).order_by('-cdt')[0:288*2]
             data_list = ", ".join([str(x.cnt) for x in objs])
 
-            y = dt.now() - timedelta(minute=5*len(objs))
+            y = dt.now() - timedelta(minutes=5*len(objs))
             milli_seconds = 5*len(objs) * 60 * 1000
             date_start_list = ', '.join([str(x) for x in [y.year, y.month, y.day, y.hour, y.minute, y.second]])
 
@@ -414,7 +414,7 @@ def get_graph_html(request):
 
             objs = DiskSize.objects.filter(ip=ip).order_by('-cdt')[0:288*2]
 
-            y = dt.now() - timedelta(minute=5*len(objs))
+            y = dt.now() - timedelta(minutes=5*len(objs))
             milli_seconds = 5*len(objs) * 60 * 1000
             date_start_list = ', '.join([str(x) for x in [y.year, y.month, y.day, y.hour, y.minute, y.second]])
 
