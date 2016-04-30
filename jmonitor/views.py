@@ -386,6 +386,7 @@ def graph_index(request):
 
 @require_role('admin')
 def get_graph_html(request):
+  try:
     G = request.GET
     # y = dt.now() - timedelta(days=1)
 
@@ -434,3 +435,6 @@ def get_graph_html(request):
 
     else:
         return HttpResponse('Empty graph')
+  except Exception, e:
+      print u'error: %s' % str(e)
+      return HttpResponse(str(e))
