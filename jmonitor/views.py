@@ -410,7 +410,7 @@ def get_graph_html(request):
 
         elif t1 == 'disk_usage':
             title = u'磁盘空间 /home - ' + ip
-            container_disk_id = 'container_' + 'tcp_conn_' + ip.replace('.', '_')
+            container_disk_id = 'container_' + 'disk_' + ip.replace('.', '_')
 
             objs = DiskSize.objects.filter(ip=ip).order_by('-cdt')[0:288*2]
 
