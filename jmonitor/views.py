@@ -11,7 +11,7 @@ from jasset.models import Asset, IDC, AssetGroup, AssetGroup1, ASSET_TYPE, ASSET
 from jperm.perm_api import get_group_asset_perm, get_group_user_perm
 from jperm.models import PermRuleDomain
 from jlog.models import RsyncCheckLog, CustomLog
-from jmonitor.models import TcpConnCount
+from jmonitor.models import TcpConnCount, DiskSize
 from rsync_util import *
 
 
@@ -392,19 +392,41 @@ def get_graph_html(request):
     t = G['t']
     if t == 'asset':
         t1 = G['t1']
+        ip = G['ip'].split(':')[-1].strip()
+
         if t1 == 'tcp':
-            ip = G['ip'].split(':')[-1].strip()
-            objs = TcpConnCount.objects.filter(ip=ip).order_by('-cdt')[0:288*2]
-            # start_dt =
-            data_list = ", ".join([str(x.cnt) for x in objs])
-            container_tcp_id = 'container_' + 'tcp_conn_' + ip.replace('.', '_')
             title = u'TCP连接数 - ' + ip
+            container_tcp_id = 'container_' + 'tcp_conn_' + ip.replace('.', '_')
+
+            objs = TcpConnCount.objects.filter(ip=ip).order_by('-cdt')[0:288*2]
+            data_list = ", ".join([str(x.cnt) for x in objs])
+
             y = dt.now() - timedelta(minute=5*len(objs))
+            milli_seconds = 5*len(objs) * 60 * 1000
             date_start_list = ', '.join([str(x) for x in [y.year, y.month, y.day, y.hour, y.minute, y.second]])
 
             return my_render('jmonitor/data_tcp_conn_count.html', locals(), request)
+
         elif t1 == 'disk_usage':
-            return HttpResponse('disk_usage')
+            title = u'磁盘空间 /home - ' + ip
+            container_disk_id = 'container_' + 'tcp_conn_' + ip.replace('.', '_')
+
+            objs = DiskSize.objects.filter(ip=ip).order_by('-cdt')[0:288*2]
+
+            y = dt.now() - timedelta(minute=5*len(objs))
+            milli_seconds = 5*len(objs) * 60 * 1000
+            date_start_list = ', '.join([str(x) for x in [y.year, y.month, y.day, y.hour, y.minute, y.second]])
+
+            data_list1 = []
+            data_list2 = []
+            for x in objs:
+                data_list1.append(str(x.total))
+                data_list2.append(str(x.used))
+            data_list1 = ', '.join(data_list1)
+            data_list2 = ', '.join(data_list2)
+
+            return my_render('jmonitor/data_disk_size.html', locals(), request)
+
         elif t1 == 'ifdata':
             return HttpResponse('ifdata')
         else:

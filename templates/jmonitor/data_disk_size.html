@@ -1,0 +1,74 @@
+<div id="{{container_disk_id}}" style="min-width:700px;height:400px"></div>
+
+<script>
+    $('#{{container_disk_id}}').highcharts({
+        chart: {
+            zoomType: 'x',
+            spacingRight: 20
+        },
+        chart: {
+            type: 'area'
+        },
+        title: {
+            text: '{{title}}'
+        },
+        subtitle: {
+            text: ''
+        },
+
+        xAxis: {
+			gridLineColor:'gray',
+			gridLineWidth: 1,
+            type: 'datetime',
+            maxZoom: 24 * 3600 * 1000, // fourteen days 这里只想看一天 ,单位是毫秒
+
+        },
+
+
+        yAxis: {
+			gridLineColor:'gray',
+			gridLineWidth: 1,
+            title: {
+                text: '空间大小'
+            },
+            labels: {
+                formatter: function() {
+                    return this.value + ' G';
+                }
+            }
+        },
+        tooltip: {
+            pointFormat: '{series.name} produced <b>{point.y:,.0f}</b><br/>warheads in {point.x}'
+        },
+        plotOptions: {
+            area: {
+                pointStart: 1940,
+                marker: {
+                    enabled: false,
+                    symbol: 'circle',
+                    radius: 2,
+                    states: {
+                        hover: {
+                            enabled: true
+                        }
+                    }
+                }
+            }
+        },
+        series: [{
+            name: '总空间',
+            pointInterval: 60 * 1000 * 5, // 5 分钟
+            pointStart: Date.UTC({{date_start_list}}),
+
+            data: [{{data_list1}}]
+        }, {
+            name: '已用空间',
+            pointInterval: 60 * 1000 * 5, // 5 分钟
+            pointStart: Date.UTC({{date_start_list}}),
+            data: [{{data_list2}}]
+        }]
+    });
+</script>
+
+
+
