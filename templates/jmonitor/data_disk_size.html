@@ -6,9 +6,7 @@
             zoomType: 'x',
             spacingRight: 20
         },
-        exporting: {
-            enabled: true
-        },
+
         chart: {
             type: 'area'
         },
@@ -26,7 +24,6 @@
             maxZoom: 24 * 3600 * 1000, // fourteen days 这里只想看一天 ,单位是毫秒
 
         },
-
 
         yAxis: {
 			gridLineColor:'gray',
@@ -69,7 +66,10 @@
             pointInterval: 60 * 1000 * 5, // 5 分钟
             pointStart: Date.UTC({{date_start_list}}),
             data: [{{data_list2}}]
-        }]
+        }],
+        exporting: {
+            enabled: true
+        }
     });
 </script>
 
