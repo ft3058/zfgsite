@@ -82,6 +82,7 @@ def parse_host_disk(retval, lines, ip, dic):
         print 'retval is error: val=', retval 
 
     obj = DiskSize()
+    obj.ip = ip
     obj.total = total_size
     obj.used = used_size
     obj.save()
