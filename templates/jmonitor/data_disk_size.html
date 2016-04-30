@@ -6,6 +6,9 @@
             zoomType: 'x',
             spacingRight: 20
         },
+        exporting: {
+            enabled: true
+        },
         chart: {
             type: 'area'
         },
@@ -38,7 +41,7 @@
             }
         },
         tooltip: {
-            pointFormat: '{series.name} produced <b>{point.y:,.0f}</b><br/>warheads in {point.x}'
+            pointFormat: '{series.name}: {point.x}'
         },
         plotOptions: {
             area: {
