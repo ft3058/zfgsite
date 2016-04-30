@@ -5,10 +5,16 @@
 
 {% block self_head_css_js %}
     <style>
+        .treeview {
+            max-height: 300px;
+            overflow-y: scroll;
+        }
         .treeview .list-group-item{cursor:pointer}
         .treeview span.indent{margin-left:10px;margin-right:10px}
         .treeview span.icon{width:12px;margin-right:5px}
         .treeview .node-disabled{color:silver;cursor:not-allowed}
+
+
     </style>
     <script type="text/javascript" src="http://cdn.hcharts.cn/jquery/jquery-1.8.3.min.js"></script>
     <script type="text/javascript" src="http://cdn.hcharts.cn/highcharts/highcharts.js"></script>
@@ -57,12 +63,14 @@
                   $.get("/jmonitor/graph/get_graph_html/?t=asset&t1=tcp&ip=" + name, function(result){
                     // alert(result);
                     $("#graph_list").append(result);
+                    $("#graph_list").append('<br>');
                     // alert('add succ');
                   });
                   // disk_usage
                   $.get("/jmonitor/graph/get_graph_html/?t=asset&t1=disk_usage&ip=" + name, function(result){
                     // alert(result);
                     $("#graph_list").append(result);
+                    $("#graph_list").append('<br>');
                     // alert('add succ');
                   });
 
