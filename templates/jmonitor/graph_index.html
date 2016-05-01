@@ -61,12 +61,12 @@
                 $.getJSON("/jmonitor/graph/get_assets_by_gp1/?gp1="+name,function(ass_ip_list) {
                     for (var i in ass_ip_list) {
                           var ip = ass_ip_list[i];
-                          alert('开始获取ip:' + ip);
-                          $.get("/jmonitor/graph/get_graph_html/?t=asset&t1=ifdata&ip=" + name, function(result){
-                            alert('获取结果是:' + result);
+                          //alert('开始获取ip:' + ip);
+                          $.get("/jmonitor/graph/get_graph_html/?t=asset&t1=ifdata&ip=" + ip, function(result){
+                            //alert('获取结果是:' + result);
                             $("#graph_list").append(result);
                             $("#graph_list").append('<br>');
-                            alert('add succ');
+                            //alert('add succ');
                           });
                     }
                 });
