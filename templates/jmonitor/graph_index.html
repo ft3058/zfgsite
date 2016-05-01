@@ -66,14 +66,19 @@
                     $("#graph_list").append('<br>');
                     // alert('add succ');
                   });
+
                   // disk_usage
                   $.get("/jmonitor/graph/get_graph_html/?t=asset&t1=disk_usage&ip=" + name, function(result){
-                    // alert(result);
+                    $("#graph_list").append(result);
+                    $("#graph_list").append('<br>');
+                  });
+
+                  // disk_usage
+                  $.get("/jmonitor/graph/get_graph_html/?t=asset&t1=ifdata&ip=" + name, function(result){
                     $("#graph_list").append(result);
                     $("#graph_list").append('<br>');
                     // alert('add succ');
                   });
-
             }
           },
 

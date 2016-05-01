@@ -1,0 +1,77 @@
+<div id="{{container_ifdata__id}}" style="min-width:700px;height:400px"></div>
+
+<script>
+    $('#{{container_ifdata_id}}').highcharts({
+        chart: {
+            zoomType: 'x',
+            spacingRight: 20
+        },
+
+        chart: {
+            type: 'area'
+        },
+        title: {
+            text: '{{title}}'
+        },
+        subtitle: {
+            text: ''
+        },
+
+        xAxis: {
+			gridLineColor:'gray',
+			gridLineWidth: 1,
+            type: 'datetime',
+            maxZoom: 24 * 3600 * 1000, // fourteen days 这里只想看一天 ,单位是毫秒
+
+        },
+
+        yAxis: {
+			gridLineColor:'gray',
+			gridLineWidth: 1,
+            title: {
+                text: '流量 (M/秒)'
+            },
+            labels: {
+                formatter: function() {
+                    return this.value + ' M';
+                }
+            }
+        },
+        tooltip: {
+            pointFormat: '{series.name}: {point.y} M'
+        },
+        plotOptions: {
+            area: {
+                pointStart: 1940,
+                marker: {
+                    enabled: false,
+                    symbol: 'circle',
+                    radius: 2,
+                    states: {
+                        hover: {
+                            enabled: true
+                        }
+                    }
+                }
+            }
+        },
+        series: [{
+            name: '流入',
+            pointInterval: 60 * 1000 * 5, // 5 分钟
+            pointStart: Date.UTC({{date_start_list}}),
+
+            data: [{{data_list1}}]
+        }, {
+            name: '流出',
+            pointInterval: 60 * 1000 * 5, // 5 分钟
+            pointStart: Date.UTC({{date_start_list}}),
+            data: [{{data_list2}}]
+        }],
+        exporting: {
+            enabled: true
+        }
+    });
+</script>
+
+
+

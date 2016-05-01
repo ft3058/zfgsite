@@ -429,10 +429,8 @@ def get_graph_html(request):
             return my_render('jmonitor/data_disk_size.html', locals(), request)
 
         elif t1 == 'ifdata':
-            return HttpResponse('please wait..')
-
+            # return HttpResponse('please wait..')
             inter_name = 'eth0'
-            title = u'流量 - ' + ip
             container_ifdata_id = 'container_' + 'ifdata_' + ip.replace('.', '_')
 
             objs = InterfaceIo.objects.filter(ip=ip).order_by('-cdt')[0:288*2]
@@ -443,15 +441,24 @@ def get_graph_html(request):
 
             data_list1 = []
             data_list2 = []
-            for x in objs:
-                data_list1.append(str(x.total))
-                data_list2.append(str(x.used))
+            all_num = len(objs)
+            for n, x in enumerate(objs):
                 inter_name = x.name
+                # 只计算到倒数第二个
+                if n < all_num-1:
+                    x1 = objs[n+1]
+                    intv_seconds = (x.cdt - x1.cdt).total_seconds()
+                    in_flow_size = (x.insize - x1.insize) / (intv_seconds * 1024 * 1024)  # M
+                    data_list1.append(str(in_flow_size))
+
+                    out_flow_size = (x.outsize - x1.outsize) / (intv_seconds * 1024 * 1024)  # M
+                    data_list2.append(str(out_flow_size))
 
             data_list1 = ', '.join(data_list1)
             data_list2 = ', '.join(data_list2)
+            title = u'流量 - ' + ip + ' - ' + inter_name
 
-            return my_render('jmonitor/data_disk_size.html', locals(), request)
+            return my_render('jmonitor/data_interface.html', locals(), request)
         else:
             return HttpResponse('No data')
 
