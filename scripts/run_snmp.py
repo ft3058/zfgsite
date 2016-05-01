@@ -23,8 +23,8 @@ os.chdir(proj_path)
 from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
 
-from jasset.models import Asset, AssetGroup, AssetGroup1
-from jmonitor.models import TcpConnCount, DiskSize
+from jasset.models import Asset
+from jmonitor.models import TcpConnCount, DiskSize, InterfaceIo
 from util import *
 
 q = Queue()
@@ -70,7 +70,41 @@ def get_disk_dic(lines):
                 # HOST-RESOURCES-MIB::hrStorageUsed.37 = INTEGER: 478379861
                 dic['used_size'] = int(l.split(':')[-1].strip()) * int(dic['unit']) / (1024*1024*1024)
 
-    return dic    
+    return dic
+
+def get_interface_dic(lines):
+  dic0 = {'in': '', 'out': ''}
+  dic1 = {'in': '', 'out': ''}
+  for i in lines:
+    l = i.strip()
+    if l:
+      if '::ifName' in l:
+        # IF-MIB::ifName.2 = STRING: eth0
+        if 'eth0' in l.lower():
+          dic0['name'] = 'eth0'
+          dic0['id'] = l.split('ifName.')[-1].split('=')[0].strip()
+        elif 'eth1' in l.lower():
+          dic1['name'] = 'eth1'
+          dic1['id'] = l.split('ifName.')[-1].split('=')[0].strip()
+
+      elif 'ifHCInOctets' in l:
+        # IF-MIB::ifHCInOctets.1 = Counter64: 356609255540
+        if 'ifHCInOctets.' + dic0['id'] in l:
+          dic0['in'] = l.split(':')[-1].strip()
+        elif 'ifHCInOctets.' + dic1['id'] in l:
+          dic1['in'] = l.split(':')[-1].strip()
+
+      elif 'ifHCOutOctets' in l:
+        # IF-MIB::ifHCOutOctets.1 = Counter64: 356609255540
+        if 'ifHCOutOctets.' + dic0['id'] in l:
+          dic0['out'] = l.split(':')[-1].strip()
+        elif 'ifHCOutOctets.' + dic1['id'] in l:
+          dic1['out'] = l.split(':')[-1].strip()
+
+  if dic0['in'] not in ['', '0']:
+    return dic0
+  else:
+    return dic1
 
 def parse_host_disk(retval, lines, ip, dic):
     total_size, used_size = 0, 0
@@ -86,12 +120,24 @@ def parse_host_disk(retval, lines, ip, dic):
     obj.total = total_size
     obj.used = used_size
     obj.save()
-    print 'save disk size succ'    
+    print 'save disk size succ'
 
+def parse_interface(retval, lines, ip, dic):
+    name, insize, outsize = 'eth_none', 0L, 0L
+    if retval == 0:
+        dic = get_interface_dic(lines)
+        if dic:
+            name, insize, outsize = dic.get('name', 'eth_no'), long(dic.get('in', 0)), long(dic.get('out', 0))
+    else:
+        print 'retval is error: val=', retval
 
-def failure(errorIndication, hostname):
-    print('%s failure: %s' % (hostname, errorIndication))
-
+    obj = InterfaceIo()
+    obj.ip = ip
+    obj.name = name
+    obj.insize = insize
+    obj.outsize = outsize
+    obj.save()
+    print 'save interface size succ'
 
 def init_all_assets():
     assets = Asset.objects.all()
@@ -129,7 +175,12 @@ class SnmpThread(Thread):
                 # snmpwalk -v 2c -c  yxdown 218.75.155.46 .1.3.6.1.2.1.25.2.3
                 cmd = 'snmpwalk -v 2c -c %s %s .1.3.6.1.2.1.25.2.3' % (community_name, ip)
                 retval, lines = exec_cmd(cmd)
-                parse_host_disk(retval, lines, ip, dic)    
+                parse_host_disk(retval, lines, ip, dic)
+
+                # interface
+                cmd = 'snmpwalk -v 2c -c %s %s .1.3.6.1.2.1.31.1.1.1' % (community_name, ip)
+                retval, lines = exec_cmd(cmd)
+                parse_interface(retval, lines, ip, dic)
 
         print u'%s is ended..' % self.thread_name
 

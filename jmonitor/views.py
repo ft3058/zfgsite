@@ -429,7 +429,24 @@ def get_graph_html(request):
             return my_render('jmonitor/data_disk_size.html', locals(), request)
 
         elif t1 == 'ifdata':
-            return HttpResponse('ifdata')
+            title = u'流量 - ' + ip
+            container_ifdata_id = 'container_' + 'ifdata_' + ip.replace('.', '_')
+
+            objs = DiskSize.objects.filter(ip=ip).order_by('-cdt')[0:288*2]
+
+            y = dt.now() - timedelta(minutes=5*len(objs))
+            milli_seconds = 5*len(objs) * 60 * 1000
+            date_start_list = ', '.join([str(x) for x in [y.year, y.month, y.day, y.hour, y.minute, y.second]])
+
+            data_list1 = []
+            data_list2 = []
+            for x in objs:
+                data_list1.append(str(x.total))
+                data_list2.append(str(x.used))
+            data_list1 = ', '.join(data_list1)
+            data_list2 = ', '.join(data_list2)
+
+            return my_render('jmonitor/data_disk_size.html', locals(), request)
         else:
             return HttpResponse('No data')
 
