@@ -101,10 +101,16 @@ def get_interface_dic(lines):
         elif 'ifHCOutOctets.' + dic1.get('id', 'nnn') in l:
           dic1['out'] = l.split(':')[-1].strip()
 
+  res_dic = dic1
   if dic0['in'] not in ['', '0']:
-    return dic0
-  else:
-    return dic1
+    res_dic = dic0
+
+  if res_dic['in'] == '':
+    res_dic['in'] = '0'
+  if res_dic['out'] == '':
+    res_dic['out'] = '0'
+
+  return res_dic
 
 def parse_host_disk(retval, lines, ip, dic):
     total_size, used_size = 0, 0
