@@ -89,16 +89,16 @@ def get_interface_dic(lines):
 
       elif 'ifHCInOctets' in l:
         # IF-MIB::ifHCInOctets.1 = Counter64: 356609255540
-        if 'ifHCInOctets.' + dic0['id'] in l:
+        if 'ifHCInOctets.' + dic0.get('id', 'nnn') in l:
           dic0['in'] = l.split(':')[-1].strip()
-        elif 'ifHCInOctets.' + dic1['id'] in l:
+        elif 'ifHCInOctets.' + dic1.get('id', 'nnn') in l:
           dic1['in'] = l.split(':')[-1].strip()
 
       elif 'ifHCOutOctets' in l:
         # IF-MIB::ifHCOutOctets.1 = Counter64: 356609255540
-        if 'ifHCOutOctets.' + dic0['id'] in l:
+        if 'ifHCOutOctets.' + dic0.get('id', 'nnn') in l:
           dic0['out'] = l.split(':')[-1].strip()
-        elif 'ifHCOutOctets.' + dic1['id'] in l:
+        elif 'ifHCOutOctets.' + dic1.get('id', 'nnn') in l:
           dic1['out'] = l.split(':')[-1].strip()
 
   if dic0['in'] not in ['', '0']:
