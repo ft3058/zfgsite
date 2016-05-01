@@ -11,7 +11,7 @@ from jasset.models import Asset, IDC, AssetGroup, AssetGroup1, ASSET_TYPE, ASSET
 from jperm.perm_api import get_group_asset_perm, get_group_user_perm
 from jperm.models import PermRuleDomain
 from jlog.models import RsyncCheckLog, CustomLog
-from jmonitor.models import TcpConnCount, DiskSize
+from jmonitor.models import TcpConnCount, DiskSize, InterfaceIo
 from rsync_util import *
 
 
@@ -429,10 +429,13 @@ def get_graph_html(request):
             return my_render('jmonitor/data_disk_size.html', locals(), request)
 
         elif t1 == 'ifdata':
+            return HttpResponse('please wait..')
+
+            inter_name = 'eth0'
             title = u'流量 - ' + ip
             container_ifdata_id = 'container_' + 'ifdata_' + ip.replace('.', '_')
 
-            objs = DiskSize.objects.filter(ip=ip).order_by('-cdt')[0:288*2]
+            objs = InterfaceIo.objects.filter(ip=ip).order_by('-cdt')[0:288*2]
 
             y = dt.now() - timedelta(minutes=5*len(objs))
             milli_seconds = 5*len(objs) * 60 * 1000
@@ -443,6 +446,8 @@ def get_graph_html(request):
             for x in objs:
                 data_list1.append(str(x.total))
                 data_list2.append(str(x.used))
+                inter_name = x.name
+
             data_list1 = ', '.join(data_list1)
             data_list2 = ', '.join(data_list2)
 
