@@ -348,6 +348,18 @@ def oplog_status(request):
     return my_render('jmonitor/oplog_status.html', locals(), request)
 
 
+def get_assets_by_gp1(request):
+    gp1_name = request.GET.get('gp1', '')
+    if not gp1_name:
+        return HttpResponse(json.dumps([]), content_type="application/json")
+    name = gp1_name.split(':')[-1].split('[')[0].strip()
+    gp1 = AssetGroup1.objects.filter(name=name)
+    if not gp1:
+        return HttpResponse(json.dumps([]), content_type="application/json")
+    assets = Asset.objects.filter(group1=gp1[0])
+    ass_ip_list = [x.ip for x in assets]
+    return HttpResponse(json.dumps(ass_ip_list), content_type="application/json")
+
 def get_asset_group_tree(request):
     tree = []
     groups = AssetGroup.objects.all()

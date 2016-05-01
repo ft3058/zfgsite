@@ -47,13 +47,28 @@
       $.getJSON("/jmonitor/graph/get_tree/",function(result) {
         $('#tree1').treeview({
           data: result,
+          //collapseAll: { silent: true },
           onNodeSelected: function(event, data) {
 
             var name = data.text;
             if (name.indexOf('资产组') > -1) {
                 // alert('资产组:' + name );
             } else if (name.indexOf('分组') > -1) {
-                // alert('分组:' + name );
+                alert('分组:' + name );
+                $("#graph_list").html('');
+
+                // 先获取出相应分组的所有ip，然后依次取出流量图
+                $.getJSON("/jmonitor/graph/get_assets_by_gp1/?gp1="+name,function(ass_ip_list) {
+                    for (var i in ass_ip_list) {
+                          var ip = ass_ip_list[i];
+                          alert('开始获取ip:' + ip);
+                          $.get("/jmonitor/graph/get_graph_html/?t=asset&t1=ifdata&ip=" + name, function(result){
+                            $("#graph_list").append(result);
+                            $("#graph_list").append('<br>');
+                            // alert('add succ');
+                          });
+                    }
+                });
             } else {
 
                   $("#graph_list").html('');
@@ -73,7 +88,7 @@
                     $("#graph_list").append('<br>');
                   });
 
-                  // disk_usage
+                  // ifdata
                   $.get("/jmonitor/graph/get_graph_html/?t=asset&t1=ifdata&ip=" + name, function(result){
                     $("#graph_list").append(result);
                     $("#graph_list").append('<br>');
@@ -83,6 +98,8 @@
           },
 
           });
+
+          $('#tree1').treeview('collapseAll', { silent: true });
       });
 	</script>
 
