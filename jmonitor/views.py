@@ -372,7 +372,7 @@ def get_asset_group_tree(request):
             if ass_list:
                 g1s_ass_list = []
                 for a in ass_list:
-                    g1s_ass_list.append({'text': u'资产 : ' + a.ip})
+                    g1s_ass_list.append({'text': u'主机 : ' + a.ip})
                 g1_asset_list.append({'text': u'分组 : ' + g1.name + u' [%d]' % len(g1s_ass_list), 'nodes': g1s_ass_list})
                 all_ass_num_in_group += len(g1s_ass_list)
             else:
