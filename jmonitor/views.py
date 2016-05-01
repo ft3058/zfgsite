@@ -443,7 +443,7 @@ def get_graph_html(request):
         elif t1 == 'ifdata':
             # return HttpResponse('please wait..')
             inter_name = 'eth0'
-            container_ifdata_id = 'container_' + 'ifdata_' + ip.replace('.', '_')
+            container_ifdata_id = 'container_' + 'ifdata_' + ip.replace('.', '_') + str(int(time.time()))
 
             objs = InterfaceIo.objects.filter(ip=ip).order_by('-cdt')[0:288*2]
 
