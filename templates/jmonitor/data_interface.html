@@ -56,16 +56,16 @@
             }
         },
         series: [{
-            name: '流入',
-            pointInterval: 60 * 1000 * 5, // 5 分钟
-            pointStart: Date.UTC({{date_start_list}}),
-
-            data: [{{data_list1}}]
-        }, {
             name: '流出',
             pointInterval: 60 * 1000 * 5, // 5 分钟
             pointStart: Date.UTC({{date_start_list}}),
+
             data: [{{data_list2}}]
+        }, {
+            name: '流入',
+            pointInterval: 60 * 1000 * 5, // 5 分钟
+            pointStart: Date.UTC({{date_start_list}}),
+            data: [{{data_list1}}]
         }],
         exporting: {
             enabled: true
