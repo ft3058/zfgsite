@@ -36,5 +36,6 @@ urlpatterns = patterns('',
     url(r'^asset/add_post/$', asset_add_post, name='asset_add_post'),
     url(r'^domain/add/$', domain_add, name='domain_add'),
     url(r'^domains/domain_group/$', domain_group_list, name='domain_group_list'),
-    url(r'^asset/change_passwd/$', asset_change_passwd, name='asset_change_passwd')
+    url(r'^asset/change_passwd/$', asset_change_passwd, name='asset_change_passwd'),
+    url(r'^asset/edit_biz/$', edit_biz, name='edit_biz'),
 )

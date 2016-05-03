@@ -128,13 +128,14 @@
                                     </th>
                                     <th class="text-center"> 主机名 </th>
                                     <th class="text-center"> 端口号 </th>
-                                    <th class="text-center"> 管理用户名 </th>
+                                    <!--th class="text-center"> 管理用户名 </th-->
                                     <th class="text-center"> 密码 </th>
 
                                     <!--
                                     <th class="text-center" name="ip"> IP地址 </th>
+
+                                    <!th class="text-center"> IDC </th>
                                     -->
-                                    <th class="text-center"> IDC </th>
                                     <th class="text-center"> 所属主机组 </th>
                                     <th class="text-center"> 所属分组 </th>
 {#                                  <th class="text-center"> 配置信息 </th>#}
@@ -158,7 +159,7 @@
                                     </td>
                                     <td class="text-center hostname"> <a href="{% url 'asset_detail' %}?id={{ asset.id }}">{{ asset.hostname|default_if_none:"" }}</a></td>
                                     <td class="text-center">{{ asset.port }}</td>
-                                    <td class="text-center">{{ asset.username }}</td>
+                                    <!--td class="text-center">{{ asset.username }}</td-->
                                     <td class="text-center">
                                         <span id="asset_passwd_{{asset.id}}">{{asset.passwd}}</span>
                                         <a class="gen_new_pass" asset_id="{{asset.id}}">生成新密码</a>
@@ -167,8 +168,9 @@
 
                                     <!--
                                     <td class="text-center"> {{ asset.ip|default_if_none:"" }} </td>
-                                    -->
+
                                     <td class="text-center"> {{ asset.idc.name|default_if_none:"" }} </td>
+                                    -->
                                     <td class="text-center">{{ asset.group.all|group_str2 }}</td>
                                     <td class="text-center">{{ asset.group1.all|group_str2 }}</td>
 {#                                  <td class="text-center">{{ asset.cpu }}|{{ asset.memory }}|{{ asset.disk }}</td>#}
@@ -183,8 +185,10 @@
                                     <td class="text-center" data-editable='false'>
                                         <a href="{% url 'asset_edit' %}?id={{ asset.id }}" class="btn btn-xs btn-info">编辑</a>
                                         <a value="{{ asset.id }}" host="{{asset.hostname}}" class="btn btn-xs btn-success asset_init">初始化</a>
-{#                                        <a value="{{ asset.id }}" class="conn btn btn-xs btn-warning" style="display:none;">连接</a>#}
+{#                                      <a value="{{ asset.id }}" class="conn btn btn-xs btn-warning" style="display:none;">连接</a>#}
                                         <a value="{{ asset.id }}" class="newconn btn btn-xs btn-warning">快速连接</a>
+                                        <a value="{{ asset.id }}" class="edit_biz btn btn-xs btn-warning" href="{%url 'edit_biz'%}" target="_blank">编辑业务</a>
+                                        <a value="{{ asset.id }}" class="start_biz btn btn-xs btn-warning">上线</a>
                                         <a value="{% url 'asset_del' %}?id={{ asset.id }}" class="btn btn-xs btn-danger asset_del">删除</a>
                                     </td>
                                 </tr>
