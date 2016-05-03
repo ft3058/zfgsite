@@ -187,8 +187,8 @@
                                         <a value="{{ asset.id }}" host="{{asset.hostname}}" class="btn btn-xs btn-success asset_init">初始化</a>
 {#                                      <a value="{{ asset.id }}" class="conn btn btn-xs btn-warning" style="display:none;">连接</a>#}
                                         <a value="{{ asset.id }}" class="newconn btn btn-xs btn-warning">快速连接</a>
-                                        <a value="{{ asset.id }}" class="edit_biz btn btn-xs btn-warning" href="{%url 'edit_biz'%}" target="_blank">编辑业务</a>
-                                        <a value="{{ asset.id }}" class="start_biz btn btn-xs btn-warning">上线</a>
+                                        <a value="{{ asset.id }}" class="test btn btn-xs btn-warning" href="{%url 'test'%}" target="_blank">test</a>
+
                                         <a value="{% url 'asset_del' %}?id={{ asset.id }}" class="btn btn-xs btn-danger asset_del">删除</a>
                                     </td>
                                 </tr>

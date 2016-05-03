@@ -416,7 +416,7 @@ def get_graph_html(request):
 
             y = dt.now() - timedelta(minutes=5*len(objs))
             milli_seconds = 5*len(objs) * 60 * 1000
-            date_start_list = ', '.join([str(x) for x in [y.year, y.month, y.day, y.hour, y.minute, y.second]])
+            date_start_list = ', '.join([str(x) for x in [y.year, y.month-1, y.day, y.hour, y.minute, y.second]])
 
             return my_render('jmonitor/data_tcp_conn_count.html', locals(), request)
 
@@ -428,7 +428,7 @@ def get_graph_html(request):
 
             y = dt.now() - timedelta(minutes=5*len(objs))
             milli_seconds = 5*len(objs) * 60 * 1000
-            date_start_list = ', '.join([str(x) for x in [y.year, y.month, y.day, y.hour, y.minute, y.second]])
+            date_start_list = ', '.join([str(x) for x in [y.year, y.month-1, y.day, y.hour, y.minute, y.second]])
 
             data_list1 = []
             data_list2 = []
@@ -449,7 +449,7 @@ def get_graph_html(request):
 
             y = dt.now() - timedelta(minutes=5*len(objs))
             milli_seconds = 5*len(objs) * 60 * 1000
-            date_start_list = ', '.join([str(x) for x in [y.year, y.month, y.day, y.hour, y.minute, y.second]])
+            date_start_list = ', '.join([str(x) for x in [y.year, y.month-1, y.day, y.hour, y.minute, y.second]])
 
             data_list1 = []
             data_list2 = []
