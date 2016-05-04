@@ -200,7 +200,8 @@
             data:{'ip':ip},
             success:function(data){
                 console.log(data);
-                layer.alert(data['info'])
+{#                layer.alert(data['info'])#}
+                alert(data['info']);
             }
         })
     });

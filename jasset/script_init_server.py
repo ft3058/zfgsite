@@ -1,5 +1,6 @@
 # coding:utf8
 import re
+import os
 import time
 from datetime import datetime as dt
 import paramiko
@@ -7,6 +8,8 @@ import traceback
 from util import write_log
 from jasset.models import Asset
 from jasset.asset_api import get_object
+from script_copy_files import copy_file_to_server
+from jumpserver.settings import LOCAL_FILE_DIR
 
 
 def get_paths(asset): # 接受Asset对象,返回所有路径列表
@@ -36,27 +39,56 @@ def clear_module_path(module_path):
 
 
 def clear_asset(ip, port, username, password, oper_user):
-    # 清理主机, 删除配置文件
+    """清理主机, 删除配置文件
+    rm -f *.sh
+    killall rsync.sh
+    rm -f /usr/local/nginx/conf/vhost/*.conf
+    删除group1.module_path 下的路径文件
+    cp *.conf /usr/local/nginx/conf/vhost/
+    service nginx restart
+    """
     s = get_ssh(ip, port, username, password)
     assets = Asset.objects.filter(ip=ip)
     # 删除文件并杀死rsync.sh
-    cmds = ['rm -f *.sh', 'killall rsync.sh', 'rm -f /usr/local/nginx/conf/vhost/*.conf']
-    for cmd in cmds:
-        s.exec_command(cmd)
+    # cmds = ['rm -f *.sh', 'killall rsync.sh', 'rm -f /usr/local/nginx/conf/vhost/*.conf']
+    # for cmd in cmds:
+    #     s.exec_command(cmd)
     if assets:
         group1_list = get_paths(assets[0])
         if group1_list:
-            cmds = ['rm -rf %s'%(i) for i in group1_list]
-            map(s.exec_command, cmds)
-            write_log(ip=host, cmd=str(cmds), title='clear_asset', result='wait remove module_path', user=oper_user)
+            # cmds = ['rm -rf %s'%(i) for i in group1_list]
+            # map(s.exec_command, cmds)
+            # write_log(ip=host, cmd=str(cmds), title='clear_asset', result='wait remove module_path', user=oper_user)
 
-            cmd = '/bin/cp *.conf /usr/local/nginx/conf/vhost/ \n'
-            s.exec_command(cmd)
-            cmd = 'service nginx restart \n'
-            s.exec_command(cmd)
+            remotedir = '/usr/local/nginx/conf/vhost/'
+            remotedir_script_path = assets[0].group1.all()[0].script_path
+
+            if LOCAL_FILE_DIR.endswith('/'):
+                lfd = LOCAL_FILE_DIR
+            else:
+                lfd = LOCAL_FILE_DIR + '/'
+
+            localdir = remotedir_script_path.replace('/var/sercon/', lfd)
+
+            find_conf = os.popen('ls %s *.conf'%localdir).read()
+            if not find_conf:
+                # cmd = 'service nginx restart'
+                # s.exec_command(cmd)
+                s.close()
+                return '没有conf文件'
+            else:
+                fname_list = find_conf.split()
+
+                # copy_file_to_server(ip, port, username, password, localdir, remotedir, fname_list, oper_user)
+                # cmd = 'service nginx restart'
+                # s.exec_command(cmd)
+            s.close()
+            return '清理完成'
         else:
-            return '此项目没有组'
+            s.close()
+            return '此资产没有组'
     else:
+        s.close()
         return '没有此资产'
 
 
@@ -64,7 +96,7 @@ def clear_asset(ip, port, username, password, oper_user):
     # write_log(ip=host, cmd=resp, title='asset_init', result='wait 1', user=oper_user)
 
 #
-    s.close()
+
 
 def install_softs(host, port, username, password, oper_user, timeout=10):
     """
