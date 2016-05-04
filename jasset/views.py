@@ -1301,8 +1301,8 @@ def idc_edit(request):
 
 
 @require_role('admin')
-def test(request):
-    header_title, path1, path2 = u'编辑', u'资产管理', u'编辑'
+def biz_edit(request):
+    header_title, path1, path2 = u'编辑biz', u'资产管理', u'编辑biz'
     idc_id = request.GET.get('id', '')
     idc = get_object(IDC, id=idc_id)
     if request.method == 'POST':
@@ -1313,6 +1313,10 @@ def test(request):
     else:
         idc_form = IdcForm(instance=idc)
         return my_render('jasset/idc_edit.html', locals(), request)
+
+@require_role('admin')
+def biz_start(request)    :
+    pass
 
 
 @require_role('admin')
