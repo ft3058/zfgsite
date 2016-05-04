@@ -1,5 +1,7 @@
 # coding:utf-8
 # import traceback
+import paramiko
+import socket
 from django.db.models import Q
 from jasset.asset_api import *
 from jasset.asset_scripts import *
@@ -10,7 +12,7 @@ from jasset.models import Asset, IDC, AssetGroup, AssetGroup1, ASSET_TYPE, ASSET
 from jperm.perm_api import get_group_asset_perm, get_group_user_perm
 from jperm.models import PermRuleDomain
 from util import get_random_str, write_log
-from script_init_server import init_server
+from script_init_server import init_server, clear_asset
 from script_copy_files import copy_file_to_server
 
 
@@ -1327,3 +1329,27 @@ def asset_upload(request):
         else:
             emg = u'批量添加失败,请检查格式.'
     return my_render('jasset/asset_add_batch.html', locals(), request)
+
+
+@require_role('admin') # /asset/clear_asset/ 清理主机
+def asset_clear_asset(request):
+    if request.method == 'POST':
+        ip = request.POST.get('ip', '')
+        if ip:
+            try:
+                asset = Asset.objects.get(ip=ip)
+                text = clear_asset(asset.ip, asset.port, asset.username, asset.passwd, request.user.username)
+                return HttpResponse(json.dumps({'error':'0','info': text}), content_type="application/json")
+                # return my_render(request.META.get('HTTP_REFERER','/'), "<script>alert('a');</script>", request)
+            except Asset.DoesNotExist:
+                return HttpResponse(json.dumps({'error':'1','info':'不存在的主机资源'}), content_type="application/json")
+            except paramiko.ssh_exception.AuthenticationException, paramiko.ssh_exception.SSHException:
+                return HttpResponse(json.dumps({'error':'1','info':'认证失败 (可能错误:密码错误)'}), content_type="application/json")
+            except socket.error:
+                return HttpResponse(json.dumps({'error':'1','info':'端口可能出错'}), content_type="application/json")
+            except:
+                return HttpResponse(json.dumps({'error':'1','info':'未知错误,请查看日志,并提交给管理员'}), content_type="application/json")
+
+
+
+

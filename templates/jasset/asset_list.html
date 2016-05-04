@@ -134,7 +134,7 @@
                                     <!--
                                     <th class="text-center" name="ip"> IP地址 </th>
                                     -->
-                                    <th class="text-center"> IDC </th>
+{#                                    <th class="text-center"> IDC </th>#}
                                     <th class="text-center"> 所属主机组 </th>
                                     <th class="text-center"> 所属分组 </th>
 {#                                  <th class="text-center"> 配置信息 </th>#}
@@ -168,7 +168,7 @@
                                     <!--
                                     <td class="text-center"> {{ asset.ip|default_if_none:"" }} </td>
                                     -->
-                                    <td class="text-center"> {{ asset.idc.name|default_if_none:"" }} </td>
+{#                                    <td class="text-center"> {{ asset.idc.name|default_if_none:"" }} </td>#}
                                     <td class="text-center">{{ asset.group.all|group_str2 }}</td>
                                     <td class="text-center">{{ asset.group1.all|group_str2 }}</td>
 {#                                  <td class="text-center">{{ asset.cpu }}|{{ asset.memory }}|{{ asset.disk }}</td>#}
@@ -184,7 +184,7 @@
                                         <a href="{% url 'asset_edit' %}?id={{ asset.id }}" class="btn btn-xs btn-info">编辑</a>
                                         <a value="{{ asset.id }}" host="{{asset.hostname}}" class="btn btn-xs btn-success asset_init">初始化</a>
 {#                                        <a value="{{ asset.id }}" class="conn btn btn-xs btn-warning" style="display:none;">连接</a>#}
-                                        <a value="{{ asset.id }}" class="newconn btn btn-xs btn-warning">快速连接</a>
+                                        <a value="{{ asset.id }}" class="newconn btn btn-xs btn-warning">连接</a>
                                         <a value="{% url 'asset_del' %}?id={{ asset.id }}" class="btn btn-xs btn-danger asset_del">删除</a>
                                     </td>
                                 </tr>
@@ -198,9 +198,11 @@
                                 <input type="button" id="asset_del" class="btn btn-danger btn-sm"  name="del_button" value="删除"/>
                                 <a value="{% url 'asset_edit_batch' %}" type="button" class="btn btn-sm btn-warning iframe">修改</a>
                                 <input type="button" id="asset_update" class="btn btn-info btn-sm"  name="update_button" value="更新"/>
+                                <input type="button" id="check_business" class="btn btn-info btn-sm"  value="检测业务"/>
                                 {#<input type="button" id="asset_update_all" name="update_button" class="btn btn-primary btn-sm" value="更新全部"/>#}
                                 <input type="button" id="exec_cmd" name="exec_cmd" class="btn btn-sm btn-primary"  value="执行命令"/>
                                 <input type="button" id="exec_custom_cmd" name="exec_custom_cmd" class="btn btn-sm btn-primary"  value="复制文件"/>
+
                             </div>
                             {% include 'paginator.html' %}
                         </div>
@@ -214,7 +216,12 @@
 
 {% block self_footer_js %}
 <script>
+    // 检查资产分组是否正确
+    $('#check_business').click(function () {
+        var asset_id_all = getIDall(); // 得到,分隔的asset id
 
+
+    });
     // 复制密码
     var clip = new ZeroClipboard( $(".zclip") );
     // 复制密码提示,并没有什么用
