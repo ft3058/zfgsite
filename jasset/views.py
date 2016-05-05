@@ -1306,7 +1306,7 @@ script_dir = '/root/scripts/tmpl'
 
 @require_role('admin')
 def biz_edit(request):
-    header_title, path1, path2 = u'编辑', u'资产管理', u'推送脚本'
+    header_title, path1, path2 = u'业务变更', u'资产管理', u'业务变更'
     asset_id = request.GET.get('id', '')
     asset = get_object(Asset, id=asset_id)
 
