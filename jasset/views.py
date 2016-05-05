@@ -1414,6 +1414,9 @@ def push_target_content_to_host(request):
         with open(tmp_file, 'w') as f:
             f.write(target_script_content.encode('utf8'))
 
+        return HttpResponse('write succ: ' + tmp_file)
+
+
     except Exception, e:
         return HttpResponse('Error:' + str(e))
 

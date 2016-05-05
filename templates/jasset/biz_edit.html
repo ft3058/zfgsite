@@ -95,6 +95,8 @@
                             <div class="col-sm-4 col-sm-offset-5">
                                 <!--button class="btn btn-white" type="submit"> 重置 </button-->
                                 <a id="push_target_file_btn" class="btn btn-warning"> 确定推送到主机 </a>
+                                <img src=""/>
+
                             </div>
                         </div>
                     </form>
@@ -175,7 +177,7 @@
         };
 
         $.post("{%url 'gen_target_content'%}", params, function(res){
-            alert(res);
+            //alert(res);
             $('#target_script_content').val(res);
         });
     });
@@ -190,6 +192,7 @@
             script_name: script_name,
             target_script_content: target_script_content
         };
+
 
         $.post("{%url 'push_target_content_to_host'%}", params, function(res){
             alert(res);
