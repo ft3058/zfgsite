@@ -1,7 +1,7 @@
 # coding:utf-8
-# import traceback
-import paramiko
 import socket
+import string
+from random import choice
 from django.db.models import Q
 from jasset.asset_api import *
 from jasset.asset_scripts import *
@@ -1407,8 +1407,7 @@ def push_target_content_to_host(request):
 
         if not script_name:
             return HttpResponse('*** script_name is empty ***')
-        import string
-        from random import choice
+
         tmp_dir_name = ''.join([choice(string.letters) for x in range(3)])
         pp = '/tmp/'+ tmp_dir_name + '/'
         if not os.path.exists(pp):
@@ -1425,8 +1424,8 @@ def push_target_content_to_host(request):
         remote_dir = '/root/'
         fname_list = [script_name, ]
         logged_user = request.user.username
-        print '====================================='
-        print a.ip, a.port, a.username, a.passwd, local_dir, remote_dir, fname_list, logged_user
+        # print '====================================='
+        # print a.ip, a.port, a.username, a.passwd, local_dir, remote_dir, fname_list, logged_user
         ct.set_params(a.ip, a.port, a.username, a.passwd, local_dir, remote_dir, fname_list, logged_user)
         ct.start()
         ct.join()
