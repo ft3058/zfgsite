@@ -5,3 +5,4 @@ logs
 keys
 local_settings.py
 local_vars.py
+*.xlsx

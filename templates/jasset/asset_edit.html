@@ -2,6 +2,7 @@
 {% load mytags %}
 {% load bootstrap %}
 {% block content %}
+    {{ jsondata|safe }}
 {% include 'nav_cat_bar.html' %}
 <div class="wrapper wrapper-content animated fadeInRight">
     <div class="row">
@@ -168,11 +169,15 @@
                                         <div class="hr-line-dashed"></div>
                                         <div class="form-group">
                                             <div class="col-sm-4 col-sm-offset-2">
+
                                                 <button class="btn btn-white" type="reset"> 重置 </button>
                                                 <button class="btn btn-primary" type="submit"> 提交 </button>
+
+{#                                                <button class="btn btn-warning" id="clear" onClick="$('#assetForm').attr('action','{% url 'clear_asset' %}');"> 清理 </button>#}
                                             </div>
                                         </div>
                                     </form>
+                                <button class="btn btn-danger" id="clear_asset"> 清理</button> 删除主机所有配置文件,请谨慎操作.
                                 </div>
                             </div>
                         </div>
@@ -186,6 +191,20 @@
 
 {% block self_footer_js %}
 <script>
+
+    $('#clear_asset').click(function () {
+        ip = $('#id_ip').val();
+        $.ajax({
+            type:"POST",
+            url:"{% url 'clear_asset' %}",
+            data:{'ip':ip},
+            success:function(data){
+                console.log(data);
+{#                layer.alert(data['info'])#}
+                alert(data['info']);
+            }
+        })
+    });
     $('document').ready(function(){
         $('#id_use_default_auth').click(function(){
             if ($(this).is(':checked')){

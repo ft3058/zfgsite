@@ -11,6 +11,11 @@ from jperm.perm_api import gen_resource
 from jumpserver.templatetags.mytags import get_disk_info
 
 
+def check_business_and_group(test=None):
+    """检查资产分组是否正确 待完成"""
+    return test
+
+
 def group_add_asset(group, asset_id=None, asset_ip=None):
     """
     资产组添加资产

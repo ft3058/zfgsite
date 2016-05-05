@@ -37,10 +37,14 @@ urlpatterns = patterns('',
     url(r'^domain/add/$', domain_add, name='domain_add'),
     url(r'^domains/domain_group/$', domain_group_list, name='domain_group_list'),
     url(r'^asset/change_passwd/$', asset_change_passwd, name='asset_change_passwd'),
+
     url(r'^asset/biz_start/$', biz_start, name='biz_start'),
     url(r'^asset/biz_edit/$', biz_edit, name='biz_edit'),
     url(r"^asset/load_script_content/$", load_script_content, name='load_script_content'),
     url(r"^asset/update_tmpl_content/$", update_tmpl_content, name='update_tmpl_content'),
     url(r"^asset/gen_target_content/$", gen_target_content, name='gen_target_content'),
     url(r"^asset/push_target_content_to_host/$", push_target_content_to_host, name='push_target_content_to_host'),
+
+    url(r'^asset/clear_asset/$', asset_clear_asset, name='clear_asset'),
+
 )
