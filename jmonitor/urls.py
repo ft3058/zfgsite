@@ -13,4 +13,6 @@ urlpatterns = patterns('',
     url(r'graph/get_graph_html/$', get_graph_html, name='get_graph_html'),
     url(r"^graph/graph_index/$", graph_index, name='graph_index'),
     url(r"^oplog/status/$", oplog_status, name='oplog_status'),
+
+
 )

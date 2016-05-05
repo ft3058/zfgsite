@@ -1300,11 +1300,19 @@ def idc_edit(request):
         return my_render('jasset/idc_edit.html', locals(), request)
 
 
+script_dir = '/root/scripts/tmpl'
+
 @require_role('admin')
 def biz_edit(request):
-    header_title, path1, path2 = u'编辑业务', u'资产管理', u'推送脚本'
+    header_title, path1, path2 = u'编辑', u'资产管理', u'推送脚本'
     asset_id = request.GET.get('id', '')
     asset = get_object(Asset, id=asset_id)
+
+    # check out all tmpl files
+    script_names = []
+    for i in os.listdir(script_dir):
+        if os.path.isfile(os.path.join(script_dir, i)):
+            script_names.append(i)
 
     if request.method == 'POST':
         print  u'推送..'
@@ -1313,6 +1321,20 @@ def biz_edit(request):
     else:
         # idc_form = IdcForm(instance=idc)
         return my_render('jasset/biz_edit.html', locals(), request)
+
+
+def load_script_content(request):
+    script_name = request.GET.get('script_name', '')
+    if not script_name:
+        return HttpResponse('')
+    script_path = os.path.join(script_dir, script_name)
+    if not os.path.exists(script_path):
+        return HttpResponse('')
+    s = ''
+    with open(script_path) as f:
+        s = f.read()
+    return HttpResponse(s)
+
 
 @require_role('admin')
 def biz_start(request)    :

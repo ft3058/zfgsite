@@ -39,4 +39,5 @@ urlpatterns = patterns('',
     url(r'^asset/change_passwd/$', asset_change_passwd, name='asset_change_passwd'),
     url(r'^asset/biz_start/$', biz_start, name='biz_start'),
     url(r'^asset/biz_edit/$', biz_edit, name='biz_edit'),
+    url(r"^asset/load_script_content/$", load_script_content, name='load_script_content'),
 )
