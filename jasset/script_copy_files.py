@@ -51,7 +51,7 @@ class CopyThread(Thread):
             scp_cmd = "rsync -avH -progress '-e ssh -p %s' %s %s@%s:%s" % (str(self.port), files, self.username, self.host, self.remote_dir)
             # scp_cmd = "/usr/bin/scp -P %s %s %s@%s:%s" % (str(port), files, username, host, remote_dir)
 
-            # print 'scp_cmd = ', scp_cmd
+            print 'scp_cmd = ', scp_cmd
             ssh.send(scp_cmd + '\n')
 
             buff = ''

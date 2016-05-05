@@ -3,6 +3,13 @@
 {% load bootstrap %}
 {% include 'nav_cat_bar.html' %}
 
+{% block self_head_css_js %}
+ <style>
+     .not_show {display: none;}
+
+ </style>
+{% endblock %}
+
 <div class="wrapper wrapper-content animated fadeInRight">
     <div class="row">
         <div class="col-sm-10">
@@ -95,7 +102,7 @@
                             <div class="col-sm-4 col-sm-offset-5">
                                 <!--button class="btn btn-white" type="submit"> 重置 </button-->
                                 <a id="push_target_file_btn" class="btn btn-warning"> 确定推送到主机 </a>
-                                <img src=""/>
+                                <img id="loading_img" src="/static/img/loading.gif" class="not_show"/>
 
                             </div>
                         </div>
@@ -193,10 +200,12 @@
             target_script_content: target_script_content
         };
 
+        $('#loading_img').removeClass('not_show');
 
         $.post("{%url 'push_target_content_to_host'%}", params, function(res){
             alert(res);
             // $('#target_script_content').val(res);
+            $('#loading_img').addClass('not_show');
         });
     });
 

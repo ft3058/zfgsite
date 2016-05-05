@@ -1399,6 +1399,7 @@ def gen_target_content(request):
 
 def push_target_content_to_host(request):
     try:
+        asset_id = int(request.POST.get('asset_id', '99999'))
         script_name = request.POST.get('script_name', '')
         target_script_content = request.POST.get('target_script_content', '')
 
@@ -1413,6 +1414,20 @@ def push_target_content_to_host(request):
         tmp_file = pp + script_name
         with open(tmp_file, 'w') as f:
             f.write(target_script_content.encode('utf8'))
+        # time.sleep(3)
+        # copy tmp file to remote server
+        from script_copy_files import CopyThread
+        ct = CopyThread()
+        a = get_object(Asset, id=asset_id)
+        local_dir = pp
+        remote_dir = '/root/'
+        fname_list = [script_name, ]
+        logged_user = request.user.username
+        print '====================================='
+        print a.ip, a.port, a.username, a.passwd, local_dir, remote_dir, fname_list, logged_user
+        ct.set_params(a.ip, a.port, a.username, a.passwd, local_dir, remote_dir, fname_list, logged_user)
+        ct.start()
+        ct.join()
 
         return HttpResponse('write succ: ' + tmp_file)
 
