@@ -53,7 +53,7 @@
                                             {% endifequal %}
                                         {% endfor %}
                                     </select>
-
+                                    <input id="asset_id" type="hidden" value="{{asset.id}}"/>
                                     <a id="load_tmpl_btn" class="btn btn-primary"> 加载模板 </a>
                                 </div>
                             </div>
@@ -94,7 +94,7 @@
 
                             <div class="col-sm-4 col-sm-offset-5">
                                 <!--button class="btn btn-white" type="submit"> 重置 </button-->
-                                <button class="btn btn-primary" type="sumbit"> 确定推送到主机 </button>
+                                <a id="push_target_file_btn" class="btn btn-warning"> 确定推送到主机 </a>
                             </div>
                         </div>
                     </form>
@@ -130,22 +130,18 @@
     });
 
     // 点击加载模板时
-    $("#load_tmpl_btn").click(function(e){
-        //alert('load tmpl ');
+    $("#load_tmpl_btn").click(function(e) {
         var script_name = $('#script_name').val();
-        alert(script_name);
       $.get("{%url 'load_script_content'%}?script_name=" + script_name, function(result){
         // alert(result);
         $("#tmpl_content").val(result);
-        alert('add succ');
+        // alert('add succ');
       });
-
         return;
     });
 
     // 保存模板
     $("#save_tmpl_btn").click(function(e) {
-        alert('save_tmpl_btn ');
         var script_name = $('#script_name').val();
         var tmpl_content = $('#tmpl_content').val();
         if (script_name == '') {
@@ -162,14 +158,45 @@
             tmpl_content: tmpl_content,
         };
         $.post("{%url 'update_tmpl_content'%}", params, function(res){
-            alert('update succ: ' + res);
+            alert(res);
         });
     });
 
     // 生成目标的脚本文件
     $("#gen_target_script_btn").click(function(e){
-        alert('生成目标的脚本文件 ');
+        // alert('生成目标的脚本文件 ');
+        var script_name = $('#script_name').val();
+        var tmpl_content = $('#tmpl_content').val();
+        var asset_id = $('#asset_id').val();
+        var params = {
+            asset_id: asset_id,
+            script_name: script_name,
+            tmpl_content: tmpl_content
+        };
+
+        $.post("{%url 'gen_target_content'%}", params, function(res){
+            alert(res);
+            $('#target_script_content').val(res);
+        });
     });
+
+    // push
+    $("#push_target_file_btn").click(function(e){
+        var script_name = $('#script_name').val();
+        var target_script_content = $('#target_script_content').val();
+        var asset_id = $('#asset_id').val();
+        var params = {
+            asset_id: asset_id,
+            script_name: script_name,
+            target_script_content: target_script_content
+        };
+
+        $.post("{%url 'push_target_content_to_host'%}", params, function(res){
+            alert(res);
+            // $('#target_script_content').val(res);
+        });
+    });
+
 
 
 </script>

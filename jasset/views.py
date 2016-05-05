@@ -1299,7 +1299,7 @@ def idc_edit(request):
         idc_form = IdcForm(instance=idc)
         return my_render('jasset/idc_edit.html', locals(), request)
 
-
+from const import MAKE_DIR_PART, RSYNC_SCRIPT_PART
 script_dir = '/root/scripts/tmpl'
 
 @require_role('admin')
@@ -1333,7 +1333,89 @@ def load_script_content(request):
     s = ''
     with open(script_path) as f:
         s = f.read()
+    # s = s.replace('MAKE_DIR_PART', MAKE_DIR_PART).replace('RSYNC_SCRIPT_PART', RSYNC_SCRIPT_PART)
     return HttpResponse(s)
+
+def update_tmpl_content(request):
+    try:
+        script_name = request.POST.get('script_name')
+        tmpl_content = request.POST.get('tmpl_content')
+        script_path = os.path.join(script_dir, script_name)
+        # print tmpl_content
+        # print '---', script_path, script_name
+        with open(script_path, 'w') as f:
+            f.write(tmpl_content.encode('utf8'))
+        return HttpResponse("update successful !")
+    except Exception, e:
+        return HttpResponse(str(e))
+
+def gen_target_content(request):
+    """
+    变量名
+    YxdownPhoneAndroid=/home/yxdown/phone/android
+
+    $yuming  sync.yxdown.cn
+    $Rsync   YxdownPhoneAndroid
+    $Rpath   /home/yxdown/phone/android
+    """
+    try:
+        asset_id = request.POST.get('asset_id', '')
+        script_name = request.POST.get('script_name', '')
+        tmpl_content = request.POST.get('tmpl_content', '')
+
+        asset = get_object(Asset, id=int(asset_id))
+        if not asset:
+            return HttpResponse('not found asset id :' + asset_id)
+        yuming = 'sync.yxdown.cn'
+
+        group1 = asset.group1.all()
+        if not group1:
+            return HttpResponse('***sub group is None!***')
+        if not group1[0].module_path:
+            return HttpResponse('***module_path is not set!***')
+
+        path_str = group1[0].module_path
+        pairs = path_str.split(',')
+        names_list = []
+
+        make_dir_part = ''
+        rsync_script_part = ''
+        for pair in pairs:
+            modu_name1 = pair.split('=')[0].strip()
+            path_name1 = pair.split('=')[-1].strip()
+            names_list.append([modu_name1, path_name1])
+
+            make_dir_part += MAKE_DIR_PART.replace('$Rpath', path_name1)
+            rsync_script_part += RSYNC_SCRIPT_PART\
+                .replace('$yuming', yuming)\
+                .replace('$Rsync', modu_name1)\
+                .replace('$Rpath', path_name1)
+
+        target_content = tmpl_content.replace('MAKE_DIR_PART', make_dir_part).replace('RSYNC_SCRIPT_PART', rsync_script_part)
+        return HttpResponse(target_content)
+    except Exception, e:
+        return HttpResponse('***' + str(e) + '***')
+
+
+def push_target_content_to_host(request):
+    try:
+        script_name = request.POST.get('script_name', '')
+        target_script_content = request.POST.get('target_script_content', '')
+
+        if not script_name:
+            return HttpResponse('*** script_name is empty ***')
+        import string
+        from random import choice
+        tmp_dir_name = ''.join([choice(string.letters) for x in range(3)])
+        pp = '/tmp/'+ tmp_dir_name + '/'
+        if not os.path.exists(pp):
+            os.mkdir(pp)
+        tmp_file = pp + script_name
+        with open(tmp_file, 'w') as f:
+            f.write(target_script_content.encode('utf8'))
+
+    except Exception, e:
+        return HttpResponse('Error:' + str(e))
 
 
 @require_role('admin')

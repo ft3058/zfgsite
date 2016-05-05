@@ -40,4 +40,7 @@ urlpatterns = patterns('',
     url(r'^asset/biz_start/$', biz_start, name='biz_start'),
     url(r'^asset/biz_edit/$', biz_edit, name='biz_edit'),
     url(r"^asset/load_script_content/$", load_script_content, name='load_script_content'),
+    url(r"^asset/update_tmpl_content/$", update_tmpl_content, name='update_tmpl_content'),
+    url(r"^asset/gen_target_content/$", gen_target_content, name='gen_target_content'),
+    url(r"^asset/push_target_content_to_host/$", push_target_content_to_host, name='push_target_content_to_host'),
 )
