@@ -1302,17 +1302,17 @@ def idc_edit(request):
 
 @require_role('admin')
 def biz_edit(request):
-    header_title, path1, path2 = u'编辑biz', u'资产管理', u'编辑biz'
-    idc_id = request.GET.get('id', '')
-    idc = get_object(IDC, id=idc_id)
+    header_title, path1, path2 = u'编辑业务', u'资产管理', u'推送脚本'
+    asset_id = request.GET.get('id', '')
+    asset = get_object(Asset, id=asset_id)
+
     if request.method == 'POST':
-        idc_form = IdcForm(request.POST, instance=idc)
-        if idc_form.is_valid():
-            idc_form.save()
-            return HttpResponseRedirect(reverse('idc_list'))
+        print  u'推送..'
+        # return HttpResponseRedirect(reverse('idc_list'))
+        return HttpResponse(u'yes')
     else:
-        idc_form = IdcForm(instance=idc)
-        return my_render('jasset/idc_edit.html', locals(), request)
+        # idc_form = IdcForm(instance=idc)
+        return my_render('jasset/biz_edit.html', locals(), request)
 
 @require_role('admin')
 def biz_start(request)    :
