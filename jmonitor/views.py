@@ -417,6 +417,10 @@ def get_graph_html(request):
             y = dt.now() - timedelta(minutes=5*len(objs))
             milli_seconds = 5*len(objs) * 60 * 1000
             date_start_list = ', '.join([str(x) for x in [y.year, y.month-1, y.day, y.hour, y.minute, y.second]])
+            if len(objs):
+                curr_value = str(objs[0].cnt) + ''
+            else:
+                curr_value = '0'
 
             return my_render('jmonitor/data_tcp_conn_count.html', locals(), request)
 
@@ -437,6 +441,10 @@ def get_graph_html(request):
                 data_list2.append(str(x.used))
             data_list1 = ', '.join(data_list1)
             data_list2 = ', '.join(data_list2)
+            if len(objs):
+                curr_value = str(objs[0].used) + 'G/' + str(objs[0].total) + 'G'
+            else:
+                curr_value = '0G'
 
             return my_render('jmonitor/data_disk_size.html', locals(), request)
 
@@ -469,6 +477,11 @@ def get_graph_html(request):
             data_list1 = ', '.join(data_list1)
             data_list2 = ', '.join(data_list2)
             title = u'流量 - ' + ip + ' - ' + inter_name
+
+            if len(objs):
+                curr_value = 'In:' + str(data_list1[0]) + 'M,' + ' Out:' + str(data_list2[0]) + 'M'
+            else:
+                curr_value = 'In:0M, Out:0M'
 
             return my_render('jmonitor/data_interface.html', locals(), request)
         else:

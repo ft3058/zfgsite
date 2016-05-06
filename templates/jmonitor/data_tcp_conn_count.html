@@ -73,6 +73,19 @@
         exporting: {
             enabled: true
         }
+    }, function (chart) { // on complete
+
+        chart.renderer.text('当前值:{{curr_value}}', 100, 60)
+            /*
+            .attr({
+                rotation: -25
+            })*/
+            .css({
+                color: 'red',
+                fontSize: '16px'
+            })
+            .add();
+
     });
 
 </script>
