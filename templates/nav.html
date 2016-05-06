@@ -56,9 +56,19 @@
                     <li class="download"><a href="{% url 'file_download' %}">文件下载</a></li>
                 </ul>
             </li>
-            <li id="setting">
+            <!--li id="setting">
                    <a href="{% url 'setting' %}"><i class="fa fa-gears"></i> <span class="nav-label">设置</span><span class="label label-info pull-right"></span></a>
+            </li-->
+
+            <li id="setting">
+                <a><i class="fa fa-inbox"></i> <span class="nav-label">设置</span><span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level">
+                    <li class="setting"><a href="{% url 'setting' %}">系统认证设置</a></li>
+                    <li class="setting"><a href="{% url 'setting' %}">模板变量设置</a></li>
+                </ul>
             </li>
+
+
             <li class="special_link">
                 <a href="http://www.jumpserver.org" target="_blank"><i class="fa fa-database"></i> <span class="nav-label">访问官网</span></a>
             </li>
