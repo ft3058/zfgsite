@@ -99,6 +99,7 @@ INSTALLED_APPS = (
     'jperm',
     'jlog',
     'jmonitor',
+    'jset',
 )
 
 MIDDLEWARE_CLASSES = (

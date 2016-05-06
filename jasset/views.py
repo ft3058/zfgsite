@@ -1096,9 +1096,6 @@ def asset_list_domain(request):
     #     return my_render('jasset/asset_cu_list.html', locals(), request)
 
 
-
-
-
 @require_role('admin')
 def asset_edit_batch(request):
     af = AssetForm()
