@@ -237,7 +237,12 @@ def push_target_content_to_host(request):
         remote_dir = '/tmp/'
         fname_list = [script_name, ]
         if script_path:
-            fname_list.append(os.path.join(script_path + '*.conf'))
+            # 需要将在数据库中配置好的路径[/var/serconf/nginx/yxdown.com/phone/android ]，
+            # 转化成在jumpserver上的路径[/root/scripts/nginx/yxdown.com/phone/android ]
+            jump_path = script_path.replace('/var/serconf', '/root/scripts')
+            for ff in os.listdir(jump_path):
+                if ff.endswith('.conf'):
+                    fname_list.append(os.path.join(jump_path, ff))
         logged_user = request.user.username
         # print '====================================='
         # print a.ip, a.port, a.username, a.passwd, local_dir, remote_dir, fname_list, logged_user
