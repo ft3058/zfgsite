@@ -311,11 +311,18 @@ class Tty(object):
             # role_key = connect_info.get('role_key')
             asset = Asset.objects.get(ip=connect_info.get('ip'))
             # if role_key and os.path.isfile(role_key):
-
-            ssh.connect(connect_info.get('ip'),
-                        port=asset.port,
-                        username = asset.username,
-                        password = asset.passwd,
+            ip = connect_info.get('ip')
+            port = asset.port
+            uname = asset.get_username()
+            passwd = asset.passwd
+            print 'ip:',ip
+            print 'port:',port
+            print 'uname:',uname
+            print 'passwd:', passwd
+            ssh.connect(ip,
+                        port=port,
+                        username = uname,
+                        password = passwd,
                         # username=connect_info.get('role_name'),
                         # password=connect_info.get('role_pass'),
                         allow_agent=False,

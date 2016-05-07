@@ -157,6 +157,18 @@ class Asset(AssetParent):
     group1 = models.ManyToManyField(AssetGroup1, blank=True, verbose_name=u"所属分组")
     domains = models.ManyToManyField(Domains, blank=True, verbose_name=u"Domain")
 
+    def get_username(self):
+        """restore password by passwd"""
+        from jumpserver.api import CRYPTOR
+        if self.username:
+            return self.username
+        else:
+            self.username = 'root'
+            if not self.password and self.passwd:
+                self.password = CRYPTOR.encrypt(self.passwd)
+            self.save()
+            return 'root'
+
 
 class AssetRecord(models.Model):
     asset = models.ForeignKey(Asset)

@@ -145,11 +145,11 @@ def push_target_content_to_host(request):
         logged_user = request.user.username
         # print '====================================='
         # print a.ip, a.port, a.username, a.passwd, local_dir, remote_dir, fname_list, logged_user
-        ct.set_params(a.ip, a.port, a.username, a.passwd, local_dir, remote_dir, fname_list, logged_user)
+        ct.set_params(a.ip, a.port, a.get_username(), a.passwd, local_dir, remote_dir, fname_list, logged_user)
         ct.start()
         ct.join()
 
-        return HttpResponse('write succ: ' + tmp_file)
+        return HttpResponse(u'推送成功 !')
 
 
     except Exception, e:

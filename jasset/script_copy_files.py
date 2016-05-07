@@ -43,6 +43,7 @@ class CopyThread(Thread):
         """
         """
         try:
+            print 'ssh info: ', IP, PORT, USERNAME, PASSWORD
             s = get_ssh(IP, PORT, USERNAME, PASSWORD)
             ssh = s.invoke_shell()
 
