@@ -27,6 +27,17 @@
                 </ul>
             </li>
 
+
+            <li id="jmonitor">
+                <a><i class="fa fa-inbox"></i> <span class="nav-label">监控管理</span><span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level">
+                    <li class="rsync"><a href="{% url 'rsync_status_list' %}">检查Rsync状态</a></li>
+                    <li class="business"><a href="{% url 'check_business' %}">检查业务状态</a></li>
+                    <li class="oplog"><a href="{% url 'oplog_status' %}">操作日志</a></li>
+                    <li class="graph"><a href="{% url 'graph_index' %}">graph</a></li>
+                </ul>
+            </li>
+
             <li id="jperm">
                 <a href="#"><i class="fa fa-edit"></i> <span class="nav-label">授权管理</span><span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level">
@@ -36,15 +47,6 @@
                     <li class="role"> <a href="{% url 'role_list' %}">系统用户</a> </li>
                     <li class="rule"> <a href="{% url 'rule_list' %}">授权规则</a> </li>
                     <li class="domain"> <a href="{% url 'rule_list_domains' %}">授权规则(域)</a> </li>
-                </ul>
-            </li>
-
-            <li id="jmonitor">
-                <a><i class="fa fa-inbox"></i> <span class="nav-label">监控管理</span><span class="fa arrow"></span></a>
-                <ul class="nav nav-second-level">
-                    <li class="rsync"><a href="{% url 'rsync_status_list' %}">Rsync同步状态</a></li>
-                    <li class="oplog"><a href="{% url 'oplog_status' %}">操作日志</a></li>
-                    <li class="graph"><a href="{% url 'graph_index' %}">graph</a></li>
                 </ul>
             </li>
 

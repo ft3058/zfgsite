@@ -1,6 +1,8 @@
 # coding:utf-8
 from django.conf.urls import patterns, include, url
 from jasset.views import *
+from jasset.views_new import *
+
 
 urlpatterns = patterns('',
     url(r'^asset/add/$',            asset_add,          name='asset_add'),

@@ -31,15 +31,17 @@ dr-xr-xr-x. 23 root root 4096 2015-01-12/18:53:11 ..
 """
 
 import paramiko
+import const as cnt
 
 
 class File(object):
-    def __init__(self, fname, user, group, size, sdt):
+    def __init__(self, fname, user, group, size, sdt, ftype):
         self.fname = fname
         self.user = user
         self.group = group
         self.size = size
         self.sdt = sdt
+        self.ftype = ftype  # is file or dir, value: f, d
 
     def __str__(self):
         s = 'file name: %s\n' % self.fname
@@ -65,7 +67,13 @@ def parse_files(lines):
         fname = l.split(sp[5])[-1].strip()
         if fname.startswith('.'):
             continue
-        fobj = File(fname, sp[2], sp[3], sp[4], sp[5])
+        ftype = 'n'
+        if l.startswith('d'):
+            ftype = 'd'
+        elif l.startswith('-'):
+            ftype = 'f'
+
+        fobj = File(fname, sp[2], sp[3], sp[4], sp[5], ftype)
         file_obj_list.append(fobj)
     return file_obj_list
 
@@ -90,16 +98,7 @@ def check():
     stdin, stdout, stderr = ssh.exec_command(cmd)
     lines = stdout.readlines()
     ssh.close()
-
     parse_files(lines)
-
-
-IP = '222.132.12.103'
-PORT = 12103
-USERNAME = 'root'
-PASSWORD = 'b9de304202a0'  # yxdown@1007 b9de304202a0 qq@20171328
-LS_CMD_TMPL = 'ls -l --time-style="+%Y-%d-%m/%H:%M:%S" '
-SEE_CONF_CMD = "cat /etc/rsyncd.conf"
 
 
 class RsyncCheck(object):
@@ -126,9 +125,11 @@ class RsyncCheck(object):
                 if j.fname == i.fname:
                     # print 'j fname:', j.fname, 'i fname:', i.fname
                     found = True
-                    if j.size != i.size:
+                    # warnning: this is not precise
+                    if j.size != i.size and j.ftype == 'f':
                         file_err_size.append(i)
-                    if j.sdt != i.sdt:
+                    # warnning: this is not precise
+                    if j.sdt != i.sdt and j.ftype == 'f':
                         file_err_time.append(i)
                     break
             if not found:
@@ -163,8 +164,8 @@ class RsyncCheck(object):
         return lines
 
     def fetch_repo_files(self, path):
-        ssh = self.get_ssh(IP, PORT, USERNAME, PASSWORD)
-        cmd = LS_CMD_TMPL + path
+        ssh = self.get_ssh(cnt.IP, cnt.PORT, cnt.USERNAME, cnt.PASSWORD)
+        cmd = cnt.LS_CMD_TMPL + path
         stdin, stdout, stderr = ssh.exec_command(cmd)
         # lines = stdout.readlines()
         txt = stdout.read()
@@ -177,7 +178,7 @@ class RsyncCheck(object):
     def get_module_key_dict(self, ip, port, username, password, setrepo=False):
         module_path_dict = {}
         ssh = self.get_ssh(ip, port, username, password)
-        stdin, stdout, stderr = ssh.exec_command(SEE_CONF_CMD)
+        stdin, stdout, stderr = ssh.exec_command(cnt.SEE_CONF_CMD)
         txt = stdout.read()
         ssh.close()
         lines = self.get_exec_output_lines(txt)
