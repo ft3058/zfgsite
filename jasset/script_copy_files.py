@@ -47,7 +47,15 @@ class CopyThread(Thread):
             s = get_ssh(IP, PORT, USERNAME, PASSWORD)
             ssh = s.invoke_shell()
 
-            files = ' '.join([os.path.join(self.local_dir, fn) for fn in self.fname_list])
+            files = ''
+            for i in self.fname_list:
+                if i.startswith('/'):
+                    files += i + ' '
+                else:
+                    files += os.path.join(self.local_dir, i) + ' '
+            # files = ' '.join([os.path.join(self.local_dir, fn) for fn in self.fname_list])
+            print '=============='
+            print 'files:::', files
 
             scp_cmd = "rsync -avH -progress '-e ssh -p %s' %s %s@%s:%s" % (str(self.port), files, self.username, self.host, self.remote_dir)
             # scp_cmd = "/usr/bin/scp -P %s %s %s@%s:%s" % (str(port), files, username, host, remote_dir)

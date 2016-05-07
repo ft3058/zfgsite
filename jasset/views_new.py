@@ -138,6 +138,13 @@ def copy_files_and_restart_service(host, port, username, password, module_path_l
         print 'rm vhost conf complete..'
         write_log(ip=host, cmd=cmd, title='rm_vhost', result="succ")
 
+        cmd = '/bin/cp /tmp/*.conf /usr/local/nginx/conf/vhost/ \n'
+        print 'run CMD: ', cmd
+        ssh.send(cmd)
+        time.sleep(0.5)
+        print 'rm /tmp/*.conf complete..'
+        write_log(ip=host, cmd=cmd, title='rm_vhost', result="succ")
+
         # rm rsync.sh
         cmd = '/bin/rm /root/rsync.sh \n'
         print 'run CMD: ', cmd
@@ -155,11 +162,11 @@ def copy_files_and_restart_service(host, port, username, password, module_path_l
         write_log(ip=host, cmd=cmd, title='rm_rsync', result="succ")
 
         # kill
-        cmd = '/bin/kill -9 rsync \n'
+        cmd = '/bin/killall -9 rsync \n'
         # print 'run CMD: ', cmd
         ssh.send(cmd)
         time.sleep(1)
-        print 'kill -9 rsync complete..'
+        print 'killall -9 rsync complete..'
         write_log(ip=host, cmd=cmd, title='kill rsync', result="succ")
 
         # copy tmp file to /root
@@ -208,9 +215,29 @@ def push_target_content_to_host(request):
         from script_copy_files import CopyThread
         ct = CopyThread()
         a = get_object(Asset, id=asset_id)
+
+        # get some dir
+        gp1_list = a.group1.all()
+        module_path_list = []
+        script_path = ''
+        for gp1 in gp1_list:
+            if gp1 and gp1.module_path:
+                ppaths = gp1.module_path.split(',')
+                for i in ppaths:
+                    mod_path = i.split('=')[-1].strip()
+                    if mod_path and mod_path not in module_path_list:
+                        module_path_list.append(mod_path)
+            if gp1 and gp1.script_path:
+                script_path = gp1.script_path
+
+        print 'module_path_list = ', module_path_list
+        print 'script_path = ', script_path
+
         local_dir = pp
         remote_dir = '/tmp/'
         fname_list = [script_name, ]
+        if script_path:
+            fname_list.append(os.path.join(script_path + '*.conf'))
         logged_user = request.user.username
         # print '====================================='
         # print a.ip, a.port, a.username, a.passwd, local_dir, remote_dir, fname_list, logged_user
@@ -222,18 +249,6 @@ def push_target_content_to_host(request):
         # 2.delete old rsync.sh etc and restart ng
         remote_tmp_fname = remote_dir + script_name
         print 'remote_tmp_fname = ', remote_tmp_fname
-
-        gp1_list = a.group1.all()
-        module_path_list = []
-        for gp1 in gp1_list:
-            if gp1 and gp1.module_path:
-                ppaths = gp1.module_path.split(',')
-                for i in ppaths:
-                    mod_path = i.split('=')[-1].strip()
-                    if mod_path and mod_path not in module_path_list:
-                        module_path_list.append(mod_path)
-
-        print 'module_path_list = ', module_path_list
         copy_files_and_restart_service(a.ip, a.port, a.get_username(), a.passwd, module_path_list, remote_tmp_fname)
 
         print 'all succ...'
