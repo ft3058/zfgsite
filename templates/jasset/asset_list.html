@@ -31,6 +31,8 @@
                             <a href="{% url 'asset_add' %}" class="btn btn-sm btn-primary "> 添加资产 </a>
                         </div>
 
+
+                        <!---cu filter -->
                         <div class="col-sm-7" style="padding-left: 0px">
                             <label>
                                 <select name="idc" class="form-control m-b input-sm" onchange="change_info()">
@@ -128,28 +130,22 @@
                                     </th>
                                     <th class="text-center"> 主机名 </th>
                                     <th class="text-center"> 端口号 </th>
-                                    <!--th class="text-center"> 管理用户名 </th-->
+                                    <th class="text-center"> 管理用户名 </th>
                                     <th class="text-center"> 密码 </th>
-
                                     <!--
                                     <th class="text-center" name="ip"> IP地址 </th>
-
                                     <!th class="text-center"> IDC </th>
                                     -->
-
-{#                                    <th class="text-center"> IDC </th>#}
+{#                                  <th class="text-center"> IDC </th>#}
                                     <th class="text-center"> 所属主机组 </th>
                                     <th class="text-center"> 所属分组 </th>
 {#                                  <th class="text-center"> 配置信息 </th>#}
-
                                     <!--
-
                                     <th class="text-center"> 操作系统 </th>
                                     <th class="text-center"> cpu核数 </th>
                                     <th class="text-center"> 内存 </th>
                                     <th class="text-center"> 硬盘 </th>
                                     -->
-
                                     <th class="text-center"> 操作 </th>
                                 </tr>
                             </thead>
@@ -161,7 +157,7 @@
                                     </td>
                                     <td class="text-center hostname"> <a href="{% url 'asset_detail' %}?id={{ asset.id }}">{{ asset.hostname|default_if_none:"" }}</a></td>
                                     <td class="text-center">{{ asset.port }}</td>
-                                    <!--td class="text-center">{{ asset.username }}</td-->
+                                    <td class="text-center">{{ asset.username }}</td>
                                     <td class="text-center">
                                         <span id="asset_passwd_{{asset.id}}">{{asset.passwd}}</span>
                                         <a class="gen_new_pass" asset_id="{{asset.id}}">生成新密码</a>

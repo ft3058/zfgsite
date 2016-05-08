@@ -7,8 +7,8 @@ urlpatterns = patterns('',
     url(r'^auth/$',                 auth_setting,           name='auth_setting'),
     url(r'^tmpl/$',                 tmpl_setting,           name='tmpl_setting'),
 
-    url(r'^del_tmpl_name/$',        del_tmpl_name,          name='del_tmpl_name'),
-    url(r'^load_tmpl_var/$',        load_tmpl_var,          name='load_tmpl_var'),
-    url(r'^add_new_tmpl_name/$',    add_new_tmpl_name,      name='add_new_tmpl_name'),
-    url(r'^update_tmpl_var_value/$',update_tmpl_var_value,  name='update_tmpl_var_value'),
+    url(r'^del_var_name/$',         del_var_name,          name='del_var_name'),
+    url(r'^load_var/$',             load_var,               name='load_var'),
+    url(r'^add_new_var_name/$',     add_new_var_name,      name='add_new_var_name'),
+    url(r'^update_var_value/$',     update_var_value,       name='update_var_value'),
 )

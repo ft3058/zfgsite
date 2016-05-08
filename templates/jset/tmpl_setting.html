@@ -62,7 +62,7 @@
                                                             </select>
                                                             <input id="asset_id" type="hidden" value="{{asset.id}}"/>
                                                             <a id="load_var_btn" class="btn btn-primary"> 加载 </a>
-                                                            <a id="del_tmpl_btn" class="btn btn-warning"> 删除此变量 </a>
+                                                            <a id="del_var_btn" class="btn btn-warning"> 删除此变量 </a>
                                                             <span id="del_info" style="color:red;"> <span>
                                                             <br>
                                                             <br>
@@ -121,7 +121,7 @@
     $("#create_new_btn").click(function(e) {
         var new_var_name = $('#new_var_name').val();
 
-        $.get("{%url 'add_new_tmpl_name'%}?new_var_name=" + new_var_name, function(result){
+        $.get("{%url 'add_new_var_name'%}?new_var_name=" + new_var_name, function(result){
             //alert(result);
             $("#add_info").html(result);
             location.reload();
@@ -131,7 +131,7 @@
     });
 
     // del_tmpl_btn
-    $("#del_tmpl_btn").click(function(e) {
+    $("#del_var_btn").click(function(e) {
         var var_name = $('#var_name').val();
         // alert(var_name);
         if (confirm('确定要删除此变量吗？')) {
@@ -140,7 +140,7 @@
             return;
         }
 
-        $.get("{%url 'del_tmpl_name'%}?var_name=" + var_name, function(result){
+        $.get("{%url 'del_var_name'%}?var_name=" + var_name, function(result){
             alert(result);
             $("#del_info").html(result);
             location.reload();
@@ -152,7 +152,7 @@
     // 点击加载模板时
     $("#load_var_btn").click(function(e) {
         var var_name = $('#var_name').val();
-      $.get("{%url 'load_tmpl_var'%}?var_name=" + var_name, function(result){
+      $.get("{%url 'load_var'%}?var_name=" + var_name, function(result){
         $("#var_value").val(result);
       });
         return;
@@ -175,7 +175,7 @@
             var_name: var_name,
             var_value: var_value,
         };
-        $.post("{%url 'update_tmpl_var_value'%}", params, function(res){
+        $.post("{%url 'update_var_value'%}", params, function(res){
             alert(res);
         });
     });

@@ -58,7 +58,7 @@ def tmpl_setting(request):
 
     return my_render('jset/tmpl_setting.html', locals(), request)
 
-def add_new_tmpl_name(request):
+def add_new_var_name(request):
     new_var_name = request.GET.get('new_var_name', '').strip()
     if not new_var_name:
         return HttpResponse(u'变量名不能为空')
@@ -74,7 +74,7 @@ def add_new_tmpl_name(request):
         return HttpResponse(u'变量名已经存在！')
 
 
-def del_tmpl_name(request):
+def del_var_name(request):
     var_name = request.GET.get('var_name', '').strip()
     if not var_name:
         return HttpResponse(u'变量名 is Empty！')
@@ -85,7 +85,7 @@ def del_tmpl_name(request):
     else:
         return HttpResponse(u'变量名不存在！')
 
-def load_tmpl_var(request):
+def load_var(request):
     var_name = request.GET.get('var_name', '').strip()
     if not var_name:
         return HttpResponse(u'变量名 is Empty！')
@@ -95,7 +95,7 @@ def load_tmpl_var(request):
     else:
         return HttpResponse(u'变量名不存在！')
 
-def update_tmpl_var_value(request):
+def update_var_value(request):
     var_name = request.POST.get('var_name', '').strip()
     var_value = request.POST.get('var_value', '').strip()
 

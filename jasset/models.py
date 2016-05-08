@@ -106,9 +106,7 @@ class IDC(IDCParent):
 
 # class Asset(models.Model):
 class AssetParent(models.Model):
-    """
-    asset modle
-    """
+    """ original asset model"""
     ip = models.CharField(max_length=32, blank=True, null=True, verbose_name=u"主机IP")
     other_ip = models.CharField(max_length=255, blank=True, null=True, verbose_name=u"其他IP")
     hostname = models.CharField(unique=True, max_length=128, verbose_name=u"主机名")

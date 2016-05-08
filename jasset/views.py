@@ -510,7 +510,7 @@ def asset_init(request):
             # host, port, username, password, new_pwd = '111.7.165.43', 16543, 'root', 'qq@20171328', '123456bgf'  # qq@20171328'
             host = obj.ip
             port = obj.port
-            username = obj.username
+            username = obj.get_username()
             password = obj.passwd
 
             # find all group1

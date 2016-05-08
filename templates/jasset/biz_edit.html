@@ -62,6 +62,13 @@
                                     </select>
                                     <input id="asset_id" type="hidden" value="{{asset.id}}"/>
                                     <a id="load_tmpl_btn" class="btn btn-primary"> 加载模板 </a>
+                                    <br>
+                                    <br>
+
+                                    <input id="new_tmpl_name" class="col-sm-3 m-b input-sm" type="text" value=""/>
+                                    <a id="create_new_btn" class="btn btn-primary"> 新建模板名 </a>
+                                    <span id="add_info" style="color:red;"> <span>
+
                                 </div>
                             </div>
 
@@ -136,6 +143,20 @@
         valid: function(form) {
             form.submit();
         }
+    });
+
+    //------------------------------------------
+    // create new
+    $("#create_new_btn").click(function(e) {
+        var new_var_name = $('#new_var_name').val();
+
+        $.get("{%url 'add_new_tmpl_name'%}?new_var_name=" + new_var_name, function(result){
+            //alert(result);
+            $("#add_info").html(result);
+            location.reload();
+        });
+
+        return;
     });
 
     // 点击加载模板时
