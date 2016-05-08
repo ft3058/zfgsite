@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+{% load mytags %}
+
+
+{% block content %}
+    {% include 'nav_cat_bar.html' %}
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="row">
+            <div class="col-sm-10">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5> 脚本变量设置 </h5>
+                        <div class="ibox-tools">
+                            <a class="collapse-link">
+                                <i class="fa fa-chevron-up"></i>
+                            </a>
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                <i class="fa fa-wrench"></i>
+                            </a>
+                            <a class="close-link">
+                                <i class="fa fa-times"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="ibox-content">
+                        <div class="panel blank-panel">
+                            <div class="panel-heading">
+                                <div class="panel-options">
+                                    <ul class="nav nav-tabs">
+                                        <li id="tab1" class="active"><a data-toggle="tab" href="#tab-default" aria-expanded="true">设置</a></li>
+{#                                      <li id="tab2" class=""><a data-toggle="tab" href="#tab-email" aria-expanded="true">邮箱设置</a></li>#}
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="panel-body">
+                                <div class="tab-content">
+
+                                    <div id="tab-default" class="tab-pane active">
+                                        <!--------------------------start------------------------>
+                <div class="ibox-content">
+                    {% if emg %}
+                        <div class="alert alert-warning text-center">{{ emg }}</div>
+                    {% endif %}
+                    {% if smg %}
+                        <div class="alert alert-success text-center">{{ smg }}</div>
+                    {% endif %}
+
+
+                    <form id="assetForm" method="post" class="form-horizontal">
+
+                            <div class="form-group" >
+                                <div class="hr-line-dashed"></div>
+                                <label class="col-sm-2 control-label"> 变量名<span class="red-fonts">*</span> </label>
+                                <div class="col-sm-8">
+                                    <select id="script_name" name="script_name" class="form-control m-b input-sm" onchange="change_info11()">
+                                        <option value="">请选择一个变量</option>
+                                        {% for name in script_names %}
+                                            {% ifequal name script_name %}
+                                                <option value="{{name}}" selected> {{ name|slice:":40" }}</option>
+                                            {% else %}
+                                                <option value="{{name}}"> {{ name|slice:":40" }}</option>
+                                            {% endifequal %}
+                                        {% endfor %}
+                                    </select>
+                                    <input id="asset_id" type="hidden" value="{{asset.id}}"/>
+                                    <a id="load_tmpl_btn" class="btn btn-primary"> 加载 </a>
+                                </div>
+                            </div>
+
+
+                        <div class="hr-line-dashed"></div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label"> 变量值<span class="red-fonts">*</span> </label>
+
+                            <div class="col-sm-8">
+                                <textarea id="tmpl_content" class="form-control" rows="15"></textarea>
+                            </div>
+
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label"></label>
+                            <div class="col-sm-1">
+                                <a id="save_tmpl_btn" class="btn btn-success"> 保存变量值 </a>
+                            </div>
+                            <div class="col-sm-2">
+                                <a>  </a>
+                            </div>
+                        </div>
+
+                    </form>
+
+
+                </div>
+                                        <!--------------------------end-------------------------->
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block self_footer_js %}
+<script>
+
+</script>
+{% endblock %}

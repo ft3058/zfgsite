@@ -52,4 +52,6 @@ def auth_setting(request):
 
 @require_role('admin')
 def tmpl_setting(request):
-    pass
+    header_title, path1 = '设置', '脚本变量设置'
+
+    return my_render('jset/tmpl_setting.html', locals(), request)
