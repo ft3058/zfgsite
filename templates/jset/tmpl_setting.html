@@ -39,62 +39,67 @@
 
                                     <div id="tab-default" class="tab-pane active">
                                         <!--------------------------start------------------------>
-                <div class="ibox-content">
-                    {% if emg %}
-                        <div class="alert alert-warning text-center">{{ emg }}</div>
-                    {% endif %}
-                    {% if smg %}
-                        <div class="alert alert-success text-center">{{ smg }}</div>
-                    {% endif %}
+                                        <div class="ibox-content">
+                                            {% if emg %}
+                                                <div class="alert alert-warning text-center">{{ emg }}</div>
+                                            {% endif %}
+                                            {% if smg %}
+                                                <div class="alert alert-success text-center">{{ smg }}</div>
+                                            {% endif %}
 
 
-                    <form id="assetForm" method="post" class="form-horizontal">
+                                            <form id="assetForm" method="post" class="form-horizontal">
 
-                            <div class="form-group" >
-                                <div class="hr-line-dashed"></div>
-                                <label class="col-sm-2 control-label"> 变量名<span class="red-fonts">*</span> </label>
-                                <div class="col-sm-8">
-                                    <select id="script_name" name="script_name" class="form-control m-b input-sm" onchange="change_info11()">
-                                        <option value="">请选择一个变量</option>
-                                        {% for name in script_names %}
-                                            {% ifequal name script_name %}
-                                                <option value="{{name}}" selected> {{ name|slice:":40" }}</option>
-                                            {% else %}
-                                                <option value="{{name}}"> {{ name|slice:":40" }}</option>
-                                            {% endifequal %}
-                                        {% endfor %}
-                                    </select>
-                                    <input id="asset_id" type="hidden" value="{{asset.id}}"/>
-                                    <a id="load_tmpl_btn" class="btn btn-primary"> 加载 </a>
-                                </div>
-                            </div>
+                                                    <div class="form-group" >
+                                                        <div class="hr-line-dashed"></div>
+                                                        <label class="col-sm-2 control-label"> 变量名<span class="red-fonts">*</span> </label>
+                                                        <div class="col-sm-8">
+                                                            <select id="var_name" name="var_name" class="form-control m-b input-sm">
+                                                                <option value="">请选择一个变量</option>
+                                                                {% for obj in objs %}
+                                                                    <option value="{{obj.name}}"> {{obj.name}}</option>
+                                                                {% endfor %}
+                                                            </select>
+                                                            <input id="asset_id" type="hidden" value="{{asset.id}}"/>
+                                                            <a id="load_var_btn" class="btn btn-primary"> 加载 </a>
+                                                            <a id="del_tmpl_btn" class="btn btn-warning"> 删除此变量 </a>
+                                                            <span id="del_info" style="color:red;"> <span>
+                                                            <br>
+                                                            <br>
 
+                                                            <input id="new_var_name" class="col-sm-3 m-b input-sm" type="text" value=""/>
+                                                            <a id="create_new_btn" class="btn btn-primary"> 新建变量名 </a>
+                                                            <span id="add_info" style="color:red;"> <span>
 
-                        <div class="hr-line-dashed"></div>
-
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label"> 变量值<span class="red-fonts">*</span> </label>
-
-                            <div class="col-sm-8">
-                                <textarea id="tmpl_content" class="form-control" rows="15"></textarea>
-                            </div>
-
-                        </div>
-
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label"></label>
-                            <div class="col-sm-1">
-                                <a id="save_tmpl_btn" class="btn btn-success"> 保存变量值 </a>
-                            </div>
-                            <div class="col-sm-2">
-                                <a>  </a>
-                            </div>
-                        </div>
-
-                    </form>
+                                                        </div>
+                                                    </div>
 
 
-                </div>
+                                                <div class="hr-line-dashed"></div>
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label"> 变量值<span class="red-fonts">*</span> </label>
+
+                                                    <div class="col-sm-8">
+                                                        <textarea id="var_value" class="form-control" rows="15"></textarea>
+                                                    </div>
+
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label"></label>
+                                                    <div class="col-sm-1">
+                                                        <a id="save_var_btn" class="btn btn-success"> 保存变量值 </a>
+                                                    </div>
+                                                    <div class="col-sm-2">
+                                                        <a>  </a>
+                                                    </div>
+                                                </div>
+
+                                            </form>
+
+
+                                        </div>
                                         <!--------------------------end-------------------------->
                                     </div>
 
@@ -107,8 +112,72 @@
         </div>
     </div>
 {% endblock %}
-{% block self_footer_js %}
-<script>
 
-</script>
+
+{% block self_footer_js %}
+    <script>
+
+    // create new
+    $("#create_new_btn").click(function(e) {
+        var new_var_name = $('#new_var_name').val();
+
+        $.get("{%url 'add_new_tmpl_name'%}?new_var_name=" + new_var_name, function(result){
+            //alert(result);
+            $("#add_info").html(result);
+            location.reload();
+        });
+
+        return;
+    });
+
+    // del_tmpl_btn
+    $("#del_tmpl_btn").click(function(e) {
+        var var_name = $('#var_name').val();
+        // alert(var_name);
+        if (confirm('确定要删除此变量吗？')) {
+
+        } else {
+            return;
+        }
+
+        $.get("{%url 'del_tmpl_name'%}?var_name=" + var_name, function(result){
+            alert(result);
+            $("#del_info").html(result);
+            location.reload();
+        });
+
+        return;
+    });
+
+    // 点击加载模板时
+    $("#load_var_btn").click(function(e) {
+        var var_name = $('#var_name').val();
+      $.get("{%url 'load_tmpl_var'%}?var_name=" + var_name, function(result){
+        $("#var_value").val(result);
+      });
+        return;
+    });
+
+    // 保存var
+    $("#save_var_btn").click(function(e) {
+        var var_name = $('#var_name').val();
+        var var_value = $('#var_value').val();
+        if (var_name == '') {
+            alert('var name is empty !');
+            return;
+        }
+        if (var_value == '') {
+            alert('value is empty !');
+            return;
+        }
+
+        var params = {
+            var_name: var_name,
+            var_value: var_value,
+        };
+        $.post("{%url 'update_tmpl_var_value'%}", params, function(res){
+            alert(res);
+        });
+    });
+    </script>
 {% endblock %}
