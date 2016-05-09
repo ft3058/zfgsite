@@ -155,7 +155,7 @@ class Asset(AssetParent):
     group1 = models.ManyToManyField(AssetGroup1, blank=True, verbose_name=u"所属分组")
     domains = models.ManyToManyField(Domains, blank=True, verbose_name=u"Domain")
     area = models.CharField(max_length=1, blank=True, null=True, verbose_name=u'国内:c, 国外:f')
-    comm_name = models.CharField(max_length=10, blank=True, null=True, verbose_name=u'snmp community name')
+    comm_name = models.CharField(max_length=10, blank=True, null=True, verbose_name=u'snmp community name,yxdown,youxun,unknown')
 
     def get_username(self):
         """restore password by passwd"""

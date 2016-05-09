@@ -43,7 +43,7 @@ class CopyThread(Thread):
         """
         """
         try:
-            print 'ssh info: ', IP, PORT, USERNAME, PASSWORD
+            # print 'ssh info: ', IP, PORT, USERNAME, PASSWORD
             s = get_ssh(IP, PORT, USERNAME, PASSWORD)
             ssh = s.invoke_shell()
 
@@ -54,8 +54,8 @@ class CopyThread(Thread):
                 else:
                     files += os.path.join(self.local_dir, i) + ' '
             # files = ' '.join([os.path.join(self.local_dir, fn) for fn in self.fname_list])
-            print '=============='
-            print 'files:::', files
+            # print '=============='
+            # print 'files:::', files
 
             scp_cmd = "rsync -avH -progress '-e ssh -p %s' %s %s@%s:%s" % (str(self.port), files, self.username, self.host, self.remote_dir)
             # scp_cmd = "/usr/bin/scp -P %s %s %s@%s:%s" % (str(port), files, username, host, remote_dir)
@@ -105,7 +105,8 @@ class CopyThread(Thread):
             try:
                 s.close()
             except Exception, e1:
-                write_log(self.logged_user, self.host, self.host, '', 'copy file', str(e1))
+                pass
+                # write_log(self.logged_user, self.host, self.host, '', 'copy file', str(e1))
             write_log(self.logged_user, self.host, self.host, '', 'copy file', str(e))
             return 'fail', str(e)
 

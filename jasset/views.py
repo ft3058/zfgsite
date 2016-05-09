@@ -548,8 +548,8 @@ def asset_init(request):
 def custom_cmd(request):
     local_file_dir = LOCAL_FILE_DIR  # "/root/scripts"
     local_file_dir = local_file_dir if local_file_dir.endswith('/') else local_file_dir+'/'
-    print 'local_file_dir = ', local_file_dir
-    print os.listdir(local_file_dir)
+    # print 'local_file_dir = ', local_file_dir
+    # print os.listdir(local_file_dir)
 
     select_ips = request.session.get('select_ips', '')
     asset_all = []
@@ -584,10 +584,6 @@ def custom_cmd(request):
                 return my_render('jasset/asset_custom_cmd.html', locals(), request)
 
             fname_list = asset_select
-            # print '^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^'
-            # print '====fname_list:==== ' + ','.join(fname_list)
-
-
             smg = ''
             emg = ''
             logged_user = request.user.username
