@@ -4,6 +4,8 @@ from django.conf.urls import patterns, include, url
 urlpatterns = patterns('jumpserver.views',
     # Examples:
     url(r'^$',              'index',        name='index'),
+    url(r'^home/$',         'home',         name='home'),
+
     # url(r'^api/user/$',   'api_user'),
     url(r'^skin_config/$',  'skin_config',  name='skin_config'),
     url(r'^login/$',        'Login',        name='login'),

@@ -62,6 +62,8 @@
                                     </select>
                                     <input id="asset_id" type="hidden" value="{{asset.id}}"/>
                                     <a id="load_tmpl_btn" class="btn btn-primary"> 加载模板 </a>
+                                    <a id="del_tmpl_btn" class="btn btn-warning"> 删除此模板 </a>
+                                    <span id="del_info" style="color:red;"> <span>
                                     <br>
                                     <br>
 
@@ -148,11 +150,30 @@
     //------------------------------------------
     // create new
     $("#create_new_btn").click(function(e) {
-        var new_var_name = $('#new_var_name').val();
+        var new_tmpl_name = $('#new_tmpl_name').val();
 
-        $.get("{%url 'add_new_tmpl_name'%}?new_var_name=" + new_var_name, function(result){
+        $.get("{%url 'add_new_tmpl_name'%}?new_tmpl_name=" + new_tmpl_name, function(result){
             //alert(result);
             $("#add_info").html(result);
+            location.reload();
+        });
+
+        return;
+    });
+
+    // del_tmpl_btn
+    $("#del_tmpl_btn").click(function(e) {
+        var script_name = $('#script_name').val();
+        // alert(var_name);
+        if (confirm('确定要删除此模板吗？')) {
+
+        } else {
+            return;
+        }
+
+        $.get("{%url 'del_tmpl_name'%}?script_name=" + script_name, function(result){
+            alert(result);
+            $("#del_info").html(result);
             location.reload();
         });
 

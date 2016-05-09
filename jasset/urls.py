@@ -49,4 +49,6 @@ urlpatterns = patterns('',
     url(r"^asset/gen_target_content/$",         gen_target_content,         name='gen_target_content'),
     url(r"^asset/push_target_content_to_host/$",push_target_content_to_host,name='push_target_content_to_host'),
 
+    url(r'^asset/del_tmpl_name/$',              del_tmpl_name,              name='del_tmpl_name'),
+    url(r'^asset/add_new_tmpl_name/$',          add_new_tmpl_name,          name='add_new_tmpl_name'),
 )

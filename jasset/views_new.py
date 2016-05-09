@@ -57,6 +57,32 @@ def load_script_content(request):
     # s = s.replace('MAKE_DIR_PART', MAKE_DIR_PART).replace('RSYNC_SCRIPT_PART', RSYNC_SCRIPT_PART)
     return HttpResponse(s)
 
+
+def add_new_tmpl_name(request):
+    """just create a new tmpl file"""
+    new_tmpl_name = request.GET.get('new_tmpl_name', '').strip()
+    if not new_tmpl_name:
+        return HttpResponse('')
+    script_path = os.path.join(script_dir, new_tmpl_name)
+    if not os.path.exists(script_path):
+        with open(script_path, 'w') as f:
+            f.write('')
+        return HttpResponse(u'已经新建立一个空模板！')
+
+    return HttpResponse(u'已经存在')
+
+def del_tmpl_name(request):
+    script_name = request.GET.get('script_name', '').strip()
+    if not script_name:
+        return HttpResponse('')
+    script_path = os.path.join(script_dir, script_name)
+    if not os.path.exists(script_path):
+        return HttpResponse(u'模板不存在!')
+    else:
+        os.remove(script_path)
+        return HttpResponse(u'删除成功!')
+
+
 def update_tmpl_content(request):
     try:
         script_name = request.POST.get('script_name')
@@ -260,7 +286,6 @@ def push_target_content_to_host(request):
 
         allfile = '/root/' + script_name + ', ' + ','.join(module_path_list) + ', /usr/local/nginx/conf/vhost/*.conf'
         return HttpResponse(u'推送完成（复制文件［%s］，删除文件［%s］，重启nginx） !' % (script_name, allfile))
-
 
     except Exception, e:
         return HttpResponse('Error:' + str(e))

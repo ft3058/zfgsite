@@ -4571,3 +4571,8 @@ body.skin-3 {
 }
 
 .n-invalid {border: 1px solid #f00;}
+
+/*change back color of table*/
+.table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
+  background-color: #FAEBD7;
+}

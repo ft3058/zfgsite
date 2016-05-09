@@ -84,6 +84,11 @@ def index_cu(request):
 
 @require_role(role='user')
 def index(request):
+    return HttpResponseRedirect(reverse('asset_list'))
+
+
+@require_role(role='user')
+def home(request):
     li_date, li_str = getDaysByNum(7)
     today = datetime.datetime.now().day
     from_week = datetime.datetime.now() - datetime.timedelta(days=7)
