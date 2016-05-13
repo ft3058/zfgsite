@@ -16,4 +16,5 @@ urlpatterns = patterns('',
     url(r"^oplog/status/$",             oplog_status,           name='oplog_status'),
 
     url(r"^business/check_business/$",  check_business,         name='check_business'),
+    url(r'^asset/check_biz_cmd/$',      check_biz_cmd,          name='check_biz_cmd'),
 )

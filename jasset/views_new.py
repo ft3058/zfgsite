@@ -316,4 +316,3 @@ def asset_clear_asset(request):
             except:
                 return HttpResponse(json.dumps({'error':'1','info':'未知错误,请查看日志,并提交给管理员'}), content_type="application/json")
 
-

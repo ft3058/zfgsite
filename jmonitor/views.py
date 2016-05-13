@@ -2,17 +2,13 @@
 import traceback
 from datetime import datetime as dt
 from datetime import timedelta
-from django.db.models import Q
 from jasset.asset_api import *
 from jumpserver.api import *
-from jumpserver.models import Setting
-from jasset.forms import AssetForm, IdcForm
-from jasset.models import Asset, IDC, AssetGroup, AssetGroup1, ASSET_TYPE, ASSET_STATUS, Domains
-from jperm.perm_api import get_group_asset_perm, get_group_user_perm
-from jperm.models import PermRuleDomain
+from jasset.models import Asset, AssetGroup, AssetGroup1
 from jlog.models import RsyncCheckLog, CustomLog
 from jmonitor.models import TcpConnCount, DiskSize, InterfaceIo
 from rsync_util import *
+from jmonitor.models import AssetBiz
 
 
 # Create your views here.
@@ -124,101 +120,24 @@ def rsync_status_list(request):
 @require_role("user")
 def check_business(request):
     q = request.GET
-    header_title, path1, path2 = u'查看Rsync状态', u'状态管理', u'查看状态'
-    username = request.user.username
-    user_perm = request.session['role_id']
+    keyword = q.get('keyword', '')
 
-    module_name = q.get('module_name', '')
-    module_name_list = []
-    path_name_list = []
-    filtered_assets = []
-    selected_group1 = None
-
-    group1_list = AssetGroup1.objects.all()
-    for gp1 in group1_list:
-        if gp1.module_path and isinstance(gp1.module_path, basestring):
-            path_str = gp1.module_path
-            pairs = path_str.split(',')
-            for pair in pairs:
-                modu_name1 = pair.split('=')[0].strip()
-                path_name1 = pair.split('=')[-1].strip()
-                if modu_name1 not in module_name_list:
-                    module_name_list.append([modu_name1, gp1])
-                if path_name1 not in path_name_list:
-                    path_name_list.append([path_name1, gp1])
-                if module_name == modu_name1:
-                    selected_group1 = gp1
-
-    keyword = request.GET.get('keyword', '')
-    export = request.GET.get("export", False)
-    group_id = request.GET.get("group_id", '')
-    idc_id = request.GET.get("idc_id", '')
-    asset_id_all = request.GET.getlist("id", '')
-
-    if module_name:
-        asset_find = Asset.objects.filter(group1=selected_group1)
-    else:
-        asset_find = Asset.objects.exclude(group1__isnull=True)
-
-
-    if keyword:
-        '''
-        asset_find = asset_find.filter(
-            Q(hostname__contains=keyword) |
-            Q(other_ip__contains=keyword) |
-            Q(ip__contains=keyword) |
-            Q(remote_ip__contains=keyword) |
-            Q(comment__contains=keyword) |
-            Q(username__contains=keyword) |
-            Q(group__name__contains=keyword) |
-            Q(cpu__contains=keyword) |
-            Q(memory__contains=keyword) |
-            Q(disk__contains=keyword) |
-            Q(brand__contains=keyword) |
-            Q(cabinet__contains=keyword) |
-            Q(sn__contains=keyword) |
-            Q(system_type__contains=keyword) |
-            Q(system_version__contains=keyword))'''
-        new_list = []
-        for i in asset_find:
-            if keyword in i.hostname or keyword in i.ip:
-                new_list.append(i)
-        asset_find = new_list
-
-    if export:
-        if asset_id_all:
-            asset_find = []
-            for asset_id in asset_id_all:
-                asset = get_object(Asset, id=asset_id)
-                if asset:
-                    asset_find.append(asset)
-        s = write_excel(asset_find)
-        if s[0]:
-            file_name = s[1]
-        smg = u'excel文件已生成，请点击下载!'
-        return my_render('jasset/asset_excel_download.html', locals(), request)
-
-    # ------------------------------get extra data----------------------------------------------------
-    for at in asset_find:
-        # find rsync log
-        logs = list(RsyncCheckLog.objects.filter(remote_ip=at.ip).order_by('-id')[:1])
-        if logs:
-            at.last_dt = logs[0].datetime.strftime("%Y-%m-%d/%H:%M:%S")
-            at.result_tag = logs[0].result_tag
-            at.file_num = "<br/>".join([x.strip() for x in logs[0].file_num.split('|')])
+    header_title, path1, path2 = u'查看业务状态', u'状态管理', u'业务状态'
+    l = AssetBiz.objects.all().order_by('-cdt')[0:100]
+    search_list = []
+    for i in l:
+        if i.ifmatch == 'Y':
+            i.ifmatch = u'是'
+        elif i.ifmatch == 'N':
+            i.ifmatch = u'否'
         else:
-            at.last_dt = 'Null'
-            at.result_tag = 'Null'
-            at.file_num = 'Null'
-
-    assets_list, p, assets, page_range, current_page, show_first, show_end = pages(asset_find, request)
-    new_list = []
-    for k1, k2 in module_name_list:
-        new_list.append({'k1': k1, 'k2': k2.name})
-    module_name_list = new_list
-
+            i.ifmatch = u'出错'
+        i.origin_biz = i.origin_biz.replace(',', r'<br/>')
+        i.current_biz = i.current_biz.replace(',', r'<br/>')
+        i.cdt = i.cdt.strftime("%Y-%m-%d/%H:%M:%S")
+        search_list.append(i)
     # if user_perm != 0:
-    return my_render('jmonitor/rsync_status_list.html', locals(), request)
+    return my_render('jmonitor/check_business.html', locals(), request)
     # else:
     #     return my_render('jasset/asset_cu_list.html', locals(), request)
 
@@ -602,3 +521,23 @@ def get_graph_html(request):
       print u'error: %s' % str(e)
       return HttpResponse(str(e))
 
+
+@require_role('admin')
+def check_biz_cmd(request):
+    # print asset_all
+    if request.method == 'POST':
+        q = request.POST
+        select_ips = unicode(q.get('check_assets', ''))
+        if not select_ips:
+            emg = u'已选择IP不能为空!'
+            return HttpResponse(emg)
+
+        ip_list = select_ips.split(':')
+        print ip_list
+        from check_biz_status import Checking
+        # multithread exec
+        che = Checking(ip_list)
+        che.start()
+
+
+        return HttpResponse('ok')

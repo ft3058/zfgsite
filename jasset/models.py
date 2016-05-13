@@ -103,7 +103,6 @@ class IDCParent(models.Model):
 class IDC(IDCParent):
     pass
 
-
 # class Asset(models.Model):
 class AssetParent(models.Model):
     """ original asset model"""
@@ -185,3 +184,26 @@ class AssetAlias(models.Model):
 
     def __unicode__(self):
         return self.alias
+
+class IpInfo(models.Model):
+    """
+    {
+      "ip": "218.75.155.46",
+      "hostname": "No Hostname",
+      "city": "Changsha",
+      "region": "Hunan",
+      "country": "CN",
+      "loc": "28.1792,113.1136",
+      "org": "AS4134 No.31,Jin-rong Street"
+    }
+    """
+    ip = models.CharField(max_length=32, blank=True, null=True, verbose_name=u'ip')
+    hostname = models.CharField(max_length=64, blank=True, null=True, verbose_name=u'hostname')
+    city = models.CharField(max_length=64, blank=True, null=True, verbose_name=u'city')
+    region = models.CharField(max_length=64, blank=True, null=True, verbose_name=u'region')
+    country = models.CharField(max_length=32, blank=True, null=True, verbose_name=u'country')
+    loc = models.CharField(max_length=32, blank=True, null=True, verbose_name=u'loc')
+    org = models.CharField(max_length=100, blank=True, null=True, verbose_name=u'org')
+    comment = models.TextField(null=True, blank=True)
+    cdt = models.DateTimeField(auto_now=True, null=True)
+    asset = models.ForeignKey(Asset)

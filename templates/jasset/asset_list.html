@@ -206,7 +206,7 @@
                                 <input type="button" id="asset_del" class="btn btn-danger btn-sm"  name="del_button" value="删除"/>
                                 <a value="{% url 'asset_edit_batch' %}" type="button" class="btn btn-sm btn-warning iframe">修改</a>
                                 <input type="button" id="asset_update" class="btn btn-info btn-sm"  name="update_button" value="更新"/>
-                                <input type="button" id="check_business" class="btn btn-info btn-sm"  value="检测业务"/>
+                                <input type="button" id="check_business" class="btn btn-warning btn-sm"  value="检测业务"/>
                                 {#<input type="button" id="asset_update_all" name="update_button" class="btn btn-primary btn-sm" value="更新全部"/>#}
                                 <input type="button" id="exec_cmd" name="exec_cmd" class="btn btn-sm btn-primary"  value="执行命令"/>
                                 <input type="button" id="exec_copy_cmd_btn" name="exec_copy_cmd_btn" class="btn btn-sm btn-primary"  value="复制文件"/>
@@ -226,10 +226,37 @@
 <script>
     // 检查资产分组是否正确
     $('#check_business').click(function () {
-        var asset_id_all = getIDall(); // 得到,分隔的asset id
+        var check_array = [];
+        $(".gradeX input:checked").closest('tr').find('.hostname a').each(function() {
+            check_array.push($(this).text())
+        });
+        check_assets = check_array.join(':');
 
+        //alert('check_assets.. = ' + check_assets);
+
+        if (check_assets != '') {
+            if (confirm("确定检查各个机器的业务状态?\n ip:" + check_assets)) {
+
+                $.ajax({
+                    type: "post",
+                    data: {check_assets: check_assets},
+                    url: "{% url 'check_biz_cmd' %}",
+                    success: function (data) {
+                        if (data.indexOf('ok') > -1) {
+                            alert('已经后台运行，请到 “监控管理” “业务状态” 下面查看详情！!');
+                            // window.open("{% url 'custom_cmd' %}", '_self');
+                        } else {  alert('失败：' + data); }
+                    }
+                });
+            }
+        }
+        else {
+            alert('未选中任何一个资产!');
+        }
 
     });
+
+
     // 复制密码
     var clip = new ZeroClipboard( $(".zclip") );
     // 复制密码提示,并没有什么用

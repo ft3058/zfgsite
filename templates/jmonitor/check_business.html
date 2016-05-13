@@ -8,7 +8,7 @@
         <div class="col-sm-12">
             <div class="ibox float-e-margins" id="all">
                 <div class="ibox-title">
-                    <h5> 主机列表</h5>
+                    <h5> 检查结果（最近100条记录）</h5>
                     <div class="ibox-tools">
                         <a class="collapse-link">
                             <i class="fa fa-chevron-up"></i>
@@ -27,31 +27,21 @@
 
                         <div class="col-sm-8" style="padding-left: 0px">
 
-                            <label>
-                                <select id="module_name" name="module_name" class="form-control m-b input-sm" onchange="change_info()">
-                                    <option value="">请选择模块名</option>
-                                    {% for name in module_name_list %}
-                                        {% ifequal name.k1 module_name %}
-                                            <option value="{{ name.k1 }}" selected> {{ name.k1 }} - {{ name.k2 }}</option>
-                                        {% else %}
-                                            <option value="{{ name.k1 }}"> {{ name.k1 }} - {{ name.k2 }}</option>
-                                        {% endifequal %}
-                                    {% endfor %}
-                                </select>
-                            </label>
 
                         </div>
 
 
                         <div class="col-sm-4" style="padding-right: 0">
                              <div class="input-group inline-group">
+                                 <!--
                                 <input type="text" class="form-control m-b input-sm" id="search_input" name="keyword" value="{{ keyword }}" placeholder="Search">
                                 <input type="text" style="display: none">
                                 <div class="input-group-btn">
+
                                     <button id='search_btn' href="{% url 'asset_list' %}?search=true" type="button" class="btn btn-sm btn-primary search-btn"  onclick="change_info()">
                                         - 搜索 -
                                     </button>
-                                    <!--
+
                                     <button disabled="disabled" type="button" href="{% url 'asset_list' %}?export=true" name="export" class="btn btn-sm btn-success search-btn-excel" onclick="return false">
                                         - 导出 -
                                     </button> -->
@@ -67,48 +57,57 @@
                                     <th class="text-center">
                                         <input id="checkall" type="checkbox" class="i-checks" name="checkall" value="checkall" data-editable='false' onclick="check_all('asset_form')">
                                     </th>
-                                    <th class="text-center"> 主机名 </th>
-                                    <th class="text-center"> 所属资产组 </th>
-                                    <th class="text-center"> 所属分组 </th>
+                                    <th class="text-center"> 编号 </th>
+                                    <th class="text-center"> ip </th>
+
+                                    <th class="text-center"> 分组名 </th>
+                                    <th class="text-center" width="200"> 所属分组业务 </th>
+                                    <th class="text-center"> 当前业务 </th>
+                                    <th class="text-center"> 是否匹配 </th>
 
                                     <!-- <th class="text-center"> 文件数量 </th>  -->
                                     <th class="text-center"> 检测状态 </th>
-                                    <th class="text-center"> 上次检测日期 </th>
-                                    <th class="text-center"> 操作 </th>
+                                    <th class="text-center"> 检测日期 </th>
                                 </tr>
                             </thead>
                             <tbody>
-                            {% for asset in assets.object_list %}
+                            {% for o in search_list %}
                                 <tr class="gradeX">
-                                    <td class="text-center" name="id" value="{{ asset.id }}" data-editable='false'>
-                                        <input name="id" value="{{ asset.id }}" type="checkbox" class="i-checks">
+                                    <td class="text-center" name="id" value="{{ o.id }}" data-editable='false'>
+                                        <input name="id" value="{{ o.id }}" type="checkbox" class="i-checks">
                                     </td>
+                                    <td class="text-center">{{ o.id }}</td>
                                     <td class="text-center hostname">
-                                        <a href="{% url 'rsync_status_detail' %}?id={{ asset.id }}" title="点击查看状态详情">{{ asset.hostname|default_if_none:"" }}</a>
+                                        <!--a href="{% url 'rsync_status_detail' %}?id={{ asset.id }}" title="点击查看状态详情">{{ asset.hostname|default_if_none:"" }}</a-->
+                                        {{ o.ip }}
                                     </td>
-                                    <td class="text-center">{{ asset.group.all|group_str2 }}</td>
-                                    <td class="text-center">{{ asset.group1.all|group1_str2 }}</td>
+
+                                    <td class="text-center">{{ o.group1_name }}</td>
+                                    {% autoescape off %}
+                                        <td class="text-center">{{ o.origin_biz }}</td>
+                                    {% endautoescape %}
+
+                                    {% autoescape off %}
+                                        <td class="text-center" width="200">{{ o.current_biz }}</td>
+                                    {% endautoescape %}
+                                    <td class="text-center">{{ o.ifmatch }}</td>
+
                                     <!--
                                     {% autoescape off %}
                                         <td class="text-center">{{asset.file_num}}</td>
                                     {% endautoescape %}
                                     -->
-                                    <td class="text-center">{{asset.result_tag}}</td>
-                                    <td class="text-center">{{asset.last_dt}}</td>
-                                    <td class="text-center" data-editable='false'>
-                                        <a href="{% url 'rsync_status_detail' %}?id={{ asset.id }}" class="btn btn-xs btn-success">详细结果</a>
-{#                                        <a value="{{ asset.id }}" class="conn btn btn-xs btn-info">终端连接</a>#}
-                                        <a value="{{ asset.id }}" class="newconn btn btn-xs btn-warning">快速连接</a>
-                                        <a value="{% url 'rsync_status_check' %}?id={{ asset.id }}" class="btn btn-xs btn-danger asset_check" onclick="exec_check_status('{{ asset.id }}')">立即检测</a>
-                                    </td>
+                                    <td class="text-center">{{o.status}}</td>
+                                    <td class="text-center">{{o.cdt}}</td>
+
                                 </tr>
                             {% endfor %}
                             </tbody>
                         </table>
                         <div class="row">
                             <div class="col-sm-6">
-                                <input type="button" id="asset_check_rsync_status" class="btn btn-info btn-sm"  name="update_button" value="检测选中"/>
-                                <input type="button" id="exec_cmd" class="btn btn-sm btn-primary"  name="exec_cmd" value="执行命令"/>
+                                <!--input type="button" id="asset_check_rsync_status" class="btn btn-info btn-sm"  name="update_button" value="检测选中"/-->
+                                <!--input type="button" id="exec_cmd" class="btn btn-sm btn-primary"  name="exec_cmd" value="执行命令"/-->
                             </div>
                             {% include 'paginator.html' %}
                         </div>
