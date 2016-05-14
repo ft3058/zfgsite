@@ -84,7 +84,7 @@ def run(at):
     print
 
 
-if __name__ == '__main__':
+def update_ipinfo():
     from jumpserver_model_api import get_all_assets
     for n, at in enumerate(get_all_assets()):
         try:
@@ -98,3 +98,11 @@ if __name__ == '__main__':
         print 'complete :', n+1
         time.sleep(1)
 
+
+if __name__ == '__main__':
+    # update_ipinfo()
+    from jumpserver_model_api import IpInfo
+    objs = IpInfo.objects.all()[0:10]
+    for i in objs:
+        print i.ip, i.country
+    pass
