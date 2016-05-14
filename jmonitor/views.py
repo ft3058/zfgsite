@@ -1,5 +1,4 @@
 # coding:utf-8
-import traceback
 from datetime import datetime as dt
 from datetime import timedelta
 from jasset.asset_api import *
@@ -9,6 +8,7 @@ from jlog.models import RsyncCheckLog, CustomLog
 from jmonitor.models import TcpConnCount, DiskSize, InterfaceIo
 from rsync_util import *
 from jmonitor.models import AssetBiz
+from const import COUNTRY_DICT
 
 
 # Create your views here.
@@ -400,7 +400,7 @@ def get_asset_group_tree(request):
             if ass_list:
                 g1s_ass_list = []
                 for a in ass_list:
-                    g1s_ass_list.append({'text': u'主机 : ' + a.ip})
+                    g1s_ass_list.append({'text': u'主机 : ' + a.ip + u' - ' + COUNTRY_DICT.get(a.area, u'未知')})
                 g1_asset_list.append({'text': u'分组 : ' + g1.name + u' [%d]' % len(g1s_ass_list), 'nodes': g1s_ass_list})
                 all_ass_num_in_group += len(g1s_ass_list)
             else:
@@ -424,6 +424,17 @@ def graph_index(request):
     return my_render('jmonitor/graph_index.html', locals(), request)
 
 
+def get_area_name_by_ip(ip):
+    try:
+        a = Asset.objects.get(ip=ip)
+        return COUNTRY_DICT.get(a.area, u'未知')
+    except Exception, e:
+        return u'未知'
+
+
+def get_ip_str(s):
+    return s.split(':')[-1].strip().split('-')[0].strip()
+
 @require_role('admin')
 def get_graph_html(request):
   try:
@@ -433,10 +444,10 @@ def get_graph_html(request):
     t = G['t']
     if t == 'asset':
         t1 = G['t1']
-        ip = G['ip'].split(':')[-1].strip()
+        ip = get_ip_str(G['ip'])
 
         if t1 == 'tcp':
-            title = u'TCP连接数 - ' + ip
+            title = u'TCP连接数 - ' + ip + u' - ' + get_area_name_by_ip(ip)
             container_tcp_id = 'container_' + 'tcp_conn_' + ip.replace('.', '_')
 
             objs = TcpConnCount.objects.filter(ip=ip).order_by('-cdt')[0:288*2]
@@ -453,7 +464,7 @@ def get_graph_html(request):
             return my_render('jmonitor/data_tcp_conn_count.html', locals(), request)
 
         elif t1 == 'disk_usage':
-            title = u'磁盘空间 /home - ' + ip
+            title = u'磁盘空间 /home - ' + ip + u' - ' + get_area_name_by_ip(ip)
             container_disk_id = 'container_' + 'disk_' + ip.replace('.', '_')
 
             objs = DiskSize.objects.filter(ip=ip).order_by('-cdt')[0:288*2]
@@ -477,7 +488,6 @@ def get_graph_html(request):
             return my_render('jmonitor/data_disk_size.html', locals(), request)
 
         elif t1 == 'ifdata':
-            # return HttpResponse('please wait..')
             inter_name = 'eth0'
             container_ifdata_id = 'container_' + 'ifdata_' + ip.replace('.', '_') #  + str(int(time.time()))
 
@@ -504,7 +514,7 @@ def get_graph_html(request):
 
             data_list1 = ', '.join(data_list1)
             data_list2 = ', '.join(data_list2)
-            title = u'流量 - ' + ip + ' - ' + inter_name
+            title = u'流量 - ' + ip + ' - ' + inter_name + u' - ' + get_area_name_by_ip(ip)
 
             if len(objs):
                 curr_value = 'In:' + str(data_list1[0]) + 'M,' + ' Out:' + str(data_list2[0]) + 'M'

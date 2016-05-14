@@ -1,20 +1,7 @@
 # coding:utf8
 """
-== rsync repo server ==
-IP = '222.132.12.103'
-PORT = 12103
-USERNAME = 'root'
-PASSWORD = 'b9de304202a0'  # yxdown@1007 b9de304202a0 qq@20171328
-LS_CMD_TMPL = 'ls -l --time-style="+%Y-%d-%m/%H:%M:%S" '
-SEE_CONF_CMD = "cat /etc/rsyncd.conf"
-"""
 
-IP = '222.132.12.106'
-PORT = 1210
-USERNAME = 'root'
-PASSWORD = 'a0466a37b454'  # yxdown@1007 b9de304202a0 qq@20171328
-LS_CMD_TMPL = 'ls -l --time-style="+%Y-%d-%m/%H:%M:%S" '
-SEE_CONF_CMD = "cat /etc/rsyncd.conf"
+"""
 
 
 COUNTRY_DICT = {
@@ -172,3 +159,24 @@ COUNTRY_DICT = {
     'ZR': u'扎伊尔',
     'ZW': u'津巴布韦',
 }
+
+
+def parse():
+    with open('country_code.txt') as f:
+        for line in f.readlines():
+            l = line.strip()
+            if not l or '-' not in l:
+                continue
+            # print l
+            code = l.split('-')[0].strip()
+            name = l.split('-')[-1].split('(')[0].strip()
+            print "'%s': u'%s'," % (code, name)
+
+
+
+if __name__ == '__main__':
+    print COUNTRY_DICT['CN']
+    print COUNTRY_DICT['CA']
+    print COUNTRY_DICT['US']
+
+    # parse()

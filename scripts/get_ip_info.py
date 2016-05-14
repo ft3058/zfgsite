@@ -37,7 +37,7 @@ AS15169 Google Inc.
 """
 import time
 import requests
-from jumpserver_model_api import IpInfo
+from jumpserver_model_api import IpInfo, Asset
 
 
 def run(at):
@@ -102,7 +102,16 @@ def update_ipinfo():
 if __name__ == '__main__':
     # update_ipinfo()
     from jumpserver_model_api import IpInfo
-    objs = IpInfo.objects.all()[0:10]
+    objs = IpInfo.objects.all()  # [0:10]
     for i in objs:
         print i.ip, i.country
+        if i.country:
+            at = Asset.objects.get(ip=i.ip)
+            area = i.country[0:2]
+            at.area = area
+            print area
+            at.save()
+            print 'update succ...'
+            print
+
     pass
