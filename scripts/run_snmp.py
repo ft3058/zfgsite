@@ -184,6 +184,7 @@ class SnmpThread(Thread):
                 parse_host_disk(retval, lines, ip, dic)
 
                 # interface
+                # snmpwalk -v 2c -c youxun 198.245.50.50 .1.3.6.1.2.1.31.1.1.1
                 cmd = 'snmpwalk -v 2c -c %s %s .1.3.6.1.2.1.31.1.1.1' % (community_name, ip)
                 retval, lines = exec_cmd(cmd)
                 parse_interface(retval, lines, ip, dic)
