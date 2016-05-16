@@ -4,7 +4,7 @@ from django.db import models
 class SnmpSetting(models.Model):
     ip = models.CharField(max_length=32, blank=True, null=True)
     # tcpconn
-    
+
     # diskusage
 
     # interface

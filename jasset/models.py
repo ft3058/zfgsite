@@ -25,6 +25,12 @@ ASSET_TYPE = (
     (7, u"其他")
     )
 
+class DomainGroup(models.Model):
+    """用资产所属的域名作为分组，位于主机组和分组之上"""
+    name = models.CharField(max_length=80, unique=True)
+    comment = models.CharField(max_length=160, blank=True, null=True)
+    def __unicode__(self):
+        return self.name
 
 class AssetGroup(models.Model):
     GROUP_TYPE = (
@@ -33,7 +39,7 @@ class AssetGroup(models.Model):
     )
     name = models.CharField(max_length=80, unique=True)
     comment = models.CharField(max_length=160, blank=True, null=True)
-
+    domain_group = models.ForeignKey(DomainGroup, blank=True, null=True,  on_delete=models.SET_NULL, verbose_name=u'DomainGroup')
     def __unicode__(self):
         return self.name
 
@@ -152,6 +158,7 @@ class Asset(AssetParent):
     type1 = models.CharField(max_length=32, blank=True, null=True, verbose_name=u'Type1')
     type2 = models.CharField(max_length=32, blank=True, null=True, verbose_name=u'Type2')
     group1 = models.ManyToManyField(AssetGroup1, blank=True, verbose_name=u"所属分组")
+    domain_group = models.ManyToManyField(DomainGroup, blank=True, verbose_name=u"DomainGroup")
     domains = models.ManyToManyField(Domains, blank=True, verbose_name=u"Domain")
     area = models.CharField(max_length=2, blank=True, null=True, verbose_name=u'国内:c, 国外:f')
     comm_name = models.CharField(max_length=10, blank=True, null=True, verbose_name=u'snmp community name,yxdown,youxun,unknown')

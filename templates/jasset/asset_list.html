@@ -48,6 +48,19 @@
                             </label>
 
                             <label>
+                                <select name="domain" class="form-control m-b input-sm" onchange="change_info()">
+                                    <option value="">域名组</option>
+                                    {% for d in domain_group_list %}
+                                        {% ifequal d.name domain %}
+                                            <option value="{{d.name}}" selected> {{ d.name|slice:":20" }}</option>
+                                        {% else %}
+                                            <option value="{{d.name}}"> {{ d.name|slice:":20" }}</option>
+                                        {% endifequal %}
+                                    {% endfor %}
+                                </select>
+                            </label>
+
+                            <label>
                                 <select name="group" class="form-control m-b input-sm" onchange="change_info()">
                                     <option value="">主机组</option>
                                     {% for asset_group in asset_group_all %}

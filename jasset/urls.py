@@ -42,6 +42,10 @@ urlpatterns = patterns('',
     url(r'^domains/domain_group/$', domain_group_list,  name='domain_group_list'),
     url(r'^asset/change_passwd/$',  asset_change_passwd,name='asset_change_passwd'),
 
+    # domain group:
+    url(r'^dmgroup/list/$',          dmgroup_list,        name='dmgroup_list'),
+    url(r'^dmgroup/add/$',           dmgroup_add,         name='dmgroup_add'),
+
     url(r'^asset/biz_start/$',                  biz_start,                  name='biz_start'),
     url(r'^asset/biz_edit/$',                   biz_edit,                   name='biz_edit'),
     url(r'^asset/clear_asset/$',                asset_clear_asset,          name='clear_asset'),

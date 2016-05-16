@@ -5,7 +5,7 @@ import xlsxwriter
 import paramiko
 from django.db.models import AutoField
 from jumpserver.api import *
-from jasset.models import ASSET_STATUS, ASSET_TYPE, ASSET_ENV, IDC, AssetRecord, AssetGroup1
+from jasset.models import ASSET_STATUS, ASSET_TYPE, ASSET_ENV, IDC, AssetRecord, AssetGroup1, DomainGroup
 from jperm.ansible_api import MyRunner
 from jperm.perm_api import gen_resource
 from jumpserver.templatetags.mytags import get_disk_info
@@ -15,6 +15,18 @@ def check_business_and_group(test=None):
     """检查资产分组是否正确 待完成"""
     return test
 
+def dmgroup_add_asset(group, asset_id=None, asset_ip=None):
+    """
+    资产组添加资产
+    Asset group add a asset
+    """
+    if asset_id:
+        asset = get_object(Asset, id=asset_id)
+    else:
+        asset = get_object(Asset, ip=asset_ip)
+
+    if asset:
+        group.asset_set.add(asset)
 
 def group_add_asset(group, asset_id=None, asset_ip=None):
     """
@@ -43,6 +55,16 @@ def group1_add_asset(group1, asset_id=None, asset_ip=None):
     if asset:
         group1.asset_set.add(asset)
 
+def db_add_dmgroup(**kwargs):
+    name = kwargs.get('name')
+    group = get_object(DomainGroup, name=name)
+    asset_id_list = kwargs.pop('asset_select')
+
+    if not group:
+        group = DomainGroup(**kwargs)
+        group.save()
+        for asset_id in asset_id_list:
+            dmgroup_add_asset(group, asset_id)
 
 def db_add_group(**kwargs):
     """

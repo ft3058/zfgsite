@@ -11,9 +11,7 @@ from jasset.asset_scripts import *
 from jumpserver.api import *
 from jumpserver.models import Setting
 from jasset.forms import AssetForm, IdcForm
-from jasset.models import Asset, IDC, AssetGroup, AssetGroup1, ASSET_TYPE, ASSET_STATUS, Domains
-from jperm.perm_api import get_group_asset_perm, get_group_user_perm
-from jperm.models import PermRuleDomain
+from jasset.models import Asset, IDC, AssetGroup, AssetGroup1, DomainGroup
 from util import get_random_str, write_log
 from script_init_server import init_server, clear_asset
 from script_copy_files import copy_file_to_server
@@ -316,3 +314,57 @@ def asset_clear_asset(request):
             except:
                 return HttpResponse(json.dumps({'error':'1','info':'未知错误,请查看日志,并提交给管理员'}), content_type="application/json")
 
+@require_role('admin')
+def dmgroup_list(request):
+    """
+    list asset group
+    列出资产组
+    """
+    header_title, path1, path2 = u'查看资产组', u'资产管理', u'查看域名组'
+    keyword = request.GET.get('keyword', '')
+    domain_group_list = DomainGroup.objects.all()
+    '''
+    domain_id = request.GET.get('id')
+    if domain_id:
+        asset_group_list = asset_group_list.filter(id=group_id)
+    if keyword:
+        asset_group_list = asset_group_list.filter(Q(name__contains=keyword) | Q(comment__contains=keyword))
+    '''
+    # asset_group_list, p, asset_groups, page_range, current_page, show_first, show_end = pages(asset_group_list, request)
+    domain_group_list, p, asset_groups, page_range, current_page, show_first, show_end = pages(domain_group_list, request)
+    return my_render('jasset/dmgroup_list.html', locals(), request)
+
+@require_role('admin')
+def dmgroup_add(request):
+    header_title, path1, path2 = u'资产管理', u'域名组管理', u'添加域名组'
+    asset_all = Asset.objects.all()
+
+    if request.method == 'POST':
+        P = request.POST
+        name = P.get('name', '')
+        asset_select = P.getlist('asset_select', [])
+        comment = request.POST.get('comment', '')
+
+        print '------------'
+        print name
+        print asset_select
+        print comment
+
+        try:
+            if not name:
+                emg = u'域名不能为空'
+                raise ServerError(emg)
+
+            domain_group_test = get_object(DomainGroup, name=name)
+            if domain_group_test:
+                emg = u"域名 %s 已存在" % name
+                raise ServerError(emg)
+
+        except ServerError:
+            pass
+
+        else:
+            db_add_dmgroup(name=name, comment=comment, asset_select=asset_select)
+            smg = u"主机组 %s 添加成功" % name
+
+    return my_render('jasset/dmgroup_add.html', locals(), request)
