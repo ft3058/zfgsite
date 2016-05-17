@@ -17,7 +17,7 @@
             <li id="jasset">
                 <a><i class="fa fa-inbox"></i> <span class="nav-label">资产管理</span><span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level">
-                    <!--li class="dmgroup"><a href="{%url 'dmgroup_list'%}">域名组</a></li-->
+                    <li class="dmgroup"><a href="{%url 'dmgroup_list'%}">域名组</a></li>
                     <li class="group"><a href="{% url 'asset_group_list' %}">资产组</a></li>
                     <li class="group1"><a href="{% url 'asset_group1_list' %}">资产分组</a></li>
                     <li class="asset"> <a href="{% url 'asset_list' %}">资产<span class="label label-info pull-right">{{ host_active_num }}/{{ host_total_num}}</span></a></li>
