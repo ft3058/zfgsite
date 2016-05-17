@@ -345,11 +345,6 @@ def dmgroup_add(request):
         asset_select = P.getlist('asset_select', [])
         comment = request.POST.get('comment', '')
 
-        print '------------'
-        print name
-        print asset_select
-        print comment
-
         try:
             if not name:
                 emg = u'域名不能为空'
@@ -366,5 +361,6 @@ def dmgroup_add(request):
         else:
             db_add_dmgroup(name=name, comment=comment, asset_select=asset_select)
             smg = u"主机组 %s 添加成功" % name
+            return my_render('jasset/dmgroup_add.html', locals(), request)
 
     return my_render('jasset/dmgroup_add.html', locals(), request)

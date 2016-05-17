@@ -175,6 +175,22 @@ def rule_domain_member_join(instance, member):
     objs = member.all()
     return ', '.join(['%s:[%s]' % (obj.module_name, str(obj)) for obj in objs])
 
+@register.filter(name='all_group_join')
+def all_group_join(instance):
+    dmgroup = instance
+    group_list = AssetGroup.objects.filter(domain_group=dmgroup)
+
+    link_list = []
+    for x in group_list:
+        # /jasset/group1/edit/?group1_id=15&gourp_id=22
+        s = "<a href='/jasset/dmgroup/edit/?group_id=%d&group1_id=%d'>%s</a>" % (dmgroup.id, x.id, x.name)
+        link_list.append(s)
+
+    if link_list:
+        s = '<br/>'.join(link_list)
+    else:
+        s = 'Empty'
+    return s
 
 @register.filter(name='all_group1_join')
 def all_group1_join(instance):

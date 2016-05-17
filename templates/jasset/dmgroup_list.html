@@ -62,7 +62,7 @@
                                 <td class="text-center"><a href="{% url 'asset_list' %}?group_id={{ asset_group.id }}">{{ asset_group.name }} </a>  </td>
                                 <td class="text-center">
                                     {% autoescape off %}
-                                        {{ asset_group | all_group1_join }}
+                                        {{ asset_group | all_group_join }}
                                     {% endautoescape %}
 
                                 </td>
@@ -96,6 +96,7 @@
 
 {% block self_footer_js %}
 <script>
+
     $(document).ready(function(){
         $('.group_del').click(function(){
             var row = $(this).closest('tr');
@@ -112,16 +113,16 @@
 
         $('#del_check').click(function(){
             var check_array = [];
-            if (confirm('确定删除')){
-                $('tr.gradeX input:checked').each(function(){
-                    check_array.push($(this).attr('value'))
-                });
-                $.get(
-                        '{% url "asset_group_del" %}',
-                        {id: check_array.join(',')},
-                        function(data){
-                            $('tr.gradeX input:checked').closest('tr').remove();
-                        }
+            $('tr.gradeX input:checked').each(function(){
+                check_array.push($(this).attr('value'));
+            });
+            alert(check_array);
+
+            if (confirm('确定删除id:[' + check_array + '] ?')){
+                $.get('{% url "dmgroup_del" %}', {id: check_array.join(',')},
+                    function(data){
+                        $('tr.gradeX input:checked').closest('tr').remove();
+                    }
                 )
 
             }

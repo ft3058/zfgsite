@@ -173,7 +173,6 @@
                                     <td class="text-center">{{ asset.username }}</td>
                                     <td class="text-center">
                                         <span id="asset_passwd_{{asset.id}}">{{asset.passwd}}</span>
-                                        <a class="gen_new_pass" asset_id="{{asset.id}}">生成新密码</a>
                                         <a class="zclip" data-clipboard-target="asset_passwd_{{asset.id}}"  data-toggle="tooltip" data-placement="left" title="复制密码"><i class="fa fa-copy"></i></a>
                                     </td>
 
@@ -196,17 +195,36 @@
                                     -->
 
                                     <td class="text-center" data-editable='false'>
-                                        <a href="{% url 'asset_edit' %}?id={{ asset.id }}" class="btn btn-xs btn-info">编辑</a>
-                                        <a value="{{ asset.id }}" host="{{asset.hostname}}" class="btn btn-xs btn-success asset_init">初始化</a>
+                                        {#<a value="{{ asset.id }}" class="conn btn btn-xs btn-warning" style="display:none;">连接</a>#}
+                                        {#<a value="{{ asset.id }}" class="conn btn btn-xs btn-warning" style="display:none;">连接</a>#}
 
-{#                                      <a value="{{ asset.id }}" class="conn btn btn-xs btn-warning" style="display:none;">连接</a>#}
-                                        <a value="{{ asset.id }}" class="newconn btn btn-xs btn-warning">快速连接</a>
-                                        <a value="{{ asset.id }}" class="biz_edit btn btn-xs btn-success" href="{%url 'biz_edit'%}?id={{ asset.id }}" target="_blank">业务变更</a>
-                                        <a value="{{ asset.id }}" class="biz_start btn btn-xs btn-warning" href="{%url 'biz_start'%}">上线</a>
+                                        <!-- new button group -->
+                                        <div class="btn-group">
+                                          <button value="{{ asset.id }}" type="button" class="newconn btn btn-xs btn-success">快速连接</button>
+                                          <button type="button" class="btn btn-success btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <span class="caret"></span>
+                                            <span class="sr-only">Toggle Dropdown</span>
+                                          </button>
+                                          <ul class="dropdown-menu">
+                                            <li><a href="{% url 'asset_edit' %}?id={{ asset.id }}" class="btn btn-xs btn-info"
+                                                   style="text-align:center;margin:auto;">编辑</a></li>
+                                            <li><a value="{{ asset.id }}" host="{{asset.hostname}}" class="btn btn-xs btn-default asset_init"
+                                                    style="text-align:center;margin:auto;">初始化</a></li>
 
-{#                                        <a value="{{ asset.id }}" class="conn btn btn-xs btn-warning" style="display:none;">连接</a>#}
-                                        <a value="{{ asset.id }}" class="newconn btn btn-xs btn-warning">连接</a>
-                                        <a value="{% url 'asset_del' %}?id={{ asset.id }}" class="btn btn-xs btn-danger asset_del">删除</a>
+                                            <!--li><a value="{{ asset.id }}" class="newconn btn btn-xs btn-warning">快速连接</a></li-->
+                                            <li><a value="{{ asset.id }}" class="biz_edit btn btn-xs btn-primary"
+                                                   href="{%url 'biz_edit'%}?id={{ asset.id }}" target="_blank"
+                                                   style="text-align:center;margin:auto;">业务变更</a></li>
+                                            <li><a value="{{ asset.id }}" class="biz_start btn btn-xs btn-warning" href="{%url 'biz_start'%}"
+                                                    style="text-align:center;margin:auto;">上线</a></li>
+                                            <!--li><a value="{{ asset.id }}" class="newconn btn btn-xs btn-warning">连接</a></li-->
+                                            <li role="separator" class="divider"></li>
+                                            <li><a class="gen_new_pass" asset_id="{{asset.id}}" style="text-align:center;margin:auto;">生成新密码</a></li>
+                                            <li><a value="{% url 'asset_del' %}?id={{ asset.id }}" class="btn btn-xs btn-danger asset_del"
+                                                    style="text-align:center;margin:auto;">删除</a></li>
+                                          </ul>
+                                        </div>
+
                                     </td>
                                 </tr>
                             {% endfor %}

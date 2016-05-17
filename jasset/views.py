@@ -324,6 +324,27 @@ def group_del(request):
             print u'AssetGroup1 [id=%d] is deleted!' % gp1.id
     return HttpResponse(u'删除成功')
 
+
+@require_role('admin')
+def dmgroup_del(request):
+    return
+    group_ids = request.GET.get('id', '')
+    group_id_list = group_ids.split(',')
+
+    for group_id in group_id_list:
+        AssetGroup.objects.filter(id=group_id).delete()
+        # delete group1
+        group1_list = AssetGroup1.objects.filter(group__id=group_id)
+        for gp1 in group1_list:
+            # remove gp1 from asset first
+            for ast in Asset.objects.filter(group1=gp1):
+                ast.group1.filter(id=gp1.id).delete()
+                print u'remove group1[%d] from asset[%d]' % (gp1.id, ast.id)
+            gp1.delete()
+            print u'AssetGroup1 [id=%d] is deleted!' % gp1.id
+    return HttpResponse(u'删除成功')
+
+
 @require_role('admin')
 def group1_del(request):
     """
