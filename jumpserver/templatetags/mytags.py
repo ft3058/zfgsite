@@ -182,8 +182,8 @@ def all_group_join(instance):
 
     link_list = []
     for x in group_list:
-        # /jasset/group1/edit/?group1_id=15&gourp_id=22
-        s = "<a href='/jasset/dmgroup/edit/?group_id=%d&group1_id=%d'>%s</a>" % (dmgroup.id, x.id, x.name)
+        # domain_name=test_dm5&group=YxDown.cn
+        s = "<a href='/jasset/asset/list/?domain_name=%s&group=%s' target='_blank'>%s</a>" % (dmgroup.name, x.name, x.name)
         link_list.append(s)
 
     if link_list:
@@ -191,6 +191,16 @@ def all_group_join(instance):
     else:
         s = 'Empty'
     return s
+
+@register.filter(name='get_asset_count_for_dmgroup')
+def get_asset_count_for_dmgroup(instance):
+    dmgroup = instance
+    group_list = AssetGroup.objects.filter(domain_group=dmgroup)
+
+    all_count = 0
+    for x in group_list:
+        all_count += x.asset_set.count()
+    return all_count
 
 @register.filter(name='all_group1_join')
 def all_group1_join(instance):

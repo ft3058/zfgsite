@@ -17,7 +17,7 @@ import tornado.websocket
 import tornado.httpserver
 import tornado.gen
 import tornado.httpclient
-from tornado.websocket import WebSocketClosedError
+from tornado.websocket import WebSocketHandler, WebSocketClosedError
 
 from tornado.options import define, options
 from pyinotify import WatchManager, Notifier, ProcessEvent, IN_DELETE, IN_CREATE, IN_MODIFY, AsyncNotifier
@@ -237,7 +237,7 @@ class WebTerminalKillHandler(tornado.web.RequestHandler):
         logger.debug('Websocket: web terminal client num: %s' % len(WebTerminalHandler.clients))
 
 
-class ExecHandler(tornado.websocket.WebSocketHandler):
+class ExecHandler(WebSocketHandler):
     clients = []
     tasks = []
 
@@ -276,7 +276,8 @@ class ExecHandler(tornado.websocket.WebSocketHandler):
 
     @require_auth('user')
     def open(self):
-        """ 新的修改权限 2016-4-11
+        """
+        新的修改权限 2016-4-11
         删除所有的权限认证，得到选中的主机列表，查询所有[{hostname,ip,port,password}],传递给MyRunner
         """
 
@@ -317,7 +318,10 @@ class ExecHandler(tornado.websocket.WebSocketHandler):
             self.write_message('匹配主机: ' + asset_name_str)
             self.write_message('<span style="color: yellow">Ansible> %s</span>\n\n' % command)
             self.__class__.tasks.append(MyThread(target=self.run_cmd, args=(command, pattern)))
-            ExecLog(host=asset_name_str, cmd=command, user=self.user.username, remote_ip=self.remote_ip).save()
+            try:
+                ExecLog(host=asset_name_str, cmd=command, user=self.user.username, remote_ip=self.remote_ip).save()
+            except Exception, e:
+                self.write_message('执行命令日志保存出错: ' + str(e))
 
         for t in self.__class__.tasks:
             if t.is_alive():
@@ -544,7 +548,7 @@ if __name__ == '__main__':
     server = tornado.httpserver.HTTPServer(app)
     server.bind(options.port, options.host)
     # server.listen(options.port)
-    processes_num = 5  # 5
+    processes_num = 15  # 5
     print u'processes_num = ', processes_num
     server.start(num_processes=processes_num)
     print "Run server on %s:%s" % (options.host, options.port)

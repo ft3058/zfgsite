@@ -337,7 +337,9 @@ def dmgroup_list(request):
 @require_role('admin')
 def dmgroup_add(request):
     header_title, path1, path2 = u'资产管理', u'域名组管理', u'添加域名组'
-    asset_all = Asset.objects.all()
+    # asset_all = Asset.objects.all()
+    # this asset repr assetgroup
+    asset_all = AssetGroup.objects.all()
 
     if request.method == 'POST':
         P = request.POST
@@ -364,3 +366,63 @@ def dmgroup_add(request):
             return my_render('jasset/dmgroup_add.html', locals(), request)
 
     return my_render('jasset/dmgroup_add.html', locals(), request)
+
+
+def dmgroup_edit(request):
+    header_title, path1, path2 = u'资产管理', u'域名组管理', u'编辑域名组'
+
+    if request.method == 'GET':
+        dmgroup_id = request.GET.get('id')
+        dmgroup = DomainGroup.objects.get(id=dmgroup_id)
+        # this asset repr assetgroup
+        finds = AssetGroup.objects.all()
+        asset_all = []
+        asset_select = []
+
+        for i in finds:
+            if i.domain_group and i.domain_group.name == dmgroup.name:
+                asset_select.append(i)
+            else:
+                asset_all.append(i)
+        return my_render('jasset/dmgroup_edit.html', locals(), request)
+
+    elif request.method == 'POST':
+        P = request.POST
+        name = P.get('name', '')
+        asset_select = P.getlist('asset_select', [])
+        comment = request.POST.get('comment', '')
+        dmgroup = DomainGroup.objects.get(name=name)
+        # remove dmgroup from each group
+        for gp in AssetGroup.objects.filter(domain_group=dmgroup):
+            # gp = AssetGroup.objects.get(id=groupid)
+            gp.domain_group = None
+            gp.save()
+        dmgroup.comment = comment
+        dmgroup.save()
+        db_edit_dmgroup(name=name, comment=comment, asset_select=asset_select)
+        smg = u"主机组 %s 修改成功" % name
+        return my_render('jasset/dmgroup_edit.html', locals(), request)
+
+
+@require_role('admin')
+def dmgroup_del(request):
+    dmgroup_ids = request.GET.get('id', '')
+    dmgroup_ids = dmgroup_ids.split(',')
+
+    if dmgroup_ids:
+        for _id in dmgroup_ids:
+            DomainGroup.objects.filter(id=_id).delete()
+            '''
+            # delete group1
+            group1_list = AssetGroup1.objects.filter(group__id=group_id)
+            for gp1 in group1_list:
+                # remove gp1 from asset first
+                for ast in Asset.objects.filter(group1=gp1):
+                    ast.group1.filter(id=gp1.id).delete()
+                    print u'remove group1[%d] from asset[%d]' % (gp1.id, ast.id)
+                gp1.delete()
+                print u'AssetGroup1 [id=%d] is deleted!' % gp1.id
+            '''
+        return HttpResponse(u'删除成功')
+    else:
+        return HttpResponse(u'not exists this dmgroup_ids id: %s' % dmgroup_ids)

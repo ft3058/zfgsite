@@ -33,7 +33,7 @@
 
 
                         <!---cu filter -->
-                        <div class="col-sm-7" style="padding-left: 0px">
+                        <div class="col-sm-8" style="padding-left: 0px">
                             <label>
                                 <select name="idc" class="form-control m-b input-sm" onchange="change_info()">
                                     <option value="">机房</option>
@@ -48,10 +48,10 @@
                             </label>
 
                             <label>
-                                <select name="domain" class="form-control m-b input-sm" onchange="change_info()">
+                                <select name="domain_name" class="form-control m-b input-sm" onchange="change_info()">
                                     <option value="">域名组</option>
                                     {% for d in domain_group_list %}
-                                        {% ifequal d.name domain %}
+                                        {% ifequal d.name domain_name %}
                                             <option value="{{d.name}}" selected> {{ d.name|slice:":20" }}</option>
                                         {% else %}
                                             <option value="{{d.name}}"> {{ d.name|slice:":20" }}</option>
@@ -116,7 +116,7 @@
                             </label>
                         </div>
 
-                        <div class="col-sm-4" style="padding-right: 0">
+                        <div class="col-sm-3" style="padding-right: 0">
                              <div class="input-group inline-group">
                                 <input type="text" class="form-control m-b input-sm" id="search_input" name="keyword" value="{{ keyword }}" placeholder="Search">
                                 <input type="text" style="display: none">
@@ -360,7 +360,7 @@
                 success: function(data){
                     var dataArray = data.split(',');
                     if (dataArray.length == 1 && data != 'error'){
-                        var title = 'Jumpserver Exec Terminal';
+                        var title = '批量执行命令窗口';  //Jumpserver Exec Terminal
                         layer.open({
                             type: 2,
                             title: title,

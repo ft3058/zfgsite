@@ -15,14 +15,15 @@
         <div id="footer">
           <div class="content">
             <input type="text" id="pattern" value="{{ check_assets }}" placeholder="Ansible Pattern">
-            <input type="text" id="command" placeholder="Command to execute" onkeypress="if(event.keyCode==13){sendMessage()}">
-            <input type="button" id="send_btn" value="Send" onclick="sendMessage()">
+            <input type="text" id="command" placeholder="输入要执行的命令" onkeypress="if(event.keyCode==13){sendMessage()}">
+            <input type="button" id="send_btn" value="立即执行" onclick="sendMessage()">
           </div>
         </div>
       </div>
 
 
 <script type="text/javascript">
+    //ws://localhost:3000/exec?role=&check_assets=119.36.192.23:115.231.153.11:115.231.153.39:222.186.37.4
     var wsUri = "{{ web_terminal_uri }}"; //请求的websocket url
     var ws = new WebSocket(wsUri);
 
@@ -66,7 +67,7 @@
         var data = {
           pattern: pattern.value,
           command: command.value,
-        {#      ts: (new Date()).getTime()#}
+          {# ts: (new Date()).getTime()#}
         };
 
         ws.send(JSON.stringify(data));

@@ -46,6 +46,7 @@ urlpatterns = patterns('',
     url(r'^dmgroup/list/$',          dmgroup_list,        name='dmgroup_list'),
     url(r'^dmgroup/add/$',           dmgroup_add,         name='dmgroup_add'),
     url(r'^dmgroup/del/$',           dmgroup_del,         name='dmgroup_del'),
+    url(r'^dmgroup/edit/$',          dmgroup_edit,         name='dmgroup_edit'),
 
     url(r'^asset/biz_start/$',                  biz_start,                  name='biz_start'),
     url(r'^asset/biz_edit/$',                   biz_edit,                   name='biz_edit'),

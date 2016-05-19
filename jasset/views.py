@@ -324,27 +324,6 @@ def group_del(request):
             print u'AssetGroup1 [id=%d] is deleted!' % gp1.id
     return HttpResponse(u'删除成功')
 
-
-@require_role('admin')
-def dmgroup_del(request):
-    return
-    group_ids = request.GET.get('id', '')
-    group_id_list = group_ids.split(',')
-
-    for group_id in group_id_list:
-        AssetGroup.objects.filter(id=group_id).delete()
-        # delete group1
-        group1_list = AssetGroup1.objects.filter(group__id=group_id)
-        for gp1 in group1_list:
-            # remove gp1 from asset first
-            for ast in Asset.objects.filter(group1=gp1):
-                ast.group1.filter(id=gp1.id).delete()
-                print u'remove group1[%d] from asset[%d]' % (gp1.id, ast.id)
-            gp1.delete()
-            print u'AssetGroup1 [id=%d] is deleted!' % gp1.id
-    return HttpResponse(u'删除成功')
-
-
 @require_role('admin')
 def group1_del(request):
     """
@@ -733,20 +712,25 @@ def asset_list(request):
     username = request.user.username
     user_perm = request.session['role_id']
     idc_all = IDC.objects.filter()
-    asset_group_all = AssetGroup.objects.all()
+
+    domain_group_list = DomainGroup.objects.all()
+
     asset_types = ASSET_TYPE
     asset_status = ASSET_STATUS
-    idc_name = request.GET.get('idc', '')
-    group_name = request.GET.get('group', '')
-    group1_name = request.GET.get('group1', '')
-    asset_type = request.GET.get('asset_type', '')
-    status = request.GET.get('status', '')
-    keyword = request.GET.get('keyword', '')
-    export = request.GET.get("export", False)
-    group_id = request.GET.get("group_id", '')
-    group1_id = request.GET.get("group1_id", '')
-    idc_id = request.GET.get("idc_id", '')
-    asset_id_all = request.GET.getlist("id", '')
+
+    P = request.GET
+    domain_name = P.get('domain_name', '')
+    idc_name = P.get('idc', '')
+    group_name = P.get('group', '')
+    group1_name = P.get('group1', '')
+    asset_type = P.get('asset_type', '')
+    status = P.get('status', '')
+    keyword = P.get('keyword', '')
+    export = P.get("export", False)
+    group_id = P.get("group_id", '')
+    group1_id = P.get("group1_id", '')
+    idc_id = P.get("idc_id", '')
+    asset_id_all = P.getlist("id", '')
 
     if group_id:
         group = get_object(AssetGroup, id=group_id)
@@ -801,6 +785,14 @@ def asset_list(request):
 
     if idc_name:
         asset_find = asset_find.filter(idc__name__contains=idc_name).order_by('-date_added')
+
+    if domain_name:
+        print 'domain_name is : ', domain_name
+        dmgroup = DomainGroup.objects.get(name=domain_name)
+        asset_group_all = [x for x in AssetGroup.objects.filter(domain_group=dmgroup)]
+        asset_find = asset_find.filter(group__in=asset_group_all).order_by('-date_added')
+    else:
+        asset_group_all = AssetGroup.objects.all()
 
     if group_name:
         asset_find = asset_find.filter(group__name__contains=group_name).order_by('-date_added')

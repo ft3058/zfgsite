@@ -15,18 +15,19 @@ def check_business_and_group(test=None):
     """检查资产分组是否正确 待完成"""
     return test
 
-def dmgroup_add_asset(group, asset_id=None, asset_ip=None):
+def dmgroup_add_asset(dmgroup, assetgroup_id=None):
     """
     资产组添加资产
     Asset group add a asset
     """
-    if asset_id:
-        asset = get_object(Asset, id=asset_id)
-    else:
-        asset = get_object(Asset, ip=asset_ip)
+    assetgroup = get_object(AssetGroup, id=assetgroup_id)
 
-    if asset:
-        group.asset_set.add(asset)
+    if assetgroup:
+        # dmgroup.asset_set.add(assetgroup)
+        assetgroup.domain_group = dmgroup
+        assetgroup.save()
+    else:
+        print 'not found assetgroup.., add fail'
 
 def group_add_asset(group, asset_id=None, asset_ip=None):
     """
@@ -63,8 +64,19 @@ def db_add_dmgroup(**kwargs):
     if not group:
         group = DomainGroup(**kwargs)
         group.save()
-        for asset_id in asset_id_list:
-            dmgroup_add_asset(group, asset_id)
+        for assetgroup_id in asset_id_list:
+            dmgroup_add_asset(group, assetgroup_id)
+
+def db_edit_dmgroup(**kwargs):
+    name = kwargs.get('name')
+    group = get_object(DomainGroup, name=name)
+    asset_id_list = kwargs.pop('asset_select')
+
+    if group:
+        for assetgroup_id in asset_id_list:
+            dmgroup_add_asset(group, assetgroup_id)
+    else:
+        print 'no dmgroup...'
 
 def db_add_group(**kwargs):
     """

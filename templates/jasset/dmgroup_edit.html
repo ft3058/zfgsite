@@ -39,15 +39,10 @@
                 </div>
 
                 <select id="assets_total" name="assets" class="form-control m-b" size="12" multiple style="display: none">
-                    {% for asset in asset_all %}
-                        <option value="{{ asset.id }}">{{ asset.hostname }} - {{ asset.ip }}</option>
-                    {% endfor %}
+
                 </select>
 
                 <select id="asset_select_total" name="j_hosts" class="form-control m-b" size="12"  multiple style="display: none">
-                    {% for asset in asset_select %}
-                        <option value="{{ asset.id }}">{{ asset.hostname }} - {{ asset.ip }}</option>
-                    {% endfor %}
                 </select>
 
                 <div class="ibox-content">
@@ -59,7 +54,9 @@
                     {% endif %}
                     <form id="assetForm" method="post" class="form-horizontal">
                         <div class="form-group"><label class="col-sm-2 control-label"> 域名组名<span class="red-fonts">*</span></label>
-                            <div class="col-sm-8" name="group_id" value="{{ post.id }}"><input type="text" value="{{ dmgroup.name }}" placeholder="Name" name="name" class="form-control"></div>
+                            <div class="col-sm-8" name="group_id" value="{{ post.id }}">
+                                <input type="text" value="{{ dmgroup.name }}" placeholder="domain name" name="name" class="form-control">
+                            </div>
                         </div>
 
                         <div class="hr-line-dashed"></div>
@@ -97,14 +94,20 @@
 
                             <div class="col-sm-3">
                                 <div>
-                                    <select id="asset_select" name="asset_select" class="form-control m-b" size="12"  multiple></select>
+                                    <!--exists asset-->
+                                    <select id="asset_select" name="asset_select" class="form-control m-b" size="12"  multiple>
+                                        {% for asset in asset_select %}
+                                            <option value="{{ asset.id }}">主机组ID:{{ asset.id }} - {{ asset.name|default_if_none:"" }}</option>
+                                        {% endfor %}
+
+                                    </select>
                                 </div>
                             </div>
                         </div>
 
                         <div class="hr-line-dashed"></div>
                         <div class="form-group"><label class="col-sm-2 control-label"> 备注 </label>
-                            <div class="col-sm-8"><input type="text" value="" placeholder="comment" name="comment" class="form-control"></div>
+                            <div class="col-sm-8"><input type="text" value="{{dmgroup.comment}}" placeholder="comment" name="comment" class="form-control"></div>
                         </div>
 
                         <div class="hr-line-dashed"></div>

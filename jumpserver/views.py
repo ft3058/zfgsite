@@ -309,9 +309,8 @@ def exec_cmd(request):
     role = request.GET.get('role')
     check_assets = request.GET.get('check_assets', '')
     web_terminal_uri = 'ws://%s/exec?role=%s&check_assets=%s' % (WEB_SOCKET_HOST, role, check_assets)
-    print 'role: ', type(role), role
-    print 'check_assets: ', type(check_assets), check_assets
-    print 'web_terminal_uri: ', web_terminal_uri
+    # ws://localhost:3000/exec?role=&check_assets=119.36.192.23:115.231.153.11:115.231.153.39:222.186.37.4
+    # print 'web_terminal_uri: ', web_terminal_uri
     return my_render('exec_cmd.html', locals(), request)
 
 

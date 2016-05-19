@@ -59,7 +59,8 @@
                                 <td class="text-center" name="id" value="{{ asset_group.id }}" data-editable='false'>
                                     <input name="id" value="{{ asset_group.id }}" type="checkbox" class="i-checks">
                                 </td>
-                                <td class="text-center"><a href="{% url 'asset_list' %}?group_id={{ asset_group.id }}">{{ asset_group.name }} </a>  </td>
+                                <td class="text-center"><a href="{% url 'asset_list' %}?domain_name={{ asset_group.name }}"
+                                                           target="_blank" title="点击进入相应资产列表">{{ asset_group.name }} </a>  </td>
                                 <td class="text-center">
                                     {% autoescape off %}
                                         {{ asset_group | all_group_join }}
@@ -67,12 +68,12 @@
 
                                 </td>
 
-                                <td class="text-center"> <a href="{% url 'asset_list' %}?group_id={{ asset_group.id }}">{{ asset_group.asset_set.count }}</a> </td>
+                                <td class="text-center"> {{ asset_group | get_asset_count_for_dmgroup}} </td>
                                 <td class="text-center"> {{ asset_group.comment }} </td>
                                 <td class="text-center">
-                                    <a href="{% url 'asset_group_edit' %}?id={{ asset_group.id }}" class="btn btn-xs btn-info">编辑</a>
-                                    <a href="{% url 'asset_group1_add' %}?id={{ asset_group.id }}" class="btn btn-xs btn-info "> 添加分组 </a>
-                                    <a value="{% url 'asset_group_del' %}?id={{ asset_group.id }}" class="btn btn-xs btn-danger group_del">删除</a>
+                                    <a href="{% url 'dmgroup_edit' %}?id={{ asset_group.id }}" class="btn btn-xs btn-info">编辑</a>
+                                    <!--a href="{% url 'asset_group1_add' %}?id={{ asset_group.id }}" class="btn btn-xs btn-info "> 添加分组 </a-->
+                                    <a value="{% url 'dmgroup_del' %}?id={{ asset_group.id }}" class="btn btn-xs btn-danger group_del">删除</a>
                                 </td>
                             </tr>
                         {% endfor %}
@@ -116,7 +117,7 @@
             $('tr.gradeX input:checked').each(function(){
                 check_array.push($(this).attr('value'));
             });
-            alert(check_array);
+            // alert(check_array);
 
             if (confirm('确定删除id:[' + check_array + '] ?')){
                 $.get('{% url "dmgroup_del" %}', {id: check_array.join(',')},
