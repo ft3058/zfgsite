@@ -8,7 +8,8 @@ from jlog.models import RsyncCheckLog, CustomLog
 from jmonitor.models import TcpConnCount, DiskSize, InterfaceIo
 from rsync_util import *
 from jmonitor.models import AssetBiz
-from const import COUNTRY_DICT
+# from const import COUNTRY_DICT
+from jumpserver.areas import COUNTRY_DICT
 
 
 # Create your views here.

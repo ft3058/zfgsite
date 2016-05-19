@@ -14,6 +14,7 @@ from jperm.models import PermRuleDomain
 from util import get_random_str, write_log
 from script_init_server import init_server, clear_asset
 from script_copy_files import copy_file_to_server
+from jumpserver.areas import COUNTRY_DICT
 
 
 @require_role('admin')
@@ -841,6 +842,12 @@ def asset_list(request):
         return my_render('jasset/asset_excel_download.html', locals(), request)
 
     assets_list, p, assets, page_range, current_page, show_first, show_end = pages(asset_find, request)
+
+    new_at_list = []
+    for i in assets.object_list:
+        i.hostname += u' - ' + COUNTRY_DICT.get(i.area, u'未知区域')
+        new_at_list.append(i)
+
     if user_perm != 0:
         return my_render('jasset/asset_list.html', locals(), request)
     else:

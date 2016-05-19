@@ -120,10 +120,11 @@ def require_auth(role='user'):
 
 class MyThread(threading.Thread):
     def __init__(self, *args, **kwargs):
+        print 'args = ', args
+        print 'kwargs = ', kwargs
         super(MyThread, self).__init__(*args, **kwargs)
 
     def run(self):
-        print 'starting one thread .. '
         try:
             super(MyThread, self).run()
         except WebSocketClosedError:
@@ -418,7 +419,7 @@ class WebTerminalHandler(tornado.websocket.WebSocketHandler):
         logger.debug('Websocket: Open request')
         role_name = self.get_argument('role', 'sb')
         asset_id = self.get_argument('id', 9999)
-        # print 'asset_id:', asset_id
+        print 'asset_id:', asset_id
         asset = get_object(Asset, id=asset_id)
 
         login_role = user_have_perm(self.user, asset)  # 跳转到jperm/perm_api :149, 被修改过，将传回一个可用的role

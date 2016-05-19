@@ -124,7 +124,7 @@ class MyRunner(MyInventory):
         super(MyRunner, self).__init__(*args, **kwargs)
         self.results_raw = {}
 
-    def run(self, module_name='shell', module_args='', timeout=10, forks=10, pattern='*',
+    def run(self, module_name='shell', module_args='', timeout=10, forks=20, pattern='*',
             become=False, become_method='sudo', become_user='root', become_pass=''):
         """
         run module from andible ad-hoc.
@@ -142,6 +142,18 @@ class MyRunner(MyInventory):
                      become_user=become_user,
                      become_pass=become_pass
                      )
+        '''
+        print 'module_name: ', module_name
+        print 'module_args: ', module_args
+        print 'timeout: ', timeout
+        print 'inventory: ', self.inventory
+        print 'pattern: ', pattern
+        print 'forks = ', forks
+        print 'become: ', become
+        print 'become_method = ', become_method
+        print 'become_user = ', become_user
+        print 'become_pass = ', become_pass
+        '''
         self.results_raw = hoc.run()
         logger.debug(self.results_raw)
         return self.results_raw
