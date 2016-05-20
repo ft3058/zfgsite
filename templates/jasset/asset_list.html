@@ -168,7 +168,7 @@
                                     <td class="text-center" name="id" value="{{ asset.id }}" data-editable='false'>
                                         <input name="id" value="{{ asset.id }}" type="checkbox" class="i-checks">
                                     </td>
-                                    <td class="text-center hostname"> <a href="{% url 'asset_detail' %}?id={{ asset.id }}">{{ asset.hostname|default_if_none:"" }}</a></td>
+                                    <td class="text-center hostname"> <a href="{% url 'asset_detail' %}?id={{ asset.id }}" ip="{{asset.ip}}">{{ asset.hostname|default_if_none:"" }}</a></td>
                                     <td class="text-center">{{ asset.port }}</td>
                                     <td class="text-center">{{ asset.username }}</td>
                                     <td class="text-center">
@@ -350,7 +350,8 @@
 
             var check_array = [];
             $(".gradeX input:checked").closest('tr').find('.hostname a').each(function() {
-                check_array.push($(this).text())
+                //check_array.push($(this).text())
+                check_array.push($(this).attr('ip'))
             });
             check_assets = check_array.join(':');
             $.ajax({
