@@ -95,6 +95,11 @@ class CopyThread(Thread):
                 # print
                 time.sleep(1)
 
+            # restart nginx if '/usr/local/nginx/conf/vhost' in path
+            if '/usr/local/nginx/conf/vhost' in self.remote_dir:
+                ssh.send('service nginx restart \n')
+                time.sleep(1)
+
             # print 'scp complete..'
             s.close()
 

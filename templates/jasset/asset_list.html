@@ -259,7 +259,8 @@
     $('#check_business').click(function () {
         var check_array = [];
         $(".gradeX input:checked").closest('tr').find('.hostname a').each(function() {
-            check_array.push($(this).text())
+            //check_array.push($(this).text())
+            check_array.push($(this).attr('ip'))
         });
         check_assets = check_array.join(':');
 
@@ -426,7 +427,8 @@
         $('#exec_copy_cmd_btn').click(function(){
             var check_array = [];
             $(".gradeX input:checked").closest('tr').find('.hostname a').each(function() {
-                check_array.push($(this).text())
+                //check_array.push($(this).text())
+                check_array.push($(this).attr('ip'))
             });
             check_assets = check_array.join(':');
 
