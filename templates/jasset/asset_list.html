@@ -206,8 +206,12 @@
                                             <span class="sr-only">Toggle Dropdown</span>
                                           </button>
                                           <ul class="dropdown-menu">
+                                            <li><a href="#" class="btn btn-xs btn-info search_file" at_id="{{asset.id}}"
+                                                   style="text-align:center;margin:auto;background:white;">查询文件</a></li>
                                             <li><a href="{% url 'asset_edit' %}?id={{ asset.id }}" class="btn btn-xs btn-info"
                                                    style="text-align:center;margin:auto;">编辑</a></li>
+
+                                            <li role="separator" class="divider"></li>
                                             <li><a value="{{ asset.id }}" host="{{asset.hostname}}" class="btn btn-xs btn-default asset_init"
                                                     style="text-align:center;margin:auto;">初始化</a></li>
 
@@ -341,6 +345,19 @@
                         }
                 )
             }
+        });
+
+        $('.search_file').click(function(){
+            // var row = $(this).closest('tr');
+            var at_id = $(this).attr('at_id');
+            alert(at_id);
+            /*
+            $.get($(this).attr('value'), {},
+                function (data) {
+                    row.remove()
+                }
+            )*/
+            return;
         });
 
         $('#exec_cmd').click(function(){

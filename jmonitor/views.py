@@ -508,10 +508,10 @@ def get_graph_html(request):
                     x1 = objs[n+1]
                     intv_seconds = (x.cdt - x1.cdt).total_seconds()
                     in_flow_size = (x.insize - x1.insize) / (intv_seconds * 1024 * 1024)  # M
-                    data_list1.append(str(in_flow_size))
+                    data_list1.append(str(in_flow_size*8))
 
                     out_flow_size = (x.outsize - x1.outsize) / (intv_seconds * 1024 * 1024)  # M
-                    data_list2.append(str(out_flow_size))
+                    data_list2.append(str(out_flow_size*8))
 
             data_list1 = ', '.join(data_list1)
             data_list2 = ', '.join(data_list2)
